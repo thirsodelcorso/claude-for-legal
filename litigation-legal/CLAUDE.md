@@ -63,16 +63,22 @@ Este arquivo é o frame da casa contra o qual cada caso é triado. Calibração 
 
 ## Quem está usando
 
-**Papel:** [PLACEHOLDER — Advogado(a) habilitado(a) | Estagiário(a) de Direito inscrito na OAB | Não-advogado com acesso a advogado | Não-advogado sem acesso a advogado]
-**Advogado de contato:** [PLACEHOLDER — nome / equipe / escritório externo / N/A]
+**Papel:** [PLACEHOLDER — Defensor(a) Público(a) (membro de unidade) | Advogado(a) habilitado(a) | Estagiário(a) de Direito inscrito(a) na OAB | Não-advogado com acesso a advogado | Não-advogado sem acesso a advogado]
+**Vínculo:** [PLACEHOLDER — nome do(a) Defensor(a)/advogado(a) de contato / unidade DPEAM (ex.: 4ª DP JEC + 17ª/34ª DPs Cíveis, varas 1ª/12ª JEC + 19ª/20ª Cíveis Comuns) / escritório externo / N/A]
 
 ---
 
 ## Papel na advocacia
 
-**Papel:** [PLACEHOLDER — `departamento-juridico` | `advogado-em-sociedade` | `advogado-autonomo` | `outro`]
+**Papel:** [PLACEHOLDER — `defensor-publico` | `departamento-juridico` | `advogado-em-sociedade` | `advogado-autonomo` | `outro`]
 
-*Skills downstream leem isto para escolher defaults: departamento-jurídico usa vocabulário de portfólio / provisão CPC 25 / memo para diretoria; advogado-em-sociedade usa vocabulário de caso / revisão por sócio / cobrança por hora ou êxito; advogado-autônomo usa vocabulário de carteira pessoal / honorários ad exitum ou contratuais / atualização ao cliente. Nunca misture frames.*
+*Skills downstream leem isto para escolher defaults:*
+- *`defensor-publico` usa vocabulário de assistido(a) (não cliente) / portfólio por vara da atribuição / hipossuficiência presumida (Súmula 481 STJ) / teses repetitivas / escalonamento institucional ao Defensor Público-Geral / sem honorário (vencimento institucional); aplica LC 80/94 e Resoluções internas do CSDPGE.*
+- *`departamento-juridico` usa vocabulário de portfólio / provisão CPC 25 / memo para diretoria.*
+- *`advogado-em-sociedade` usa vocabulário de caso / revisão por sócio / cobrança por hora ou êxito.*
+- *`advogado-autonomo` usa vocabulário de carteira pessoal / honorários ad exitum ou contratuais / atualização ao cliente.*
+
+*Nunca misture frames.*
 
 ---
 
@@ -80,9 +86,11 @@ Este arquivo é o frame da casa contra o qual cada caso é triado. Calibração 
 
 **Posição default:** [PLACEHOLDER — `autor` | `réu` | `ambos — default autor` | `ambos — default réu` | `varia por caso` | `terceiro interessado / amicus curiae frequente`]
 
-*Posição de autor: a calibração de risco é valor da causa, economia de honorários (CPC art. 85 sucumbenciais), expectativa do cliente, exposição à prescrição (CC arts. 205-206) e decadência. Notificações extrajudiciais são afirmações. Produção de provas é ofensiva.*
+*Posição de autor: a calibração de risco é valor da causa, economia de honorários (CPC art. 85 sucumbenciais — não se aplica pessoalmente ao Defensor; vide nota abaixo), expectativa do(a) cliente/assistido(a), exposição à prescrição (CC arts. 205-206) e decadência. Notificações extrajudiciais e ofícios são afirmações. Produção de provas é ofensiva.*
 
-*Posição de réu: a calibração de risco é exposição, provisões CPC 25 (só DJ corporativo), alçada de transação, cobertura de seguros (D&O, RC profissional, etc.). Notificações são recebidas e triadas. Produção de provas é defensiva.*
+*Posição de réu: a calibração de risco é exposição, provisões CPC 25 (só DJ corporativo), alçada de transação, cobertura de seguros (D&O, RC profissional, etc., quando aplicável). Notificações são recebidas e triadas. Produção de provas é defensiva.*
+
+*Nota Defensor Público: o polo é majoritariamente autor (autor coletivo ou patrocínio do(a) assistido(a) como autor individual), mas há cenários de defesa (réu em ação de cobrança, defesa em ação possessória de despejo, embargos à execução, defesa em ação penal — quando atribuída defesa criminal pela escala da DP). Sucumbência: o Defensor não recebe sucumbência pessoalmente — verbas sucumbenciais devidas pela contraparte revertem ao Fundo da Defensoria (LC 80/94 e Lei 13.105/15 + entendimento STJ em REsps repetidos), não ao membro. Reciprocamente, em caso de eventual sucumbência contra o(a) assistido(a), a hipossuficiência presumida (Súmula 481 STJ) costuma suspender a exigibilidade (CPC art. 98).*
 
 *Skills que ramificam por posição: `demand-draft` / `demand-received`, `subpoena-triage`, `matter-intake` (por caso), `chronology` (frame ofensivo vs defensivo), `claim-chart` (provar vs desprovar elementos).*
 
@@ -107,8 +115,9 @@ Este arquivo é o frame da casa contra o qual cada caso é triado. Calibração 
 ## Outputs
 
 **Cabeçalho de sigilo profissional** (prefixado em toda análise interna, briefing, triagem ou revisão que este plugin gerar):
-- Se o Papel em `## Quem está usando` é Advogado(a) habilitado(a) ou Estagiário(a) inscrito: `SIGILOSO — TRABALHO DE ADVOGADO — Art. 7º, XIX, Lei 8.906/94 — Preparado sob direção de advogado habilitado`
-- Se o Papel é Não-advogado: `NOTAS DE PESQUISA — NÃO É PARECER JURÍDICO — REVISAR COM ADVOGADO HABILITADO ANTES DE USAR`
+- Se o Papel em `## Quem está usando` é Defensor(a) Público(a): `SIGILOSO — TRABALHO DE DEFENSOR PÚBLICO — Art. 4º-A V LC 80/94 + Art. 7º XIX Lei 8.906/94 — Sigilo do(a) assistido(a) e inviolabilidade do membro`
+- Se o Papel é Advogado(a) habilitado(a) ou Estagiário(a) inscrito(a): `SIGILOSO — TRABALHO DE ADVOGADO — Art. 7º, XIX, Lei 8.906/94 — Preparado sob direção de advogado habilitado`
+- Se o Papel é Não-advogado: `NOTAS DE PESQUISA — NÃO É PARECER JURÍDICO — REVISAR COM ADVOGADO HABILITADO OU DEFENSOR(A) PÚBLICO(A) ANTES DE USAR`
 
 **A proteção do cabeçalho é específica do ordenamento e do contexto.** O sigilo profissional do advogado brasileiro (Lei 8.906/94 art. 7º, XIX; CPC art. 388, IV; Código de Ética OAB arts. 35-37) tem características próprias e não é um análogo perfeito do "attorney work product" americano nem do "legal professional privilege" inglês:
 
@@ -401,9 +410,9 @@ A coluna canônica mapeia para o floor de severidade cross-plugin descrito em `#
 | **Baixa severidade**    | Rotina              | Rotina              | Monitor            |
 
 **Bandas de severidade (monetárias e não-monetárias):**
-- **Alta:** [PLACEHOLDER — ex.: exposição >R$ 5M, OU qualquer obrigação de fazer/não-fazer que ameace produto/serviço core, OU ação de regulador (CVM/ANS/ANPD/Bacen/RFB), OU risco reputacional de nível-conselho]
-- **Média:** [PLACEHOLDER — ex.: R$ 500K–R$ 5M, OU obrigação de fazer não-core, OU perda material de contrato]
-- **Baixa:** [PLACEHOLDER — ex.: <R$ 500K e sem obrigação de fazer/não-fazer]
+- **Alta:** [PLACEHOLDER — DJ/banca: ex.: exposição >R$ 5M, OU qualquer obrigação de fazer/não-fazer que ameace produto/serviço core, OU ação de regulador (CVM/ANS/ANPD/Bacen/RFB), OU risco reputacional de nível-conselho. **Defensor:** risco humanitário grave (negativa de BPC/LOAS a idoso ou pessoa com deficiência sem outra fonte; negativa de medicamento/leito que ameaça vida; despejo iminente de família com criança; violência doméstica em curso; prescrição em 30 dias para tese principal)]
+- **Média:** [PLACEHOLDER — DJ/banca: ex.: R$ 500K–R$ 5M, OU obrigação de fazer não-core, OU perda material de contrato. **Defensor:** risco humanitário relevante mas não imediato (cobrança indevida cíclica, vício de produto durável, alimentos atrasados, conflito de guarda sem violência, prescrição em 6 meses)]
+- **Baixa:** [PLACEHOLDER — DJ/banca: ex.: <R$ 500K e sem obrigação de fazer/não-fazer. **Defensor:** matéria patrimonial menor, divergência negocial recuperável por mediação, sem urgência humanitária e sem prescrição próxima]
 
 **Bandas de probabilidade:**
 - **Alta:** [PLACEHOLDER — ex.: resultado adverso mais provável que não (>50%) com a prova atual]
@@ -412,7 +421,11 @@ A coluna canônica mapeia para o floor de severidade cross-plugin descrito em `#
 
 ### Limiares de materialidade
 
-*Direciona o campo `materiality:` no `_log.yaml` — `provisionado | divulgado | monitorado | nenhum`. Esta sub-seção é **só para DJ corporativo**. Se seu `## Papel na advocacia` é `advogado-em-sociedade` ou `advogado-autonomo`, CPC 25 / divulgação CVM / memo para diretoria-comitê de auditoria não se aplica — deixe omitida ou substitua pelos equivalentes do autônomo ("leitura de valor da causa" para autor, "leitura de exposição" para réu) capturados no caminho de autônomo. O cold-start escreve o formato certo para seu papel; você não deveria estar preenchendo CPC 25 como advogado autônomo.*
+*Direciona o campo `materiality:` no `_log.yaml` — `provisionado | divulgado | monitorado | nenhum` (DJ corporativo) ou `escalado-DPG | escalado-coordenador | monitorado | nenhum` (Defensor). Esta sub-seção é **calibrada por papel**.*
+
+*Se seu `## Papel na advocacia` é `advogado-em-sociedade` ou `advogado-autonomo`, CPC 25 / divulgação CVM / memo para diretoria não se aplica — deixe omitida ou substitua pelos equivalentes do autônomo ("leitura de valor da causa" para autor, "leitura de exposição" para réu).*
+
+*Se seu papel é `defensor-publico`, CPC 25 / CVM / D&O não se aplicam — substituídos por: escalonamento institucional ao(à) Defensor(a) Público(a)-Geral (LC 80/94 art. 8º) em casos atípicos ou de impacto coletivo; manifestação ao Conselho Superior da DP em hipóteses regulamentadas; remessa ao Núcleo Especializado quando a tese transborda a competência da unidade.*
 
 | Gatilho | Limiar | Ação |
 |---|---|---|
@@ -423,12 +436,24 @@ A coluna canônica mapeia para o floor de severidade cross-plugin descrito em `#
 
 ### Alçada de transação
 
+**Para DJ corporativo / banca / autônomo:**
+
 | Valor | Aprovador |
 |---|---|
 | R$ 0–[PLACEHOLDER] | Advogado responsável pelo caso |
 | [PLACEHOLDER]–[PLACEHOLDER] | Diretor Jurídico |
 | [PLACEHOLDER]–[PLACEHOLDER] | Diretor Financeiro + Diretor Jurídico |
 | >[PLACEHOLDER] | Conselho de Administração (acima de [valor] também pode exigir deliberação assemblear — Lei 6.404/76 art. 122, quando aplicável) |
+
+**Para Defensor Público (transação na DP):**
+
+| Tipo de decisão | Aprovador |
+|---|---|
+| Acordo no caso individual, dentro da pretensão deduzida pelo(a) assistido(a) | Discricionariedade do(a) Defensor(a) responsável, ouvido(a) o(a) assistido(a) (LC 80/94 art. 4º-A I, II) |
+| Acordo que renuncia parcela material do direito do(a) assistido(a) | Defensor(a) + manifestação inequívoca do(a) assistido(a); registrar fundamentação |
+| Tese institucional inédita (precedente para casos repetitivos) | Comunicação ao(à) Defensor(a) Coordenador(a) da área antes de fechar |
+| Acordo coletivo / TAC (Termo de Ajustamento de Conduta) | Defensor(a) Público(a)-Geral conforme regulamento interno (LC 80/94 art. 8º + resolução CSDPGE) |
+| Desistência ou renúncia em ação coletiva / Ação Civil Pública | Conselho Superior da Defensoria (quando exigido por regulamento) |
 
 ### Perfil de seguros
 
@@ -477,13 +502,28 @@ A coluna canônica mapeia para o floor de severidade cross-plugin descrito em `#
 |---|---|---|
 | [PLACEHOLDER] | | |
 
-### Banca externa de referência
+### Banca externa / DPs colaboradoras / núcleos especializados
+
+**Para DJ corporativo / banca / autônomo — escritórios externos:**
 
 | Escritório | Sócio responsável | Tipo de matéria | Postura de honorários (hora / êxito / fixo) | Contrato de honorários |
 |---|---|---|---|---|
 | [PLACEHOLDER] | | | | |
 
 *Lembre: success fee / honorários ad exitum admitidos no Brasil com limites do Código de Ética OAB art. 38; quota litis pura (>50% do proveito) é vedada.*
+
+**Para Defensor Público — DPs colaboradoras e núcleos especializados:**
+
+| DP / Núcleo | Defensor(a) responsável | Atribuição | Quando encaminhar |
+|---|---|---|---|
+| [PLACEHOLDER — ex.: Núcleo de Saúde] | | Demandas SUS, medicamento, leito, internação | Caso com pretensão de saúde fora da rotina da unidade |
+| [PLACEHOLDER — ex.: Núcleo do Idoso] | | Estatuto do Idoso (Lei 10.741/03) | Hipervulnerabilidade pela idade, com demanda específica |
+| [PLACEHOLDER — ex.: Núcleo do Consumidor] | | Demandas coletivas consumeristas | Pretensão que beneficia grupo (publicidade enganosa, vício serial) |
+| [PLACEHOLDER — ex.: Núcleo da Mulher / Lei Maria da Penha] | | Violência doméstica | Encaminhamento prioritário, articulação com rede |
+| [PLACEHOLDER — ex.: Núcleo de Fazenda Pública] | | Ações contra Estado, Município, União | Quando a demanda exige expertise em fazenda |
+| [PLACEHOLDER — ex.: Núcleo Criminal] | | Defesa criminal por escala | Conflito de interesse impedindo a unidade cível |
+| [PLACEHOLDER — ex.: Núcleo da Infância e Juventude] | | ECA (Lei 8.069/90) | Caso envolvendo criança/adolescente em situação de risco |
+| [PLACEHOLDER — ex.: Núcleo LGBTQIA+] | | Demandas específicas (retificação registro, união, adoção) | Conforme atribuição |
 
 ### Foros frequentes
 
@@ -512,12 +552,14 @@ A coluna canônica mapeia para o floor de severidade cross-plugin descrito em `#
 
 *Como esta empresa efetivamente checa conflitos em novos casos. Prática de DJ varia — alguns lugares rodam sistema formal, outros delegam ao escritório retido, outros confiam em conhecimento institucional. Capture o que vocês fazem.*
 
-**Método:** [PLACEHOLDER — `corporate-legal` (rodado pela equipe de jurídico corporativo) | `escritorio-externo` (delegado ao escritório retido) | `system-check` (base interna de conflitos) | `informal` (juízo do próprio advogado) | `outro`]
+**Método:** [PLACEHOLDER — `defensoria-publica` (vedação institucional LC 80/94 + escusa por foro íntimo) | `corporate-legal` (rodado pela equipe de jurídico corporativo) | `escritorio-externo` (delegado ao escritório retido) | `system-check` (base interna de conflitos) | `informal` (juízo do próprio advogado) | `outro`]
 **Quem roda:** [PLACEHOLDER]
-**Contra o que checa:** [PLACEHOLDER — ex.: "lista atual de clientes, fornecedores ativos, afiliadas, conselheiros e seus conselhos externos, ex-empregados nos últimos 2 anos"]
+**Contra o que checa:** [PLACEHOLDER — DJ/banca: ex.: "lista atual de clientes, fornecedores ativos, afiliadas, conselheiros e seus conselhos externos, ex-empregados nos últimos 2 anos". **Defensor:** lista de impedimentos pessoais (parentes, ex-procurados, contraparte com vínculo) + lista de vedações institucionais da LC 80/94 art. 46 (advocacia privada, parecer remunerado para parte privada, etc.)]
 **Obrigatório antes do intake:** [PLACEHOLDER — `sim, bloqueia intake` | `sim, mas intake pode rodar em paralelo` | `só checagem leve`]
 
-*Base normativa: EAOAB (Lei 8.906/94) art. 17; Código de Ética OAB arts. 19-21 (vedação de patrocínio simultâneo de interesses conflitantes; impedimento por 2 anos após cessação do patrocínio em relação a ex-cliente).*
+*Base normativa para advocacia privada: EAOAB (Lei 8.906/94) art. 17; Código de Ética OAB arts. 19-21 (vedação de patrocínio simultâneo de interesses conflitantes; impedimento por 2 anos após cessação do patrocínio em relação a ex-cliente).*
+
+*Base normativa para Defensor Público: LC 80/94 art. 46 (vedações ao membro da DP — exercer advocacia privada, receber honorário ou remuneração por advocacia paralela, parecer remunerado para parte privada, exercer atividade político-partidária); LC 80/94 art. 134 (impedimentos, suspeição, escusa pessoal por foro íntimo) + CPC arts. 144-148 aplicáveis subsidiariamente. Não há "ex-cliente 2 anos" — o impedimento é institucional e por caso.*
 
 ---
 
@@ -605,6 +647,32 @@ A coluna canônica mapeia para o floor de severidade cross-plugin descrito em `#
 | Template de comunicação de dever de guarda | [PLACEHOLDER] | |
 | Apólices de seguro / resumo de cobertura | [PLACEHOLDER] | |
 | Manual de padronização de peças (interno) | [PLACEHOLDER] | |
+
+---
+
+## Atribuições da Unidade (Defensor Público)
+
+*Só relevante se seu `## Papel na advocacia` é `defensor-publico`. Capturado pelo cold-start; mantenha sincronizado com a Resolução do CSDPGE que regula sua unidade.*
+
+**Unidade:** [PLACEHOLDER — ex.: "4ª DP dos JECs + 17ª DP Cível + 34ª DP Cível — Capital de Manaus"]
+**Resolução de criação / atribuição:** [PLACEHOLDER — ex.: "Resolução 004/2019 DPEAM"]
+**Defensor(a) titular:** [PLACEHOLDER]
+**Defensor(a) substituto(a) / suplência:** [PLACEHOLDER]
+
+**Varas atendidas:**
+
+| Vara | Competência | Tipo | Cadência típica de audiência |
+|---|---|---|---|
+| [PLACEHOLDER — ex.: 1ª Vara JEC] | Lei 9.099/95 (até 40 SM) | JEC Cível | [PLACEHOLDER] |
+| [PLACEHOLDER — ex.: 12ª Vara JEC] | Lei 9.099/95 (até 40 SM) | JEC Cível | [PLACEHOLDER] |
+| [PLACEHOLDER — ex.: 19ª Vara Cível] | CPC 2015 (sem limite de valor) | Cível Comum | [PLACEHOLDER] |
+| [PLACEHOLDER — ex.: 20ª Vara Cível] | CPC 2015 (sem limite de valor) | Cível Comum | [PLACEHOLDER] |
+
+**Escala interna da unidade:** [PLACEHOLDER — distribuição de atendimento de novo assistido entre Defensores(as); rodízio de plantão; cobertura em afastamento]
+
+**Sistema interno usado:** [PLACEHOLDER — Sapiens-DPGU / sistema próprio AM / outro]
+
+**Núcleos especializados de referência:** [PLACEHOLDER — vide `## Banca externa / DPs colaboradoras / núcleos especializados` acima]
 
 ---
 
