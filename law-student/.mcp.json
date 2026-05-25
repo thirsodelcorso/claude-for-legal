@@ -16,7 +16,38 @@
       "type": "http",
       "url": "https://mcp.jusratio.com.br/mcp",
       "title": "JusRatio",
-      "description": "Pesquisa jurisprudencial brasileira — STF, STJ, tribunais estaduais — útil para estudar precedentes vinculantes (ADI/ADC/ADPF/Súmula Vinculante), repetitivos do STJ, súmulas, e informativos. Use para entender casos paradigmáticos e treinar fichamento."
+      "description": "Pesquisa jurisprudencial brasileira — STF, STJ, tribunais estaduais — útil para estudar precedentes vinculantes (ADI/ADC/ADPF/Súmula Vinculante), repetitivos do STJ, súmulas e informativos. Use para entender casos paradigmáticos e treinar fichamento."
+    },
+    "bnp-api": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/bnp-api/server.py"],
+      "title": "BNP — Banco Nacional de Precedentes",
+      "description": "Precedentes vinculantes (ADI/ADC/ADPF/SV) e qualificados (Tema Repetitivo, Repercussão Geral) do STF e STJ. Ideal para estudar precedentes cobrados em prova (OAB, concursos públicos) com texto integral. Tools: buscar_precedentes, gerar_relatorio_precedentes, listar_tipos_precedentes. Sem chave."
+    },
+    "cjf-jurisprudencia": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/cjf-jurisprudencia/server.py"],
+      "title": "CJF Jurisprudência (STF/STJ/TRFs)",
+      "description": "Jurisprudência unificada STF/STJ/TRF1-5 do portal CJF. Útil para fichamento de casos paradigmáticos, comparação de teses entre tribunais regionais, prática de FIRAC. Sem chave."
+    },
+    "tjam-jurisprudencia": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/tjam-jurisprudencia/server.py"],
+      "title": "TJAM Jurisprudência (e-SAJ)",
+      "description": "Jurisprudência do TJAM via e-SAJ. Útil para estudo de direito local, comarca de Manaus, AM. Tools: buscar_tjam, gerar_relatorio_tjam, listar_filtros_tjam."
+    },
+    "datajud": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/datajud/server.py"],
+      "env": {
+        "DATAJUD_API_KEY": "${DATAJUD_API_KEY}"
+      },
+      "title": "DataJud (CNJ + e-SAJ TJAM)",
+      "description": "Acompanhamento processual via DataJud (CNJ, 61 tribunais) e e-SAJ TJAM. Útil para estagiário acompanhar processos do estágio e para estudar movimentação real de casos. API key gratuita do DataJud (e-SAJ funciona sem chave)."
     }
   },
   "recommendedCategories": [

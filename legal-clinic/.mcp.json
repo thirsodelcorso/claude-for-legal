@@ -4,39 +4,58 @@
       "type": "http",
       "url": "https://mcp.slack.com/mcp",
       "title": "Slack",
-      "description": "Search messages, read channels, find discussions across your workspace."
+      "description": "Mensagens da equipe da unidade: orientação do Defensor-Supervisor, alertas de escala, recados do núcleo."
     },
     "Google Drive": {
       "type": "http",
       "url": "https://drivemcp.googleapis.com/mcp/v1",
       "title": "Google Drive",
-      "description": "Search, read, and fetch documents from Google Drive."
+      "description": "Busca, lê e recupera documentos da pasta do(a) assistido(a): formulário social, comprovantes, peças, ofícios."
     },
-    "CourtListener": {
+    "JusRatio": {
       "type": "http",
-      "url": "https://mcp.courtlistener.com/",
-      "title": "CourtListener",
-      "description": "Free Law Project's legal research platform — millions of U.S. court opinions, PACER dockets, judge profiles, oral arguments, and citation verification."
+      "url": "https://mcp.jusratio.com.br/mcp",
+      "title": "JusRatio",
+      "description": "Pesquisa jurisprudencial brasileira proprietária (STF, STJ, tribunais estaduais) com níveis de autoridade A-E. Útil para o(a) estagiário(a) começar pesquisa com ranqueamento curado antes da revisão do Defensor-Supervisor."
     },
-    "Courtroom5": {
-      "type": "http",
-      "url": "https://mcp.courtroom5.com",
-      "title": "Courtroom5",
-      "description": "Courtroom5 — jurisdiction-aware guidance for self-represented litigants: case intake, deadline calculations, procedural next steps."
+    "bnp-api": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/bnp-api/server.py"],
+      "title": "BNP — Banco Nacional de Precedentes",
+      "description": "Precedentes vinculantes (ADI/ADC/ADPF/SV) e qualificados (Tema Repetitivo, Repercussão Geral) do STF e STJ. Use ao fundamentar petição inicial ou contestação em tese repetitiva (saúde, BPC, consumidor, direitos sociais)."
     },
-    "Descrybe": {
-      "type": "http",
-      "url": "https://mcp.descrybe.com/mcp",
-      "title": "Descrybe",
-      "description": "Primary law research — search cases by concept or wording, find cases from citations, extract authorities, check treatment, verify quoted language."
+    "cjf-jurisprudencia": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/cjf-jurisprudencia/server.py"],
+      "title": "CJF Jurisprudência (STF/STJ/TRFs)",
+      "description": "Jurisprudência unificada STF/STJ/TRF1-5. Útil quando o caso tem matéria federal (saúde via SUS, BPC/LOAS, demanda contra ente federal)."
+    },
+    "tjam-jurisprudencia": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/tjam-jurisprudencia/server.py"],
+      "title": "TJAM Jurisprudência (e-SAJ)",
+      "description": "Jurisprudência local do TJAM via e-SAJ. Use para sondar como câmaras cíveis ou turmas recursais vêm decidindo a tese antes de protocolizar."
+    },
+    "datajud": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CONSULTA_JURISPRUDENCIA_MCP_DIR}/datajud/server.py"],
+      "env": {
+        "DATAJUD_API_KEY": "${DATAJUD_API_KEY}"
+      },
+      "title": "DataJud (CNJ + e-SAJ TJAM)",
+      "description": "Acompanhamento processual via DataJud (CNJ) e e-SAJ TJAM. Use para monitorar processos da unidade — varas atendidas, prazos vencendo, audiências marcadas, novos despachos. Cascata e-SAJ + DataJud retorna partes, valor da causa, classe, movimentações e a juízo."
     }
   },
   "recommendedCategories": [
-    "case-management",
-    "legal-research",
-    "case-law",
-    "licensing-boards",
-    "documents",
+    "defensoria-publica",
+    "jurisprudencia-brasileira",
+    "acompanhamento-processual",
+    "intake-assistido",
+    "documentos",
     "chat"
   ]
 }
