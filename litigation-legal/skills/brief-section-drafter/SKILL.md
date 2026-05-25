@@ -1,191 +1,263 @@
 ---
 name: brief-section-drafter
-description: Draft a brief section in house style, consistent with the case theory — every fact cited, every case checked, every argument tied to the theory. Use when the user says "draft the [section]", "write the statement of facts", "argument section on [issue]", or needs a first draft of a brief section.
-argument-hint: "[section \u2014 e.g., 'statement of facts', 'argument II']"
+description: Redige seção de peça em estilo da casa, consistente com a tese — todo fato citado, todo julgado conferido, todo argumento amarrado à tese. Use quando o(a) usuário(a) disser "redija a [seção]", "escreva os fatos", "argumento II sobre [questão]", "petição inicial JEC", "petição inicial comum", "contestação", "recurso inominado", "apelação", ou precisar de primeira minuta de seção de peça.
+argument-hint: "[seção — ex.: 'fatos', 'fundamentos jurídicos', 'preliminares', 'petição inicial JEC vício de produto']"
 ---
 
 # /brief-section-drafter
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → case theory, house style.
-2. Follow the workflow and reference below.
-3. Draft in house format/tone/citation style. Consistent with theory.
-4. Output: draft section. Flag every place a fact or cite needs verification.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → tese do caso, estilo da casa.
+2. Siga o workflow e a referência abaixo.
+3. Redija no formato/tom/padrão de citação da casa. Consistente com a tese.
+4. Output: seção em minuta. Flag todo lugar onde fato ou citação precisa de verificação.
 
 ---
 
-# Brief Section Drafter
+# Redator de Seção de Peça
 
-## Witness statements for England & Wales — PD 57AC
+## Quatro formatos brasileiros principais
 
-If the user's jurisdiction includes England & Wales and they're asking for a trial witness statement for the Business & Property Courts (or any CPR-governed proceeding), PD 57AC applies. The statement must be in the witness's own words, must not contain argument, must identify the documents the witness used to refresh their memory, and must carry the required confirmation of compliance and the legal representative's certificate.
+**Petição inicial JEC (Lei 9.099/95).** Procedimento sumaríssimo. Princípios: oralidade, simplicidade, informalidade, economia processual, celeridade. Estrutura típica:
+1. Endereçamento (juízo competente — JEC da comarca)
+2. Qualificação das partes (autor[a], réu[ré]; CPF/RG se possível, mas omissão admitida no JEC)
+3. Fatos (objetivos, sem ornamentação — "no dia X o(a) requerido(a) fez Y")
+4. Direito (suscinto — base legal + súmula/Tema se aplicável; doutrina opcional)
+5. Pedidos (claros e específicos — tutela de urgência se cabível CPC 300, dano moral quantificado em valores, obrigação de fazer com prazo, etc.)
+6. Valor da causa (atenção: valor de alçada do JEC é 40 SM — Lei 9.099/95 art. 3º I)
+7. Provas (rol — sem juntada obrigatória de documentos pré-constituídos, salvo essenciais à inicial)
+8. Requerimento de citação + indicação de horário para audiência de conciliação
+9. Assinatura do(a) advogado(a)/Defensor(a) ou da própria parte (ius postulandi até 20 SM — Lei 9.099 art. 9º)
 
-**Drafting a narrative "as the witness" from a chronology, document set, or your account of the case is exactly what PD 57AC was designed to prevent.** Courts are actively sanctioning AI-assisted witness statement drafting. If you ask me to do it, I won't.
+Tom: direto, objetivo, sem latim, sem floreios. Doutrina e jurisprudência usadas com parcimônia — JEC valoriza a tese clara mais que o aparato técnico.
 
-What I WILL do: prepare question prompts to elicit the witness's actual recollection; capture and organize what the witness says (their words, not mine); generate the list of documents they were shown; run a PD 57AC compliance checklist against a statement they've drafted; draft the solicitor's certificate of compliance. I help you get the witness's evidence into the statement. I don't write the evidence.
+**Petição inicial Comum (CPC 319).** Procedimento ordinário. Requisitos obrigatórios:
+1. Endereçamento (juízo competente)
+2. Qualificação completa (CPC 319 II — nome, prenome, estado civil, profissão, número de inscrição CPF, endereço eletrônico, domicílio e residência)
+3. Fato e fundamentos jurídicos do pedido (causa de pedir próxima e remota)
+4. Pedido com especificações (CPC 319 IV)
+5. Valor da causa
+6. Provas com que o autor pretende demonstrar a verdade dos fatos
+7. Opção pela realização ou não da audiência de conciliação (CPC 319 VII + 334 §5º — só dispensável se ambas as partes manifestarem)
+8. Documentos indispensáveis à propositura da ação (CPC 320)
+9. Requerimento de tutela de urgência (CPC 300) ou tutela da evidência (CPC 311), se cabível
+10. Requerimento de gratuidade da justiça CPC 98 (para assistido(a) da DP: hipossuficiência presumida — Súmula 481 STJ)
+11. Assinatura
 
-For US depositions, declarations, and affidavits: different rules, but the same discipline applies. A declaration in the declarant's voice that the declarant didn't write is a credibility problem at best.
+Tom: técnico, mas claro. Doutrina e jurisprudência citadas com pinpoint. Padrão CNJ de citação + ABNT NBR 6023/10520 onde couber.
 
-## Purpose
+**Contestação (CPC 335-342).** Prazo de 15 dias úteis (em dobro para Defensor — CPC 186; 30 dias úteis). Estrutura:
+1. Endereçamento
+2. Preliminares (CPC 337 — incompetência, perempção, litispendência, coisa julgada, conexão, falta de legitimidade ou interesse, etc.) — exaustivas; ônus de alegação concentrada (CPC 342)
+3. Mérito (impugnação especificada dos fatos — CPC 341; impugnação ao valor da causa, se cabível; teses de defesa)
+4. Pedido contraposto / reconvenção (se cabível)
+5. Provas
+6. Pedidos finais
+7. Assinatura
 
-A good brief section is consistent with the theory, cited to the record, written in house style, and checkable. This skill produces the first draft — emphasis on *draft*. Partner edits.
+Defensor em defesa: tipicamente em ação de cobrança contra hipossuficiente, despejo, embargos à execução. Frequentemente acompanhada de pedido de gratuidade + suspensão da exigibilidade (CPC 98 §3º).
 
-## Written or oral?
+**Recurso inominado (Lei 9.099/95 art. 41-46), apelação (CPC 1009), agravo de instrumento (CPC 1015) ou apelação cível.** Prazo de 10 dias corridos no JEC (Lei 9.099/95 art. 42) ou 15 dias úteis em rito CPC (em dobro para Defensor). Estrutura:
+1. Endereçamento (ao juízo a quo, com pedido de remessa ao ad quem)
+2. Razões: relatório sucinto + tese da impugnação (nulidades, errores in judicando, errores in procedendo)
+3. Pedidos (reforma total/parcial, anulação, etc.)
+4. Assinatura
 
-Ask before drafting: "Is this for a written submission or oral argument?" They are different crafts:
+**Outras peças relevantes para Defensor:** ofício institucional (timbre da DP, ao órgão administrativo — concessionária, secretaria, hospital, fornecedor), notificação extrajudicial (assistido(a) → contraparte privada), embargos de declaração (CPC 1022), agravo interno (CPC 1021), embargos à execução (CPC 914-920).
 
-- **Written:** thorough. Cover the points, develop the authority, anticipate the responses.
-- **Oral (rebuttal, closing, argument):** strategic. Pick the 3-4 points that matter most. Concede or ignore the weak ones. Lead with your strongest. A tribunal remembers the first two minutes and the last two. "Too thorough" for oral advocacy reads as unfocused. If you're responding to a multi-issue submission, tell the user which issues you'd press and which you'd let go — that's the draft of the strategy, not just the words.
+## Propósito
 
-## Record fidelity — quotes and pinpoints
+Uma boa seção de peça é consistente com a tese, citada aos autos, escrita em estilo da casa, e conferível. Esta skill produz a primeira minuta — ênfase em *minuta*. Sócio(a)/Defensor(a)/Defensor(a)-Supervisor(a) edita.
 
-Two rules that govern every citation and every quotation in advocacy drafting. The canonical statement lives in the plugin's `CLAUDE.md` shared guardrails; repeated here because this skill is the most common place the rule gets tested.
+## Escrita ou sustentação oral?
 
-**Verbatim quotes from the record must be verbatim.** Never put quotation marks around words attributed to opposing counsel, a witness, the court, or any record document unless you have the exact passage in front of you and can cite to it. A quote that's almost right is worse than a paraphrase — it misrepresents the record, it's sanctionable if filed, and it will be caught. When you want to characterize what someone said but can't find the exact words:
+Pergunte antes de redigir: "É para peça escrita ou sustentação oral?" São ofícios distintos:
 
-- **Paraphrase without quotation marks**, attributing clearly: "Opposing counsel argued that X `[verify against record — Tr. p. __]`."
-- **Mark the placeholder:** `[verify exact quote — record cite pending]`
-- **Never fill the gap.** An invented quote, even one word, is a fabrication. The reviewer note must flag every `[verify exact quote]` in the output.
+- **Escrita:** detalhada. Cubra os pontos, desenvolva a autoridade, antecipe as respostas.
+- **Sustentação oral (rebuttal, alegações finais, sustentação no tribunal):** estratégica. Escolha os 3-4 pontos mais importantes. Conceda ou ignore os fracos. Lidere com seu mais forte. Um tribunal lembra dos dois primeiros minutos e dos dois últimos. "Detalhada demais" para sustentação soa desfocado. Se está respondendo a peça multi-questão, diga ao(à) usuário(a) quais questões pressionaria e quais deixaria — isso é a minuta da estratégia, não só das palavras.
 
-Before citing any passage with quotation marks, have the source open. If you're working from memory or a summary, no quotation marks.
+## Fidelidade aos autos — citações e pinpoints
 
-**Pinpoint cites must support the whole proposition.** If the argument is "opposing counsel said X, Y, and Z" and you're citing one pinpoint, verify the pinpoint supports X AND Y AND Z. If it only supports Z, either (a) split the cite — "said X (Tr. p. 10), Y (Tr. p. 12), and Z (Tr. p. 15)" — or (b) narrow the proposition to what the pinpoint actually supports. A cite that supports part of a claim is how a tribunal catches you stretching. It's the single most common way a lawyer's credibility erodes in front of a court. This is the "misgrounded citation" failure mode: the cite exists, the passage exists, but the passage doesn't support the proposition as stated.
+Duas regras que governam toda citação e toda transcrição em peça. A declaração canônica vive no `CLAUDE.md` do plugin (guardrails compartilhados); repetida aqui porque esta skill é o lugar mais comum onde a regra é testada.
 
-## Candor about weak arguments
+**Citações literais dos autos devem ser literais.** Nunca coloque aspas em palavras atribuídas ao(à) advogado(a) contrário(a), testemunha, juízo ou qualquer documento dos autos a menos que tenha a passagem exata diante de você e possa citar com pinpoint (folha dos autos / ID de movimentação CNJ / ata de audiência fl. X). Citação quase-certa é pior que paráfrase — distorce os autos, é punível se protocolada (CPC art. 80 II — alterar a verdade dos fatos), e vai ser pega. Quando você quer caracterizar o que alguém disse mas não acha as palavras exatas:
 
-When the law is against you, say so. When an argument is weak — the authority cuts the other way, the facts don't support it, the inference is a stretch — don't construct a shaky argument and present it as if it were solid. Flag it:
+- **Parafraseie sem aspas**, atribuindo claramente: "O(a) advogado(a) contrário(a) sustentou que X `[verificar contra os autos — Ata da audiência fl. __]`."
+- **Marque o placeholder:** `[verificar citação literal — pinpoint pendente]`
+- **Nunca preencha a lacuna.** Citação inventada, ainda que uma palavra, é fabricação. A nota do revisor deve marcar toda `[verificar citação literal]` no output.
 
-> "This point is weak — [authority] cuts the other way. Consider whether to press it (here's how you'd frame it), concede and pivot to [stronger point], or drop it. `[review — strategic call]`."
+Antes de citar passagem com aspas, tenha a fonte aberta. Se está trabalhando de memória ou sumário, sem aspas.
 
-Asserting a weak argument without flagging it erodes the lawyer's credibility with the tribunal and creates a candor problem (MR 3.1 — a lawyer must have a basis in law and fact). The draft should make the lawyer smarter, not confident about a bad position.
+**Pinpoints devem sustentar a proposição inteira.** Se o argumento é "o(a) advogado(a) contrário(a) disse X, Y e Z" e você cita um pinpoint, verifique que o pinpoint sustenta X E Y E Z. Se sustenta só Z, ou (a) divida a citação — "disse X (Ata fl. 10), Y (Ata fl. 12) e Z (Ata fl. 15)" — ou (b) estreite a proposição ao que o pinpoint efetivamente sustenta. Citação que sustenta parte da alegação é como tribunal pega você esticando. É a maneira mais comum de credibilidade do(a) advogado(a)/Defensor(a) erodir em juízo. Failure mode da "misgrounded citation": a citação existe, a passagem existe, mas a passagem não sustenta a proposição como posta.
 
-## Citation extraction coverage
+## Candura sobre argumentos fracos
 
-When this draft is cite-checked — by you, by another skill, or by a reviewer running through what you produced — the check must be exhaustive, not selective:
+Quando o direito está contra você, diga. Quando um argumento é fraco — a autoridade corta para o outro lado, os fatos não sustentam, a inferência é forçada — não construa argumento frágil e apresente como se fosse sólido. Flag:
 
-1. **First pass: extract.** Read the whole document and build a list of every citation — cases, statutes, regulations, record cites, secondary authority. Report the count: "Found [N] citations."
-2. **Second pass: check.** Check each one against the source. Don't sample. Don't stop when you get tired.
-3. **Report coverage.** At the end: "Checked [N] of [M] citations. [K] could not be retrieved — verify manually. [J] confirmed. [I] flagged as potential miscitations. [H] flagged as misgrounded (cite exists but doesn't support the proposition)."
-4. **When source text is unavailable, say "could not check," never "confirmed."** A false positive ("this cite is fine" when you couldn't read the source) is worse than "couldn't check this one."
-5. **The hardest errors to catch are partial support.** A cite that backs part of a claim but not all of it. Read the proposition the brief makes, read what the source actually holds, and compare element by element.
+> "Este ponto é fraco — [autoridade] corta para o outro lado. Considere pressionar (eis como você enquadraria), conceder e pivotar para [ponto mais forte], ou deixar. `[review — chamada estratégica]`."
 
-## Echo vs repeat
+Asseverar argumento fraco sem flag erode a credibilidade do(a) advogado(a)/Defensor(a) com o tribunal e cria problema de candor (Código de Ética OAB art. 6º — vedação ao patrocínio de demanda manifestamente infundada; LC 80/94 art. 4º-A VI — atendimento jurídico orientado pela boa-fé). A minuta deve fazer o(a) usuário(a) mais inteligente, não confiante sobre posição ruim.
 
-Echo key framings; don't lift sentences. Consistency with prior submissions is good — it reinforces your theory of the case and makes the record coherent. But there's a line between echoing and repeating.
+## Cobertura de extração de citações
 
-- **Echo:** use the same key terms, the same framing of the central issue, the same characterization of the other side's theory.
-- **Don't:** lift whole sentences, re-use distinctive phrasings so often the tribunal notices, or repeat the same argument verbatim without advancing it.
+Quando esta minuta é cite-check — por você, por outra skill, ou por revisor — a checagem deve ser exaustiva, não seletiva:
 
-A rebuttal that sounds like a re-read of the opening loses ground. The draft should advance the argument, not restate it.
+1. **Primeira passada: extrair.** Leia o documento todo e construa lista de toda citação — julgados, leis, regulamentos, citações aos autos, doutrina. Reporte a contagem: "Encontradas [N] citações."
+2. **Segunda passada: conferir.** Confira cada uma contra a fonte. Não amostre. Não pare quando cansar.
+3. **Reporte cobertura.** No final: "Conferi [N] de [M] citações. [K] não pude recuperar — verifique manualmente. [J] confirmadas. [I] flagged como potenciais miscitações. [H] flagged como sem sustentação (citação existe mas não sustenta a proposição)."
+4. **Quando texto da fonte não está disponível, diga "não pude conferir", nunca "confirmada".** Falso positivo ("esta citação está ok" quando você não pôde ler a fonte) é pior que "não consegui conferir esta".
+5. **Os erros mais difíceis de pegar são suporte parcial.** Uma citação que sustenta parte da alegação mas não toda. Leia a proposição que a peça faz, leia o que a fonte efetivamente decide, e compare elemento por elemento.
 
-## Load context
+## Eco vs repetição
 
-`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → case theory, house style (citation format, structure, tone, length norms).
+Eche enquadramentos-chave; não copie frases. Consistência com peças anteriores é boa — reforça sua tese do caso e faz os autos coerentes. Mas há uma linha entre echar e repetir.
 
-**Conflicts gate — unbypassable.** Before drafting, check `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for the matter slug this skill is being invoked on. If the matter is not in `_log.yaml`, refuse and route:
+- **Echo:** use os mesmos termos-chave, o mesmo enquadramento da questão central, a mesma caracterização da tese do outro lado.
+- **Não:** copie frases inteiras, re-use formulações distintivas tantas vezes que o tribunal nota, ou repita o mesmo argumento literalmente sem avançar.
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't draft substantive work product on a matter that hasn't been intaken — the conflicts check is the gate."
+Uma réplica que soa como re-leitura da inicial perde terreno. A minuta deve avançar o argumento, não restatá-lo.
 
-Do not proceed on an unintaken matter. Intake is what runs conflicts, sets up `matter.md` / `history.md`, and writes the `_log.yaml` row this skill reads from. Skipping it produces work in an unmanaged location and bypasses the firm's conflicts discipline.
+## Carregar contexto
+
+`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → tese do caso, estilo da casa (padrão de citação, estrutura, tom, normas de extensão).
+
+**Gate de conflitos — não bypassável.** Antes de redigir, cheque `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` para o slug do caso onde esta skill foi invocada. Se o caso não está em `_log.yaml`, recuse e roteie:
+
+> "Não vejo [slug do caso] no log de casos. Rode `/litigation-legal:matter-intake` primeiro para a checagem de conflitos/impedimentos rodar e o workspace do caso ser setup. Não redijo produto substantivo em caso não-intaken — a checagem é o gate."
+
+Não prossiga em caso não-intaken. Intake é o que roda conflitos/impedimentos, monta `matter.md` / `history.md`, e escreve a linha do `_log.yaml` que esta skill lê. Pular produz trabalho em local não gerenciado e bypassa a disciplina institucional/escritório de conflitos.
 
 ## Workflow
 
-### Step 1: Which section?
+### Passo 1: Qual seção (ou qual peça)?
 
-| Section | What it does | Inputs needed |
+| Seção / Peça | O que faz | Inputs necessários |
 |---|---|---|
-| Statement of facts | Tells the story, in our frame, cited to record | Chronology, key docs, depo cites |
-| Standard of review | Sets the bar the court applies | Procedural posture |
-| Argument | Makes the legal case | Issue, authorities, facts |
-| Conclusion | Asks for relief | What we want |
+| Fatos | Conta a história, no nosso enquadramento, citada aos autos | Cronologia, docs-chave, transcrições de oitiva |
+| Fundamentos jurídicos | Faz o caso jurídico | Questão, autoridades, fatos |
+| Pedidos | Pede a tutela específica | O que queremos |
+| Petição inicial JEC | Inicial sumaríssima Lei 9.099/95 | Fatos + tese curta + pedidos claros |
+| Petição inicial Comum CPC 319 | Inicial completa CPC | Causa de pedir + fundamentos + pedidos + provas + valor + tutela urgência se cabível |
+| Contestação CPC 335-342 | Resposta com preliminares + mérito | Análise das alegações da inicial + teses defensivas + ônus do CPC 341 |
+| Recurso inominado / Apelação / Agravo | Impugnação de decisão | Relatório sucinto + tese de reforma/anulação |
+| Ofício institucional (DP) | Requisição administrativa para órgão | Pedido específico + base legal + prazo razoável |
+| Notificação extrajudicial | Pré-litigação | Constituir em mora / dar ciência |
 
-### Step 2: Theory check
+### Passo 2: Checagem de tese
 
-Before writing: what does this section need to accomplish for the theory?
+Antes de escrever: o que esta seção precisa cumprir para a tese?
 
-- Statement of facts: Frame the story so our theory is the natural reading.
-- Argument: Connect the law to the facts in a way that supports the theory.
+- Fatos: enquadre a história para que nossa tese seja a leitura natural.
+- Fundamentos jurídicos: conecte o direito aos fatos de forma que sustente a tese.
+- Para Defensor: as teses repetitivas (vide `references/element-templates.md`) carregam súmulas e Temas Repetitivos — invoque sempre os de nível A (vinculantes) e B (qualificados) primeiro.
 
-If the section you're about to draft contradicts the theory — stop. Either the theory is wrong or the section approach is wrong. Flag it, don't paper over it.
+Se a seção que você está prestes a redigir contradiz a tese — pare. Ou a tese está errada ou a abordagem da seção está errada. Flag, não maquile.
 
-### Step 3: Draft in house style
+### Passo 3: Redigir em estilo da casa
 
-**Research the forum's local rules and the judge's standing orders for length, formatting, citation, and filing requirements; don't rely on preferences. Cite primary sources (local rule number, standing order section) in the drafting notes. Verify currency — local rules change.**
+**Pesquise as regras locais do juízo / da câmara e as portarias específicas para extensão, formatação, citação e requisitos de protocolização; não dependa de preferências. Cite fontes primárias (provimento da Corregedoria local, portaria do juízo) nas notas de redação. Verifique atualidade — regras locais mudam.**
 
 Per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
 
-- **Citation format:** Bluebook, ALWD, or local — match exactly. Signals, pincites, parentheticals per house practice, confirmed against the local rule.
-- **Structure:** How does this firm organize arguments? CRAC? Topic sentences first? Headings that argue vs. headings that describe?
-- **Tone:** Aggressive ("Defendants' argument is meritless") or measured ("The evidence does not support Defendants' position")? Match the seed brief.
-- **Length:** per the local rule / standing order — never relying on "what this judge usually wants" when the rule is checkable.
+- **Padrão de citação:** padrão CNJ + ABNT NBR 6023/10520, ou padrão híbrido por tipo de peça. Citação de jurisprudência: "STJ, REsp [número], Rel. Min. [nome], j. [data], DJe [data]". Citação de lei: "Lei [número], art. X". Doutrina: "Autor (ano, p. XX)" em corpo + nota completa em rodapé. Conforme estilo extraído da peça-semente.
+- **Estrutura:** Como este escritório/unidade organiza argumentos? Tese-regra-fato-aplicação-conclusão (FIRAC)? Tópicos com cabeçalho descritivo ou argumentativo? Para Defensor em JEC: estrutura simples; em vara comum: estrutura completa com preliminares.
+- **Tom:** Incisivo ("o pedido da requerida é manifestamente infundado") ou mensurado ("a prova produzida não sustenta a tese da requerida")? Case a peça-semente.
+- **Extensão:** Per a regra do juízo / portaria — nunca dependendo de "o que este juízo costuma querer" quando a regra é conferível.
 
-### Step 4: Cite everything
+### Passo 4: Citar tudo
 
-Every fact → record cite (Bates, depo page:line, exhibit).
-Every legal proposition → case cite with pincite.
+Todo fato → citação aos autos (folha dos autos / ID movimentação CNJ / exibição).
+Toda proposição jurídica → julgado + dispositivo legal com pinpoint.
 
-**Marker discipline — use liberally:**
-- `[VERIFY: specific factual assertion]` — anything not confirmed against the record
-- `[UNCERTAIN: specific legal proposition]` — anything not confirmed against current authority
-- `[CITE NEEDED: specific cite — fact/rule believed but cite not yet pinned]`
+**Disciplina de marcadores — use liberalmente:**
+- `[VERIFICAR: alegação factual específica]` — qualquer coisa não confirmada contra os autos
+- `[INCERTO: proposição jurídica específica]` — qualquer coisa não confirmada contra autoridade atual
+- `[CITAÇÃO NECESSÁRIA: citação específica — fato/regra acreditado mas citação ainda não pinned]`
 
-A draft with unresolved markers is not final. The markers make the verification step explicit.
+Minuta com marcadores não resolvidos não é final. Os marcadores fazem o passo de verificação explícito.
 
-**No silent supplement.** If a research query to the configured legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or firm platform) returns few or no results for an authority the draft needs, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [issue / holding]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) leave the `[CITE NEEDED]` marker and stop here. Which would you like?" A partner decides whether to accept lower-confidence sources; the skill does not decide for them.
+**Sem suplementação silenciosa.** Se uma busca no MCP de pesquisa jurídica (JusRatio, BNP, CJF, TJAM, DataJud) retorna poucos ou nenhum resultado para autoridade que a minuta precisa, reporte o que foi achado e pare. NÃO preencha a lacuna de busca web ou conhecimento do modelo sem perguntar. Diga: "A busca retornou [N] resultados em [ferramenta]. Cobertura parece fina para [questão / tese]. Opções: (1) ampliar a query, (2) tentar ferramenta diferente, (3) buscar na web — resultados serão marcados `[busca web — verificar]` e deveriam ser checados contra fonte primária antes de confiar, ou (4) deixar o marcador `[CITAÇÃO NECESSÁRIA]` e parar aqui. Qual você prefere?" Defensor(a) ou sócio(a) decide se aceita fontes de menor confiança; a skill não decide por eles.
 
-**Source attribution.** Tag every citation in the draft with where it came from: `[Westlaw]`, `[CourtListener]`, `[Trellis]`, `[Descrybe]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations the partner or senior associate supplied. Citations tagged `verify` carry higher fabrication risk than tool-retrieved citations and should be checked first. Never strip or collapse the tags — they are the reviewing attorney's fastest signal about which citations to Shepardize first before the brief is filed.
+**Atribuição de fonte.** Marque toda citação na minuta com de onde veio: `[JusRatio]`, `[BNP]`, `[CJF]`, `[TJAM]`, `[DataJud]`, ou o nome da tool MCP para citações recuperadas de MCP de pesquisa jurídica; `[busca web — verificar]` para citações de busca web; `[conhecimento do modelo — verificar]` para citações lembradas do treino; `[usuário forneceu]` para citações que o(a) sócio(a)/Defensor(a) supriu. Citações marcadas `verificar` carregam maior risco de fabricação que citações recuperadas por ferramenta e devem ser conferidas primeiro. Nunca tire ou colapse as tags — são o sinal mais rápido para o(a) Defensor(a)/sócio(a) revisor(a) sobre quais citações conferir primeiro antes da peça ser protocolada.
 
-### Step 5: Output
+### Passo 5: Output
 
-**Before the brief is filed (the consequential act — this skill drafts, but the gate runs at the filing step regardless of who triggers it):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+**Antes da peça ser protocolada (o ato consequente — esta skill redige, mas o gate roda no passo de protocolização independente de quem aciona):** Leia `## Quem está usando` em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Se o Papel é Não-advogado:
 
-> Filing a brief has legal consequences — it becomes the record, binds the client on arguments and facts asserted, and a Rule 11 / equivalent certification attaches to signature. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+> Protocolizar peça tem consequência jurídica — vira parte dos autos, vincula o(a) cliente nos argumentos e fatos asseverados, e assinatura traz certificação de boa-fé (CPC art. 77 + Código de Ética OAB). Você revisou isto com profissional habilitado(a)? Se sim, prossiga. Se não, eis um briefing para levar:
 >
-> [Generate a 1-page summary: the section drafted, the theory tie-in, authorities relied on, open `[VERIFY]` / `[UNCERTAIN]` / `[CITE NEEDED]` markers unresolved, what could go wrong (factual misstatement, unsupported citation, argument outside the theory), what to ask the attorney before filing.]
+> [Gere sumário de 1 página: a seção redigida, vínculo com a tese, autoridades invocadas, marcadores `[VERIFICAR]` / `[INCERTO]` / `[CITAÇÃO NECESSÁRIA]` ainda não resolvidos, o que pode dar errado (misstatement factual, citação não sustentada, argumento fora da tese), o que perguntar ao(à) profissional antes de protocolar.]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> Se você precisa achar advogado(a)/Defensor(a) habilitado(a): OAB Seccional (Comissão de Assistência Judiciária Gratuita) tem orientação inicial. Defensoria Pública estadual atende hipossuficiente. NPJ de faculdade local pode atender em certas áreas.
 
-Do not treat the draft as filing-ready without an explicit yes. Drafting itself does not require the gate — filing does.
+Não trate a minuta como pronta-para-protocolar sem um sim explícito. Redação em si não exige o gate — protocolização exige.
 
-The section, in house style, with markers inline.
+A seção, em estilo da casa, com marcadores inline.
 
-Preface (not in the brief — a note to the reviewing attorney):
+Cabeçalho (não na peça — nota ao(à) advogado(a)/Defensor(a) revisor(a)):
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — per plugin config ## Outputs — difere por papel; vide `## Quem está usando`]
 
-## Drafting Notes — [Section] — [date]
+## Notas de redação — [Seção/Peça] — [data]
 
-**Theory tie-in:** [How this section supports the case theory]
-**Authorities relied on:** [list — all need Shepardizing]
-**Record cites to verify:** [N] flagged inline
-**Open questions for the partner:** [anything the draft assumes that should be confirmed]
-**Length:** [words/pages vs. house norm]
+**Vínculo com a tese:** [Como esta seção sustenta a tese do caso]
+**Autoridades invocadas:** [lista — todas precisam de conferência: vigência atual da lei + Shepardização do julgado (overruling, modulação)]
+**Citações aos autos a verificar:** [N] flagged inline
+**Perguntas em aberto para o(a) sócio(a)/Defensor(a):** [qualquer coisa que a minuta assume que deveria ser confirmada]
+**Extensão:** [palavras/páginas vs. norma da casa / limite da regra local]
 
 ---
 
-**Cite check before filing.** Citations in this draft were generated by an AI model and have not been verified against a primary source. Run every case, statute, and regulation through Westlaw, CourtListener, or your firm's research platform for accuracy, good-law status, and subsequent history. Fabricated or misquoted citations in filed briefs have resulted in Rule 11 sanctions.
+**Cite-check antes de protocolar.** Citações nesta minuta foram geradas por modelo de IA e não foram verificadas contra fonte primária. Rode todo julgado, lei e regulamento através de JusRatio, BNP, CJF, TJAM, DataJud ou plataforma da casa para precisão, status (vigência, overruling, modulação) e tratamento subsequente. Citação fabricada ou mal-citada em peça protocolada pode resultar em sanções por litigância de má-fé (CPC art. 80) e infração ético-disciplinar (Código de Ética OAB; Provimento OAB 205/2021).
 
-**Draft only — not a filing.** Filing this section initiates (or participates in) a proceeding and carries Rule 11 / Rule 3.3 exposure. A licensed attorney reviews, edits, and takes professional responsibility before it goes on the docket. Do not file unreviewed.
+**Apenas minuta — não é protocolização.** Protocolizar esta seção inicia (ou participa de) processo e carrega exposição do CPC art. 77/80 + Código de Ética OAB. Advogado(a) habilitado(a) ou Defensor(a) revisa, edita, e assume responsabilidade profissional antes de ir aos autos. Não protocole sem revisão.
 ```
 
-## Statement of facts specifics
+## Especificidades de fatos (seção)
 
-The statement of facts is advocacy through selection and sequence, not argument.
+Os fatos são advocacia por seleção e sequência, não argumento.
 
-- Chronological unless there's a reason not to be
-- **Every fact in the statement of facts must cite to the record — a page and line reference, a docket entry, an exhibit.** "Or conceded" is not a substitute for a record cite. If the fact is established by a concession or stipulation, cite the stipulation document or the hearing transcript where the concession was made.
-- Frame through selection: which facts lead, which get one line, which get omitted (if not necessary and not helpful)
-- No argument. "The contract unambiguously required X" is argument. "The contract stated 'X.'" is fact.
+- Cronológicos salvo razão para não ser
+- **Todo fato na seção de fatos deve citar aos autos — folha dos autos, número de ID de movimentação CNJ, número de exibição.** "Ou confessado" não substitui citação aos autos. Se o fato é estabelecido por confissão ou acordo, cite o documento ou a ata da audiência onde a confissão foi feita.
+- Enquadre por seleção: que fatos lideram, que recebem uma linha, que são omitidos (se não-necessários e não-úteis)
+- Sem argumento. "O contrato inequivocamente exigia X" é argumento. "O contrato estabelecia 'X.'" é fato.
 
-## Argument section specifics
+## Especificidades de fundamentos jurídicos
 
-- Lead with the rule, not the facts (usually — house style may differ)
-- One argument per section. If it's really two arguments, it's two sections.
-- Address the other side's best counterargument. Don't hide from it — a brief that ignores the obvious counter is a brief the judge doesn't trust.
-- Parentheticals earn their space. If a parenthetical doesn't add something the cite alone doesn't, cut it.
+- Lidere com a regra, não com os fatos (geralmente — estilo da casa pode diferir)
+- Um argumento por seção. Se é realmente dois, são duas seções.
+- Trate o melhor contra-argumento do outro lado. Não fuja — peça que ignora o contra óbvio é peça em que o juízo não confia.
+- Parentéticos ganham seu espaço. Se um parentético não adiciona algo que a citação sozinha não, corte.
 
-## What this skill does not do
+## Especificidades de petição inicial JEC
 
-- Produce a final brief. It produces a draft. Every cite needs verification, every argument needs a partner's eyes.
-- Decide strategy. If there are two ways to argue the issue, flag both and let the partner choose.
-- File anything. Ever.
+- Linguagem direta — Lei 9.099/95 valoriza simplicidade
+- Pedidos quantificados (dano moral em R$ específico, não "a ser arbitrado")
+- Valor da causa atento ao limite de 40 SM (alçada)
+- Documentação probatória mínima essencial à inicial; o resto na audiência
+
+## Especificidades de petição inicial Comum CPC 319
+
+- Atenda aos incisos do art. 319 — emenda CPC 321 se omisso
+- Tutela de urgência (CPC 300) ou de evidência (CPC 311) em seção própria, com preenchimento expresso dos requisitos
+- Para Defensor: requerimento de gratuidade (CPC 98) com declaração de hipossuficiência presumida (Súmula 481 STJ)
+- Opção de audiência de conciliação (CPC 334 §5º) — só dispensável se autor expressamente pedir; mesmo assim, juízo pode designar
+
+## Especificidades de contestação
+
+- Preliminares (CPC 337) primeiro — exaustivas, sob pena de preclusão (CPC 342)
+- Impugnação especificada dos fatos (CPC 341) — fato não impugnado expressamente é presumido verdadeiro, salvo exceções
+- Para Defensor em defesa: pedido de gratuidade + suspensão CPC 98 §3º; argumentos de prescrição/decadência se cabíveis; impugnação do valor da causa se inflacionado
+
+## Especificidades de recurso
+
+- **Recurso inominado JEC:** 10 dias corridos (Lei 9.099 art. 42, conforme STJ); razões devem demonstrar nulidade ou error in judicando
+- **Apelação (CPC 1009):** 15 dias úteis em dobro para Defensor (CPC 186 = 30 dias); admite efeito suspensivo automático em regra (CPC 1012)
+- **Agravo de instrumento (CPC 1015):** 15 dias úteis em dobro; rol legal — verificar cabimento (Tema 988 STJ ampliou interpretação para taxatividade mitigada)
+- **Embargos de declaração (CPC 1022):** 5 dias úteis em dobro (10 para Defensor); contradição, omissão, obscuridade, erro material
+
+## O que esta skill NÃO faz
+
+- Produzir peça final. Produz minuta. Toda citação precisa de verificação, todo argumento precisa de olhos do(a) sócio(a)/Defensor(a).
+- Decidir estratégia. Se há dois jeitos de argumentar a questão, flag os dois e deixe o(a) sócio(a)/Defensor(a) escolher.
+- Protocolar coisa alguma. Nunca.

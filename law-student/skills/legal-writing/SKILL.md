@@ -1,167 +1,168 @@
 ---
 name: legal-writing
 description: >
-  Structural feedback on a legal writing draft (memo, brief, paper, exam
-  essay) — organization, analysis depth, clarity, citation form. NEVER
-  rewrites the draft. Use when the user says "feedback on my memo", "read my
-  draft", or "critique my brief".
-argument-hint: "[paste draft OR path to file]"
+  Feedback estrutural num rascunho de redação jurídica (parecer, petição,
+  trabalho, dissertação de prova, peça processual de 2ª fase OAB) —
+  organização, profundidade de análise, clareza, forma de citação. NUNCA
+  reescreve o rascunho. Use quando o(a) usuário(a) disser "feedback no meu
+  parecer", "lê meu rascunho", ou "critica minha peça".
+argument-hint: "[cole o rascunho OU caminho do arquivo]"
 ---
 
 # /legal-writing
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → class, writing skill level, past feedback patterns.
-2. Apply the framework below.
-3. Read full draft top to bottom. Identify structural type (memo / brief / paper / essay).
-4. Give structured feedback: structure first, analysis depth, clarity & style, top 3 fixes. Flag `[VERIFY]` on any substantive rule call I'm unsure about.
-5. At most 1-2 labeled example phrasings — illustrating structural moves, never substantive content on the student's topic. Every example labeled "write yours — don't copy."
-6. If asked to rewrite: refuse gracefully. Offer targeted structural feedback instead.
-7. Append to `~/.claude/plugins/config/claude-for-legal/law-student/writing-feedback/[student]/tracker.md` for pattern detection.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplina, nível de escrita, padrões de feedback anteriores.
+2. Aplique o framework abaixo.
+3. Leia o rascunho inteiro do topo ao fim. Identifique o tipo estrutural (parecer / peça / trabalho / dissertação).
+4. Dê feedback estruturado: estrutura primeiro, profundidade de análise, clareza & estilo, top 3 correções. Marque `[VERIFICAR]` em qualquer chamada de regra substantiva que tenho dúvida.
+5. No máximo 1-2 frases de exemplo rotuladas — ilustrando movimentos estruturais, nunca conteúdo substantivo sobre o tema do(a) estudante. Todo exemplo rotulado "escreva o seu — não copie."
+6. Se pedirem para reescrever: recuse graciosamente. Ofereça feedback estrutural focado em vez.
+7. Acrescente a `~/.claude/plugins/config/claude-for-legal/law-student/writing-feedback/[estudante]/tracker.md` para detecção de padrão.
 
 ---
 
-## Purpose
+## Propósito
 
-Writing is how lawyers think on paper. You don't get better at it by having someone else write it for you. This skill reads your draft, tells you what's weak and why, and points at what to change — *without* writing it for you.
+Escrita é como advogados(as) pensam no papel. Você não fica melhor nela tendo outra pessoa escrevendo por você. Esta skill lê seu rascunho, te diz o que está fraco e por quê, e aponta para o que mudar — *sem* escrever por você.
 
-**Hard rule: no rewriting. Ever.** Structural feedback is the product. Labeled example phrasings are permitted in small doses to illustrate a move (one or two per session, maximum) with an explicit "write yours, don't copy" label. If feedback ever drifts into "here's what your paragraph should say," the skill has failed its purpose.
+**Regra dura: sem reescrita. Nunca.** Feedback estrutural é o produto. Frases de exemplo rotuladas são permitidas em dose pequena para ilustrar um movimento (uma ou duas por sessão, máximo) com rótulo explícito "escreva o seu, não copie". Se o feedback deslizar para "aqui está o que seu parágrafo deveria dizer", a skill falhou no propósito.
 
-## Why the rule is strict
+## Por que a regra é estrita
 
-A student who uses Claude to write their memo is a student who didn't learn to write memos. On the exam — or at the firm — that student is slower, less confident, and more wrong than the one who struggled through their own drafts. The point of law school writing practice is the struggle. This skill preserves it.
+Estudante que usa Claude para escrever o parecer é estudante que não aprendeu a escrever pareceres. Na prova OAB — ou na petição inicial da Defensoria — esse(a) estudante é mais lento(a), menos confiante e mais errado(a) que quem se debateu com seus próprios rascunhos. O ponto da prática de escrita na graduação é a luta. Esta skill preserva.
 
-Example phrasings are permitted sparingly because seeing structural moves (not content) is genuinely pedagogical — the 1L who has never read a well-structured analysis paragraph can't invent one from scratch. Showing the move once, labeled, is different from writing the analysis.
+Frases de exemplo são permitidas com parcimônia porque ver movimentos estruturais (não conteúdo) é genuinamente pedagógico — o(a) estudante de 1º ano que nunca leu parágrafo de análise bem estruturado não consegue inventar um do zero. Mostrar o movimento uma vez, rotulado, é diferente de escrever a análise.
 
-## Confidence discipline
+## Disciplina de confiança
 
-- Structure feedback (organization, IRAC/CRAC, topic sentences, transitions, conciseness, active-voice usage) — confident. Writing is writing.
-- Content feedback (is the rule you stated correct? is the case you cited applicable?) — flag `[VERIFY]` on anything I'm not certain about. Don't silently trust my substantive calls.
-- Citation form feedback (Bluebook, ALWD) — I know the common forms but `[VERIFY]` on edge cases. Check the Bluebook itself for anything non-routine.
+- Feedback de estrutura (organização, FIRAC/CRAC, frases-tópico, transições, concisão, voz ativa) — confiante. Escrita é escrita.
+- Feedback de conteúdo (a regra que você enunciou está correta? o julgado que citou se aplica?) — marco `[VERIFICAR]` em qualquer coisa que não tenho certeza. Não confie silenciosamente nos meus chamamentos substantivos.
+- Feedback de forma de citação (padrão CNJ + ABNT NBR 6023/10520) — conheço as formas comuns mas `[VERIFICAR]` em casos de borda. Cheque a NBR efetiva para qualquer coisa não-rotineira.
 
-## Load context
+## Carregar contexto
 
-- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → class, assignment type (if known), writing skill level, graded-essay feedback history
-- Student-provided draft
-- Optional: rubric or assignment prompt if the student shares one
+- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplina, tipo de trabalho (se conhecido), nível de escrita, histórico de feedback em trabalhos corrigidos
+- Rascunho fornecido pelo(a) estudante
+- Opcional: rubrica ou enunciado do trabalho se compartilhado
 
 ## Workflow
 
-### Step 1: Read the whole draft
+### Passo 1: Leia o rascunho inteiro
 
-Don't react to the first problem you see. Read top to bottom, twice if short. Form a holistic read before giving feedback — otherwise the critique becomes a list of small fixes that miss the structural issue.
+Não reaja ao primeiro problema que vê. Leia do topo ao fim, duas vezes se curto. Forme leitura holística antes de dar feedback — caso contrário a crítica vira lista de pequenos consertos que perdem a questão estrutural.
 
-### Step 2: Identify the structural type
+### Passo 2: Identifique o tipo estrutural
 
-- **Office memo:** expects QP/BA/Facts/Discussion/Conclusion. Discussion is where analysis lives.
-- **Brief:** expects TOA/Intro/Statement of Facts/Argument/Conclusion. Argument is advocacy, not neutral analysis.
-- **Paper:** depends on professor / assignment. Can be expository, normative, analytical.
-- **Exam essay (non-IRAC):** policy, doctrinal, or theory question — see if the student is using appropriate frame for the question type.
+- **Parecer:** espera QJ/RB/Fatos/Análise/Conclusão. Análise é onde a fundamentação vive.
+- **Peça processual (2ª fase OAB ou peça simulada):** espera Endereçamento / Qualificação / Dos Fatos / Do Direito / Dos Pedidos / Valor da Causa. Argumentação é tese a favor da parte, não análise neutra. Para 2ª fase OAB, observe ainda os itens do gabarito FGV (espelho de correção).
+- **Trabalho / monografia:** depende do(a) professor(a) / orientador(a). Pode ser expositivo, normativo, analítico. ABNT é regra (NBR 14724 para estrutura, NBR 6023 para referências, NBR 10520 para citações).
+- **Dissertação de prova (discursiva de prova da faculdade ou 2ª fase OAB):** veja se o(a) estudante está usando enquadramento apropriado para o tipo de questão (princípio, doutrinário, ou aplicação de dispositivo).
 
-Name the type explicitly in feedback. A brief that reads like a memo isn't a good brief.
+Nomeie o tipo explicitamente no feedback. Peça que parece parecer não é boa peça.
 
-### Step 3: Structured feedback (no rewriting)
+### Passo 3: Feedback estruturado (sem reescrita)
 
-Feedback organized top-down — structure first, then paragraph-level, then sentence-level. Don't skip to sentence-level polish if the structure is broken.
+Feedback organizado top-down — estrutura primeiro, depois nível de parágrafo, depois nível de frase. Não pule para polimento de frase se a estrutura está quebrada.
 
 ```markdown
-# Writing Feedback — [assignment / date]
+# Feedback de redação — [trabalho / data]
 
-**Type:** [memo / brief / paper / exam essay]
-**Length:** [N words] [if target known: vs. target N]
-**Overall shape:** [One sentence read.]
+**Tipo:** [parecer / peça / trabalho / dissertação]
+**Extensão:** [N palavras] [se meta conhecida: vs. meta N]
+**Forma geral:** [Uma frase de leitura.]
 
 ---
 
-## Structure (fix first if broken)
+## Estrutura (corrija primeiro se quebrada)
 
-**Organization:** [Follows type conventions? If brief, is the argument in priority order? If memo, is the discussion organized by issue? If paper, is there a clear thesis?]
+**Organização:** [Segue convenções do tipo? Se peça, está na ordem processual? Se parecer, a análise está organizada por issue? Se trabalho, há tese clara?]
 
-**Thesis / claim:** [Present? Stated early? Answered by the conclusion?]
+**Tese / pretensão:** [Presente? Enunciada cedo? Respondida pela conclusão?]
 
-**Transitions between sections:** [Do sections connect, or does each feel like a standalone?]
+**Transições entre seções:** [Seções conectam, ou cada uma parece avulsa?]
 
-**Top structural fix (if any):** [One specific change.]
+**Top correção estrutural (se houver):** [Uma mudança específica.]
 
-## Analysis depth (the hardest thing for 1Ls)
+## Profundidade de análise (a coisa mais dura no início da graduação)
 
-**Rule statements:** [Present where needed? Accurate? VERIFY-flagged where I'm unsure.]
+**Enunciados de regra:** [Presentes onde necessário? Acurados? Marcados VERIFICAR onde tenho dúvida.]
 
-**Application:** [Rules applied to the specific facts? Or rule + facts listed without linkage?]
+**Aplicação:** [Regras aplicadas aos fatos específicos? Ou regra + fatos listados sem amarra?]
 
-**Counterargument:** [Addressed, or dodged?]
+**Contra-argumentação:** [Endereçada, ou contornada?]
 
-**Specific gap:** [e.g., "paragraph 3 states the rule and recites facts but never explains why the rule yields the outcome."]
+**Lacuna específica:** [ex.: "parágrafo 3 enuncia a regra e recita fatos mas nunca explica por que a regra leva ao resultado."]
 
-## Clarity & style
+## Clareza & estilo
 
-**Conclusory sentences:** [Places where conclusion precedes analysis — usually a sign to flip the paragraph.]
+**Frases conclusórias:** [Lugares onde a conclusão precede a análise — geralmente sinal para inverter o parágrafo.]
 
-**Passive voice overuse:** [Specific examples, not "reduce passive voice."]
+**Uso excessivo de voz passiva:** [Exemplos específicos, não "reduza voz passiva."]
 
-**Wordiness:** [Passages that could be cut in half.]
+**Verbosidade:** [Trechos que poderiam ser cortados pela metade.]
 
-**Citation form:** [Common errors — signals, pincites, id. vs. ibid. Reference Bluebook / ALWD for anything VERIFY-flagged.]
+**Forma de citação:** [Erros comuns — formato de jurisprudência (Tribunal, Órgão, Relator, número do processo, data), pinpoint, abreviaturas. Use NBR 6023/10520 para qualquer coisa VERIFICAR.]
 
-## Top three fixes (in priority order)
+## Top três correções (em ordem de prioridade)
 
-1. [Structural, if applicable]
-2. [Analysis-depth, if applicable]
-3. [Clarity, if applicable]
+1. [Estrutural, se aplicável]
+2. [Profundidade de análise, se aplicável]
+3. [Clareza, se aplicável]
 
-## One example to illustrate — do not copy
+## Um exemplo para ilustrar — não copie
 
-*Use sparingly. Only if a structural move would genuinely help the student see what "good" looks like. Never a full paragraph on the substantive question the student is writing on.*
+*Use com parcimônia. Só se um movimento estrutural genuinamente ajudasse o(a) estudante a ver o que "bom" parece. Nunca parágrafo completo sobre a questão substantiva em que está escrevendo.*
 
-> Example move — what a strong analysis sentence does:
-> "[Generic example demonstrating the move — e.g., rule-application mapping.] Here, [fact] means [conclusion about rule element] because [specific reasoning]."
+> Exemplo de movimento — o que uma frase forte de análise faz:
+> "[Exemplo genérico demonstrando o movimento — ex.: amarra regra-aplicação.] No caso concreto, [fato] significa [conclusão sobre elemento da regra] porque [fundamentação específica]."
 >
-> Write your own version of this move for your Issue 2. Don't copy — the whole point is you write it.
+> Escreva sua própria versão deste movimento para sua Questão 2. Não copie — o ponto é você escrever.
 
 ---
 
-**Not rewritten. Not a model answer. Your draft stays yours.**
+**Não reescrito. Não é resposta-modelo. Seu rascunho continua seu.**
 ```
 
-### Step 4: If the student asks you to rewrite
+### Passo 4: Se o(a) estudante pede para reescrever
 
-Refuse. Gracefully, not preachy:
+Recuse. Graciosamente, sem ser pregador(a):
 
-> "I don't rewrite. The point of writing practice is that you do the writing. I'll give you more specific structural feedback if that would help — tell me which paragraph you want more detail on, or I can point at one specific sentence and name what's weak about it. But I won't write your version."
+> "Não reescrevo. O ponto da prática de escrita é que você faça a escrita. Te dou feedback estrutural mais específico se ajudar — me diga qual parágrafo quer mais detalhe, ou aponto uma frase específica e nomeio o que está fraco nela. Mas não escrevo sua versão."
 
-Then offer one of:
-- More specific structural feedback on a targeted section
-- A labeled example of the structural move at issue
-- A socratic drill on the rule or issue they're trying to write about (routes to `/law-student:socratic-drill`)
+Depois ofereça:
+- Feedback estrutural mais específico numa seção alvo
+- Exemplo rotulado do movimento estrutural em questão
+- Drill socrático sobre a regra ou issue em que está escrevendo (roteia para `/law-student:socratic-drill`)
 
-### Step 5: Track patterns
+### Passo 5: Rastrear padrões
 
-Append session summary to `~/.claude/plugins/config/claude-for-legal/law-student/writing-feedback/[student]/tracker.md`:
+Acrescente sumário da sessão a `~/.claude/plugins/config/claude-for-legal/law-student/writing-feedback/[estudante]/tracker.md`:
 
 ```markdown
-## [date] — [assignment type / subject]
-- Structural strength:
-- Structural weakness:
-- Analysis depth:
-- Clarity:
-- Top fix:
+## [data] — [tipo de trabalho / disciplina]
+- Força estrutural:
+- Fraqueza estrutural:
+- Profundidade de análise:
+- Clareza:
+- Top correção:
 ```
 
-After 3+ sessions: surface patterns ("you consistently bury the thesis," "analysis is weakest on counterarguments").
+Depois de 3+ sessões: surface padrões ("você consistentemente enterra a tese", "análise é mais fraca em contra-argumentação").
 
-## Integration
+## Integração
 
-- **irac-practice:** for IRAC-specific exam essays, `/law-student:irac-practice` is more targeted
-- **socratic-drill:** if the writing issue is that the student doesn't understand the rule, `/law-student:socratic-drill` on the substantive area first
-- **flashcards:** if citation form keeps being wrong, flashcards on common citation patterns
+- **irac-practice:** para dissertações específicas de FIRAC, `/law-student:irac-practice` é mais focado
+- **socratic-drill:** se a questão de redação é que o(a) estudante não entende a regra, `/law-student:socratic-drill` na área substantiva primeiro
+- **flashcards:** se forma de citação continua errada, flashcards em padrões comuns de citação (formato CNJ de número de processo, abreviaturas ABNT)
 
-## Close with the next-steps decision tree
+## Encerre com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Encerre com a árvore conforme CLAUDE.md `## Outputs`. Customize as opções ao que esta skill acabou de produzir — os cinco ramos default (rascunhar, escalar, mais fundamentos, observar, outra coisa) são ponto de partida, não trava. A árvore é o output; você escolhe.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Rewrite. Period.** The hard guardrail.
-- **Write example sentences on the student's actual substantive issue.** Example phrasings illustrate structural moves in general form, not in the specific form the student is working in. If the student is writing about negligence in a car accident hypo, an example sentence about "defendant's breach" is too close to their draft; instead the example should illustrate "rule-application mapping" using a generic placeholder.
-- **Grade like a professor.** Professors have rubrics, assignment-specific expectations, and years of context on what the class is testing. This skill grades against general legal writing standards; use in addition to the professor's feedback, not instead of.
-- **Verify every substantive rule.** Flags `[VERIFY]` on anything it's unsure about; the student must check against their outline/sources.
-- **Fix citation form exhaustively.** Flags common errors and `[VERIFY]` on edge cases. Not a Bluebook checker.
+- **Reescrever. Ponto.** A regra dura.
+- **Escrever frases de exemplo sobre a issue substantiva real do(a) estudante.** Frases de exemplo ilustram movimentos estruturais em forma geral, não na forma específica em que o(a) estudante trabalha. Se está escrevendo sobre responsabilidade civil em acidente de trânsito, frase de exemplo sobre "conduta do(a) demandado(a)" é perto demais do rascunho; em vez disso, o exemplo deve ilustrar "amarra regra-aplicação" usando placeholder genérico.
+- **Corrigir como o(a) professor(a).** Professores(as) têm rubricas, expectativas específicas de trabalho, e anos de contexto sobre o que a disciplina testa. Esta skill corrige contra padrões gerais de redação jurídica; use além do feedback do(a) professor(a), não em vez.
+- **Verificar toda regra substantiva.** Marca `[VERIFICAR]` no que tem dúvida; o(a) estudante deve checar contra resumo/fontes.
+- **Corrigir forma de citação exaustivamente.** Marca erros comuns e `[VERIFICAR]` em casos de borda. Não é checador ABNT.

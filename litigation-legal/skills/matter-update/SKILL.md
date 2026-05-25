@@ -1,150 +1,150 @@
 ---
 name: matter-update
-description: Append a dated event to a matter's history file and refresh the log row — captures new developments, status changes, risk re-assessments, deadline shifts, and settlement authority changes. Use when the user wants to log an update on a matter, note a development, or record a status change against the portfolio.
+description: Anexa evento datado ao arquivo de histórico do caso e atualiza a linha do log — captura novos desenvolvimentos, mudanças de status, reavaliações de risco, prazos deslocados e mudanças de alçada para transação. Use quando o usuário quer logar update de um caso, anotar desenvolvimento, ou registrar mudança de status no portfólio.
 argument-hint: "[slug] [brief event description]"
 ---
 
 # /matter-update
 
-1. Follow the workflow and reference below.
-2. Confirm slug exists in `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/` and `_log.yaml`.
-3. Prompt for event type, date (default today), summary, and any log field updates (risk change, status change, next deadline shift, materiality reclassification).
-4. Append dated entry to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`.
-5. Update `_log.yaml` — set `last_updated` to today, apply any field updates.
-6. Confirm.
+1. Siga o workflow e a referência abaixo.
+2. Confirme que o slug existe em `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/` e `_log.yaml`.
+3. Pergunte por tipo de evento, data (default hoje), sumário, e quaisquer atualizações de campo do log (mudança de risco, mudança de status, prazo seguinte deslocado, reclassificação de materialidade).
+4. Anexe entrada datada a `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`.
+5. Atualize `_log.yaml` — defina `last_updated` como hoje, aplique quaisquer atualizações de campo.
+6. Confirme.
 
 ---
 
 # Matter Update
 
-## Purpose
+## Propósito
 
-The portfolio only stays useful if it stays current. This skill makes logging an update cheap — two minutes of structured capture, no freeform drift.
+O portfólio só permanece útil se permanecer atual. Esta skill torna barato logar update — dois minutos de captura estruturada, sem drift em formato livre.
 
-## Load context
+## Carregar contexto
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — find the row
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — append target
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — reference (don't rewrite)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — risk calibration (if re-assessing risk)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — encontrar a linha
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — alvo do append
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — referência (não reescrever)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — calibração de risco (se reavaliando risco)
 
-**Conflicts gate — unbypassable.** Before logging an update, check `_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+**Gate de impedimentos — incontornável.** Antes de logar update, cheque `_log.yaml` para o slug do caso. Se o caso não está em `_log.yaml`, recuse e route:
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace exists. I won't append history to an unmanaged matter — the conflicts check is the gate, and there's no `history.md` to append to until the matter is intaken."
+> "Não vejo [slug do caso] no log de casos. Rode `/litigation-legal:matter-intake` primeiro para a checagem de impedimentos rodar e o workspace ser montado. Não anexo histórico em caso não-intaken — a checagem de impedimentos é o gate, e não existe `history.md` para anexar até o caso ser intaken."
 
 ## Input
 
-Slug (required). If not provided, ask — with a short list of recently updated matters to pick from.
+Slug (obrigatório). Se não fornecido, pergunte — com lista curta de casos atualizados recentemente para escolher.
 
-## The update
+## O update
 
-### 1. Event type
+### 1. Tipo de evento
 
-Offer categories:
+Ofereça categorias:
 
-- **Procedural** — motion filed/received, order issued, hearing held, deadline set
-- **Discovery** — production made/received, depositions taken, subpoena served
-- **Substantive** — new facts, key document surfaced, ruling on merits
-- **Strategy** — posture shift, settlement offer made/received, authority update
-- **Risk re-assessment** — severity or likelihood changed
-- **Stakeholder** — new person looped in, outside counsel change
-- **Administrative** — engagement letter executed, budget adjusted, hold refreshed
+- **Procedimental** — petição protocolada/recebida, decisão proferida, audiência realizada, prazo fixado
+- **Instrução probatória** — produção feita/recebida, oitivas/depoimentos tomados, ofício requisitório expedido
+- **Substantivo** — fatos novos, documento-chave aflorou, decisão sobre o mérito
+- **Estratégia** — mudança de postura, proposta de acordo feita/recebida, mudança de alçada
+- **Reavaliação de risco** — severidade ou probabilidade mudaram
+- **Stakeholder** — pessoa nova no loop, troca de escritório externo / DP colaboradora
+- **Administrativo** — contrato de honorários assinado, orçamento ajustado, dever de guarda renovado
 
-Or freeform if none fits.
+Ou formato livre se nenhum couber.
 
-### 2. Date
+### 2. Data
 
-Default today. Accept an override (e.g., capturing an event from last week).
+Default hoje. Aceite override (ex.: capturando evento da semana passada).
 
-### 3. Summary
+### 3. Sumário
 
-One-paragraph narrative. What happened, what it means, any immediate implication.
+Narrativa em um parágrafo. O que aconteceu, o que significa, qualquer implicação imediata.
 
-### 4. Log field changes
+### 4. Mudanças de campo do log
 
-Walk through potentially affected fields:
+Caminhe pelos campos potencialmente afetados:
 
-- `status:` — has the stage shifted (e.g., pleadings → fact discovery)?
-- `stage:` — substage update
-- `risk:` — reassessment required?
-- `materiality:` — any change (new facts might trigger reserve or disclosure)?
-- `exposure_range:` — revise if new information
-- `next_deadline:` — new upcoming date, if any
-- `outside_counsel:` — change?
-- `internal_owners:` — anyone new or removed?
-- `legal_hold:` — refreshed, expanded, released?
+- `status:` — fase mudou (ex.: petição inicial → instrução)?
+- `stage:` — atualização de subfase
+- `risk:` — reavaliação necessária?
+- `materiality:` — alguma mudança (fatos novos podem disparar provisão ou divulgação, ou escalonamento ao(à) Defensor(a) Público(a)-Geral)?
+- `exposure_range:` — revisar se informação nova
+- `next_deadline:` — nova data próxima, se houver (lembrar prazo em dobro CPC art. 186 se Defensor)
+- `outside_counsel:` — mudou (escritório externo ou DP colaboradora)?
+- `internal_owners:` — alguém novo ou removido?
+- `legal_hold:` — renovado, expandido, liberado?
 
-Only prompt for fields likely affected by the event type. Procedural updates usually touch `stage` and `next_deadline` only; a settlement offer might touch `materiality`, `exposure_range`, `status`.
+Só pergunte por campos provavelmente afetados pelo tipo de evento. Atualizações procedimentais usualmente tocam só `stage` e `next_deadline`; uma proposta de acordo pode tocar `materiality`, `exposure_range`, `status`.
 
-### 4pre. Settlement-acceptance gate
+### 4pre. Gate de aceitação de acordo
 
-If the Strategy update is a **settlement acceptance** (the company is accepting a settlement offer, executing a settlement agreement, or authorizing acceptance in principle — not merely logging an offer made or received): Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+Se a atualização de Estratégia é uma **aceitação de acordo** (a empresa / o(a) assistido(a) está aceitando proposta de acordo, executando termo de acordo, ou autorizando aceitação em princípio — não meramente logando proposta feita ou recebida): Leia `## Quem está usando` em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Se o Papel é Não-advogado:
 
-> Accepting a settlement has legal consequences — it resolves claims, typically requires a release, and can affect insurance, tax, and related matters. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+> Aceitar acordo tem consequências jurídicas — resolve a pretensão, tipicamente exige quitação, e pode afetar seguro, tributação e matérias correlatas. Você revisou com advogado(a) ou Defensor(a) Público(a)? Se sim, prossiga. Se não, segue brief para levar:
 >
-> [Generate a 1-page summary: the matter, proposed settlement terms (dollar, structural, release scope, confidentiality, non-disparagement), exposure at stake, authority ladder status (see `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` settlement authority), what could go wrong, what to ask the attorney before accepting.]
+> [Gere sumário de 1 página: o caso, termos propostos do acordo (valor, estruturais, escopo da quitação, confidencialidade, não-depreciação), exposição em jogo, status da escada de alçada (vide `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` alçada de transação), o que pode dar errado, o que perguntar ao(à) advogado(a) antes de aceitar.]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> Se precisa achar advogado(a) habilitado(a) ou Defensor(a) Público(a) na sua localidade: o serviço de referência da OAB Seccional do estado (ou da Defensoria Pública Estadual/União) é o ponto de partida mais rápido.
 
-Do not log the acceptance or flip materiality on acceptance basis without an explicit yes. Logging offers or counters does not require the gate — acceptance does.
+Não logue a aceitação nem mude materialidade com base em aceitação sem um sim explícito. Logar propostas ou contrapropostas não exige o gate — aceitação exige.
 
-### 4a. Materiality trigger — explicit prompt
+### 4a. Gatilho de materialidade — prompt explícito
 
-Certain event types force a materiality re-check. When the event type is in this list, **always prompt** — don't let the user move on without an explicit answer:
+Certos tipos de evento forçam re-checagem de materialidade. Quando o tipo de evento está nesta lista, **sempre pergunte** — não deixe o usuário seguir sem resposta explícita:
 
-| Event type | Materiality trigger prompt |
+| Tipo de evento | Prompt de gatilho de materialidade |
 |---|---|
-| Substantive (new facts, key document, merits ruling) | "This event is substantive. Does it push `materiality`? Current: `[current]`. Options: `reserved / disclosed / monitored / none`. Change?" |
-| Strategy (posture shift, settlement offer made or received) | "Settlement activity often triggers materiality reclassification. Current: `[current]`. If the offer, counter, or acceptance moves exposure or shifts from contested to probable-and-estimable, reclassify." |
-| Risk re-assessment (severity or likelihood changed) | "Risk moved. Materiality should track. Current: `[current]`. Reclassify?" |
-| Regulatory / enforcement development | "Regulator action (subpoena, CID, enforcement notice) usually triggers disclosure analysis. Current: `[current]`. Change?" |
+| Substantivo (fatos novos, documento-chave, decisão de mérito) | "Este evento é substantivo. Empurra `materiality`? Atual: `[atual]`. Opções: `provisionado / divulgado / monitorado / nenhum` (DJ) ou `escalado-DPG / escalado-coordenador / monitorado / nenhum` (Defensor). Mudar?" |
+| Estratégia (mudança de postura, proposta de acordo feita ou recebida) | "Atividade de acordo frequentemente dispara reclassificação de materialidade. Atual: `[atual]`. Se a proposta, contraproposta, ou aceitação move exposição ou desloca de contestado para provável-e-estimável, reclassifique." |
+| Reavaliação de risco (severidade ou probabilidade mudaram) | "Risco mexeu. Materialidade deveria acompanhar. Atual: `[atual]`. Reclassificar?" |
+| Desenvolvimento regulatório / fiscalizatório | "Ação de regulador (ofício, intimação, notificação fiscalizatória de ANPD/CVM/ANS/Bacen/RFB) usualmente dispara análise de divulgação. Atual: `[atual]`. Mudar?" |
 
-Acceptable answers include `no change` — but `no change` must be explicit, not implied by silence. Capture in the history entry:
-
-```markdown
-**Materiality check:** [no change / changed from X to Y]
-**Reasoning:** [one sentence]
-```
-
-If materiality moves to `reserved` or `disclosed`, and the matter did not previously carry a reserve or disclosure, flag the event as requiring finance / audit-committee notification per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` materiality thresholds.
-
-### 5. Seed doc prompt (optional)
-
-If the update references a document (order, filing, correspondence), ask if there's a path to link. Not pushy.
-
-## Writing
-
-### Append to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`
-
-Most recent at top, directly under the `---` that follows the header.
+Respostas aceitáveis incluem `sem mudança` — mas `sem mudança` deve ser explícito, não implícito por silêncio. Capture na entrada de histórico:
 
 ```markdown
-## [YYYY-MM-DD] — [Event type]: [short title]
-
-[Paragraph summary.]
-
-**Fields changed:**
-- [field]: [old → new]
-- [field]: [old → new]
-
-**Related doc:** [path, if provided]
+**Checagem de materialidade:** [sem mudança / mudou de X para Y]
+**Razão:** [uma frase]
 ```
 
-If no fields changed, omit the "Fields changed" block.
+Se materialidade move para `provisionado` ou `divulgado` (DJ) ou `escalado-DPG` (Defensor), e o caso não carregava provisão / divulgação / escalonamento prévio, sinalize o evento como exigindo notificação financeira / comitê de auditoria (DJ) ou comunicação ao(à) Coordenador(a) / Defensor(a) Público(a)-Geral (Defensoria) per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` limiares de materialidade.
 
-### Update `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### 5. Prompt de documento-semente (opcional)
 
-- Apply any field changes.
-- Set `last_updated: [today]` (or the event date if the user overrode — the log tracks when the record was last touched).
+Se o update referencia documento (decisão, peça protocolada, correspondência), pergunte se há path para linkar. Sem insistir.
 
-## Confirm
+## Gravando
 
-Show the user the history entry and the yaml diff before writing:
+### Anexar a `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`
 
-> Here's what I'll append and update. Good to commit?
+Mais recente no topo, diretamente sob o `---` que segue o cabeçalho.
 
-## What this skill does not do
+```markdown
+## [YYYY-MM-DD] — [Tipo de evento]: [título curto]
 
-- Edit past history entries. Corrections are new entries that reference and correct prior ones.
-- Silently change the log. Every field change is shown to the user before write.
-- Decide whether a new development warrants reserve/disclosure. It surfaces the question ("this might push materiality — want to reclassify?"), the user answers.
+[Parágrafo de sumário.]
+
+**Campos alterados:**
+- [campo]: [velho → novo]
+- [campo]: [velho → novo]
+
+**Documento relacionado:** [path, se fornecido]
+```
+
+Se nenhum campo mudou, omita o bloco "Campos alterados".
+
+### Atualizar `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+
+- Aplique qualquer mudança de campo.
+- Defina `last_updated: [hoje]` (ou a data do evento se o usuário sobrescreveu — o log rastreia quando o registro foi tocado pela última vez).
+
+## Confirmar
+
+Mostre ao usuário a entrada de histórico e o diff do yaml antes de gravar:
+
+> Eis o que vou anexar e atualizar. Tudo certo para confirmar?
+
+## O que esta skill não faz
+
+- Edita entradas de histórico passadas. Correções são novas entradas que referenciam e corrigem as anteriores.
+- Muda o log silenciosamente. Toda mudança de campo é mostrada ao usuário antes do write.
+- Decide se um desenvolvimento novo merece provisão/divulgação. Aflora a pergunta ("isto pode empurrar materialidade — quer reclassificar?"), o usuário responde.

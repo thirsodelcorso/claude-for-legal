@@ -1,351 +1,369 @@
 ---
 name: demand-draft
-description: Draft a demand letter from a completed intake, gated on a privilege / FRE 408 / waiver / admission checklist, with a .docx output, post-send checklist, and an offer to create a matter. Use when the user says "draft the demand", "write the [type] letter", or has a finished demand intake ready to turn into a sendable draft.
+description: >
+  Redige notificação extrajudicial (ou ofício institucional da DP) a partir
+  de intake completado, com gate de sigilo, confidencialidade negocial
+  (Lei 13.140/15 art. 30), renúncia, confissão, output .docx, checklist
+  pós-envio, e oferta de criação de caso. Use quando disser redigir a
+  notificação, escrever o ofício, redigir cessar-e-desistir, ou tiver
+  intake completo pronto para virar minuta enviável. Para Defensor —
+  ofício institucional ao órgão administrativo (concessionária, secretaria,
+  hospital) ou notificação extrajudicial do(a) assistido(a) contra
+  contraparte privada.
 argument-hint: "[slug] [--skip-gate] [--version=N]"
 ---
 
 # /demand-draft
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md`. Refuse if missing or strategic block empty (for material demands).
-2. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → demand-letter practice, house style, seed-doc table.
-3. Follow the workflow and reference below.
-4. Run the pre-draft gate: privilege filter, admission risk, accord-and-satisfaction, FRE 408 posture, waiver scan, tone, factual accuracy. Do not proceed until each is engaged.
-5. Template select: seed doc if provided in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`; else soft template for the demand type.
-6. Draft in-chat for review. Iterate until user approves.
-7. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/draft-v[N].docx` using the docx skill.
-8. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/checklist.md` (post-send checklist).
-9. Assess materiality per heuristic; offer to create a matter. If yes: hand off to `matter-intake` with pre-populated fields.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md`. Recuse se ausente ou bloco estratégico vazio (para notificações materiais).
+2. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → prática de notificação extrajudicial, estilo da casa, tabela de docs-semente.
+3. Siga o workflow e referência abaixo.
+4. Rode o gate pré-redação: filtro de sigilo, risco de confissão, satisfação inadvertida, postura de confidencialidade negocial, scan de renúncia, tom, precisão factual.
+5. Seleção de template: doc-semente se fornecido em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`; senão template suave para o tipo de notificação.
+6. Minuta em chat para revisão. Itere até aprovação do(a) usuário(a).
+7. Escreva `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/draft-v[N].docx` usando a skill docx.
+8. Escreva `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/checklist.md` (checklist pós-envio).
+9. Avalie materialidade por heurística; ofereça criar caso. Se sim: handoff para `matter-intake` com campos pré-populados.
 
 ---
 
-# Demand Draft
+# Redação de Notificação Extrajudicial / Ofício
 
-## Purpose
+## Propósito
 
-Take a completed intake and produce a sendable draft. Most of the value is in refusing to draft until privilege, waiver, admission, and settlement-communication posture have been consciously addressed — the failure mode is a letter that waives privilege or constitutes an admission because no one paused to check.
+Pegue intake completado e produza minuta enviável. Maior parte do valor está em recusar redigir até sigilo, renúncia, confissão e postura de confidencialidade negocial terem sido conscientemente endereçados — o failure mode é uma notificação que quebra sigilo ou constitui confissão porque ninguém pausou para checar.
 
-## Record fidelity — quotes and pinpoints
+## Quatro tipos principais no Brasil
 
-Demand letters are advocacy, and every quoted line from a contract, an email, or a prior communication becomes an assertion the counterparty will test. Canonical statement in the plugin's `CLAUDE.md` shared guardrails; repeated here.
+1. **Notificação extrajudicial cartorial** — registrada em Tabelionato de Notas, com fé pública. Modalidade tradicional para constituir em mora, interpelar, cessar-e-desistir.
+2. **Notificação extrajudicial postal com AR** — Carta com Aviso de Recebimento, comprovação simples mas suficiente para fins de constituição em mora (CC art. 397 par. único).
+3. **Notificação extrajudicial por e-mail** — admitida quando há cláusula contratual prevendo essa via OU quando há prova robusta de recebimento.
+4. **Ofício institucional da Defensoria Pública** — papel timbrado da DP, signatário Defensor(a) responsável, dirigido a órgão administrativo (concessionária de serviço público, hospital, secretaria de saúde, fornecedor de medicamento, Município/Estado). Pressuposto de fé institucional. Não é notificação extrajudicial do(a) assistido(a) — é ato institucional da DP em nome do(a) assistido(a).
 
-**Verbatim quotes must be verbatim.** Never put quotation marks around words attributed to the counterparty, their counsel, a witness, or any document unless you have the exact passage in front of you. When you want to characterize without the exact words:
+## Fidelidade aos autos — citações e pinpoints
 
-- **Paraphrase without quotation marks**, with a placeholder: "Your [date] email stated X `[verify exact quote — email cite pending]`."
-- **Never fill the gap.** A misquoted contract provision in a demand letter is the fastest way to lose credibility with opposing counsel on the first round.
-- Every `[verify exact quote]` must be flagged in the reviewer note before the letter leaves.
+Notificações são advocacia, e toda linha citada de contrato, e-mail ou comunicação anterior vira asseveração que a contraparte vai testar. Declaração canônica nos guardrails compartilhados do `CLAUDE.md`; repetida aqui.
 
-**Pinpoint cites must support the whole proposition.** If the demand asserts "Section 4.2 requires payment within 30 days upon invoice receipt," the cited section must cover the obligation AND the trigger AND the window. If it only covers one, split the cite (e.g., "Section 4.2 (payment obligation); Section 4.3 (30-day window)") or narrow the proposition. A contract cite that backs part of the demand is how the counterparty replies with the full text and flips the posture.
+**Citações literais devem ser literais.** Nunca coloque aspas em palavras atribuídas à contraparte, advogado(a) deles, testemunha, ou qualquer documento a menos que tenha a passagem exata diante de você. Quando você quer caracterizar sem palavras exatas:
 
-## Candor about weak arguments
+- **Parafraseie sem aspas**, com placeholder: "Seu e-mail de [data] declarou X `[verificar citação literal — referência do e-mail pendente]`."
+- **Nunca preencha a lacuna.** Cláusula contratual mal-citada em notificação é o jeito mais rápido de perder credibilidade com o(a) advogado(a) contrário(a) na primeira rodada.
+- Toda `[verificar citação literal]` deve ser sinalizada na nota do revisor antes da notificação sair.
 
-When the law or the record is against a point, don't dress it up as solid. When an argument in the demand is weak — the contract language is ambiguous, the authority cuts the other way, the damages theory is a stretch — flag it for the sender:
+**Pinpoints devem sustentar a proposição inteira.** Se a notificação assevera "Cláusula 4.2 exige pagamento dentro de 30 dias do recebimento da fatura", a cláusula citada deve cobrir a obrigação E o gatilho E o prazo. Se cobre só um, divida (ex.: "Cláusula 4.2 (obrigação de pagamento); Cláusula 4.3 (prazo de 30 dias)") ou estreite a proposição.
 
-> "The [claim / theory] here is weak because [authority / fact]. Options: (a) press it and frame as `[alternative framing]`, (b) drop it and rely on [stronger claim], (c) keep it as a hook but hedge the language. `[review — strategic call]`."
+## Candor sobre argumentos fracos
 
-A demand letter that over-asserts gets a response that catalogs every overreach, shifts leverage, and burns the next round. The strongest demand letter is the one that concedes what's weak so the counterparty can't.
+Quando o direito ou os autos estão contra um ponto, não dress up como sólido. Quando um argumento na notificação é fraco — a cláusula é ambígua, a autoridade corta para o outro lado, a teoria de danos é forçada — flag para o(a) signatário(a):
 
-## Echo vs repeat
+> "A [tese / pretensão] aqui é fraca porque [autoridade / fato]. Opções: (a) pressionar e enquadrar como `[enquadramento alternativo]`, (b) deixar e basear em [pretensão mais forte], (c) manter como gancho mas hedge a linguagem. `[review — chamada estratégica]`."
 
-If the matter has prior correspondence, echo the key terms — the same characterization of the breach, the same framing of the core obligation, the same name for the transaction. Don't lift whole sentences. A demand letter that reads like a copy-paste of the prior one signals that nothing has changed; the new letter should advance the posture (new facts, new deadline, new consequence), not restate it.
+Notificação que sobre-assevera recebe resposta que cataloga cada overreach, transfere alavancagem, e queima a próxima rodada. Notificação mais forte é a que concede o fraco para a contraparte não conceder.
 
-> **External deliverable:** the drafted demand letter is sent to counterparty. Do NOT include a `PRIVILEGED & CONFIDENTIAL — ATTORNEY WORK PRODUCT — PREPARED AT THE DIRECTION OF COUNSEL` header on the outgoing letter. The post-send checklist and the intake file are internal work product and do carry the header.
+## Echo vs repetição
 
-## Side context
+Se o caso tem correspondência anterior, eche os termos-chave — a mesma caracterização do inadimplemento, o mesmo enquadramento da obrigação central, o mesmo nome para a transação. Não copie frases inteiras. Notificação que lê como cópia-cola da anterior sinaliza que nada mudou; a nova deve avançar a postura (novos fatos, novo prazo, nova consequência), não restatá-la.
 
-Drafting a demand letter is inherently an assertion — the sender is making a claim. Read `## Side` in the practice profile:
+> **Entregável externo:** a notificação minutada é enviada à contraparte ou ao órgão administrativo. NÃO inclua cabeçalho `SIGILOSO — TRABALHO DE ADVOGADO` ou `SIGILOSO — TRABALHO DE DEFENSOR PÚBLICO` na carta que sai. O checklist pós-envio e o arquivo de intake são produtos internos e carregam o cabeçalho.
 
-- **Plaintiff / claimant** (default for this skill): demand-draft aligns with the posture. The letter is the claim. Tone, consequence language, and relief demanded all flow from the plaintiff-side playbook.
-- **Defense / respondent**: demand-drafts are less common from defense but do happen — a defense practitioner may send a counter-demand, a demand for contribution, or a demand letter in an unrelated matter. Confirm before drafting: "You said defense is your default. Is this matter plaintiff-posture for you (you're asserting a claim), or is this a different posture?"
-- **Both / varies**: ask per-draft which posture applies. The draft's tone and default signer may differ.
+## Contexto de posição
 
-For in-house defense practitioners who receive demand letters more than they send them, route to `demand-received` instead — that skill handles the inbound-triage case.
+Redigir notificação é inerentemente assertivo — o(a) signatário(a) faz pretensão. Leia `## Posição processual` no perfil:
 
-## Posture for this matter
+- **Autor / requerente** (default desta skill): notificação alinha com a postura. A carta é a pretensão.
+- **Defensor Público:** notificação extrajudicial em favor do(a) assistido(a) (constituir em mora, interpelar privado, cessar-e-desistir contra fornecedor); OU ofício institucional para órgão administrativo (concessionária, secretaria, hospital — pedido administrativo antes da via judicial).
+- **Réu / requerido:** notificações são menos comuns de defesa mas acontecem — contra-notificação, notificação para constituição em mora em cumprimento, ou em matéria não-relacionada. Confirme antes de redigir.
+- **Ambos / varia:** pergunte por minuta qual postura aplica.
 
-Before the pre-draft gate, confirm the matter-level posture. Demand-letter tone and terms are case-by-case, not a practice default. Confirm with the user (reading the intake's `## Posture` section if present; asking if not):
+## Postura para este caso
 
-> **Posture for this matter.** Demand-letter tone and terms are case-by-case, not a practice default. Ask:
-> - **Tone:** measured / assertive / aggressive? (depends on the relationship, the amount, and whether litigation is likely)
-> - **Response window:** what's reasonable given the claim? (14 days is common for payment demands; 30 days for cure; 7 days for cease-and-desist — but the contract or protocol may set it)
-> - **Marking:** does this need a "without prejudice" or "without prejudice save as to costs" marking? (settlement communications do; assertions of claim often don't; jurisdiction matters — ask if unsure)
-> - **Signer:** you, the client, the GC, instructed solicitor/counsel?
-> Don't assume. Read the prior demand correspondence in the matter file if there is any — it establishes the register.
+Antes do gate pré-redação, confirme a postura no nível do caso. Tom e termos são caso-a-caso, não default de prática. Confirme (lendo seção `## Postura` do intake se presente; perguntando se não):
 
-The answers drive tone verb choice, the consequence language, the `Without prejudice` header (or its absence), the signature block, and the compliance deadline. A posture that wasn't captured in intake gets captured here — do not fall back to a practice-level default.
+> **Postura para este caso.**
+> - **Tom:** mensurado / assertivo / agressivo? (depende da relação, do valor, e se litígio é provável)
+> - **Janela de resposta:** o que é razoável dada a pretensão? (15 dias é comum para pagamento; 30 dias para purgação; 5-10 dias para cessar-e-desistir — mas o contrato ou protocolo pode setar)
+> - **Marcação:** isto precisa de "sem prejuízo" / "sem prejuízo de medidas judiciais cabíveis"? (comunicações negociais carregam confidencialidade Lei 13.140/15 art. 30; asseverações de pretensão frequentemente não)
+> - **Signatário:** você, o(a) cliente, o DJ, advogado(a) instruído(a), Defensor(a) titular, Defensor(a)-Geral?
+> Não assuma. Leia correspondência anterior no arquivo do caso se houver — estabelece o registro.
 
-## Jurisdiction assumption
+As respostas direcionam escolha verbal de tom, a linguagem de consequência, o cabeçalho de marcação (ou ausência), o bloco de assinatura, e o prazo de cumprimento. Postura não capturada no intake é capturada aqui — não caia em default de nível-prática.
 
-This draft assumes the jurisdiction identified in the intake and the forum's applicable settlement-communication rule (FRE 408 in federal, the state equivalent otherwise). Legal rules, deadlines, fee-shifting, and statutory hooks vary materially by jurisdiction. If the underlying facts touch a different forum, a different counterparty's home state, or a choice-of-law question, the draft may not apply as written — confirm before sending.
+## Suposição de jurisdição
 
-## Load context
+Esta minuta assume a jurisdição identificada no intake e a regra aplicável de confidencialidade negocial (Lei 13.140/15 art. 30 no Brasil para mediação; sigilo profissional do(a) advogado(a)/Defensor(a) por Lei 8.906/94 art. 7º XIX + LC 80/94 art. 4º-A V; CDC art. 51 IV nulidade de cláusulas que dispensam direito do consumidor). Regras, prazos, fee-shifting e ganchos legais variam materialmente por jurisdição. Se os fatos subjacentes tocam outro foro, contraparte estrangeira, ou questão de lei aplicável, a minuta pode não se aplicar como escrita — confirme antes de enviar.
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md` — required; refuse to proceed if missing
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Demand-letter practice (seed-doc paths, insurance-tender timing, materiality threshold for matter creation), house style (privilege markings, outside counsel directive format for tone reference). **Tone, compliance period, marking, and signer come from `## Posture for this matter` — they are matter-level, not practice-level.**
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — to check for existing related matters (same counterparty) and offer cross-link
+## Carregar contexto
 
-### Strategic-block skipped handling
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md` — obrigatório; recuse prosseguir se ausente
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Prática de notificação extrajudicial (caminhos de doc-semente, timing de aviso de sinistro ao seguro, limiar de materialidade para criação de caso), estilo da casa (marcações de sigilo, formato de diretrizes ao escritório externo para referência de tom). **Tom, período de cumprimento, marcação e signatário vêm de `## Postura para este caso` — são nível-caso, não nível-prática.**
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — para checar casos existentes relacionados (mesma contraparte) e oferecer cross-link
 
-If the intake has `strategic_block: skipped` or `partial`, prompt the user before running the pre-draft gate:
+### Manejo de bloco estratégico pulado
 
-> The intake skipped [all / some] of the strategic block (leverage, BATNA, tone, privilege filters). Drafting now will produce a usable letter but the strategic sections will be generic and flagged with `[SME VERIFY]`.
+Se o intake tem `strategic_block: skipped` ou `partial`, prompt antes de rodar o gate pré-redação:
+
+> O intake pulou [tudo / parte] do bloco estratégico (alavanca, BATNA, tom, filtros de sigilo). Redigir agora vai produzir notificação usável mas as seções estratégicas serão genéricas e sinalizadas `[SME VERIFICAR]`.
 >
-> - **Complete strategic block now** — pause, return to `/demand-intake [slug] --resume-strategic`
-> - **Proceed anyway** — continue to pre-draft gate; downstream sections flagged
+> - **Completar bloco estratégico agora** — pause, retorne para `/demand-intake [slug] --resume-strategic`
+> - **Prosseguir mesmo assim** — continue para o gate; seções downstream sinalizadas
 
-If "proceed anyway," every section of the draft that depends on a skipped strategic question gets `[SME VERIFY: [specific question]]` inline.
+Se "prosseguir mesmo assim", toda seção que depende de pergunta estratégica pulada recebe `[SME VERIFICAR: [pergunta específica]]` inline.
 
 ## Flags
 
-- `--skip-gate` → bypass the pre-draft checklist. Available but logged; use only when the checklist was run separately and documented.
-- `--version=N` → draft as `draft-vN.docx` (default: next version number)
+- `--skip-gate` → bypassa o checklist pré-redação. Disponível mas logado; use só quando o checklist foi rodado separadamente e documentado.
+- `--version=N` → minuta como `draft-vN.docx` (default: próximo número de versão)
 
-## The pre-draft gate
+## O gate pré-redação
 
-**This runs before any drafting. If the user doesn't engage with it, stop.**
+**Isto roda antes de qualquer redação. Se o(a) usuário(a) não engaja, pare.**
 
 ```
-PRE-DRAFT CHECKLIST — [slug]
+CHECKLIST PRÉ-REDAÇÃO — [slug]
 
-1. Privilege filter
-   Per intake privilege filters: [list]
-   Confirm: none of these will appear in the draft?  [y/n]
+1. Filtro de sigilo
+   Per filtros de sigilo do intake: [lista]
+   Confirme: nenhum destes aparecerá na minuta?  [s/n]
 
-2. Admission risk
-   Per intake admission risk: [list]
-   For each, is the phrasing controlled or removed?  [y/n per item]
+2. Risco de confissão
+   Per risco de confissão do intake: [lista]
+   Para cada, a formulação está controlada ou removida?  [s/n por item]
 
-3. Accord-and-satisfaction
-   Per intake: [flagged risk, if any]
-   Does the demand inadvertently satisfy or accept a separate claim?  [y/n]
+3. Satisfação inadvertida (accord-and-satisfaction)
+   Per intake: [risco sinalizado, se algum]
+   A notificação inadvertidamente satisfaz ou aceita pretensão separada?  [s/n]
 
-4. Settlement-communication posture
-   Research the settlement-communication protections applicable in the forum
-   (FRE 408 in federal, the state equivalent otherwise). Note that protection
-   attaches from conduct and context, not merely from labeling the communication.
-   Intake says: [protected / not protected / case-by-case]
-   Draft will [include / omit] settlement-communication markers, and will be
-   structured so the substance — not just the label — supports the posture.
-   Confirm.
+4. Postura de confidencialidade negocial
+   Pesquise as proteções de confidencialidade negocial aplicáveis no foro
+   (Lei 13.140/15 art. 30 em mediação; CC art. 422 boa-fé pré-contratual;
+   marcação "sem prejuízo" como expressão típica). Note que proteção
+   adere a conduta e contexto, não meramente a rotular a comunicação.
+   Intake diz: [protegido / não protegido / caso-a-caso]
+   Minuta vai [incluir / omitir] marcadores de comunicação negocial, e
+   será estruturada para que a substância — não só o rótulo — sustente
+   a postura. Confirme.
 
-5. Privilege waiver scan
-   Will any sentence in the draft reveal the substance of our internal legal analysis (not just the conclusion)?  [y/n]
-   If yes, rephrase before drafting.
+5. Scan de renúncia de sigilo
+   Alguma frase na minuta revelará a substância da nossa análise jurídica
+   interna (não só a conclusão)?  [s/n]
+   Se sim, reformule antes de redigir.
 
-6. Tone posture
-   Intake says: [relationship-preserving / measured / scorched-earth]
-   This will drive verb choice, framing, and consequence language. Confirm.
+6. Postura de tom
+   Intake diz: [preservando-relacionamento / mensurado / terra-arrasada]
+   Isto vai direcionar escolha de verbo, enquadramento, e linguagem de
+   consequência. Confirme.
 
-7. Factual accuracy
-   Every fact in the draft must be verified. Not "probably true" — verified. List any facts that are not yet verified, and they will be flagged [VERIFY: ___] inline.
+7. Precisão factual
+   Todo fato na minuta deve ser verificado. Não "provavelmente verdade" —
+   verificado. Liste qualquer fato ainda não verificado, e serão sinalizados
+   [VERIFICAR: ___] inline.
 ```
 
-Only proceed when the user has engaged with each item. A blank-acknowledged checklist is worse than no checklist.
+Só prossiga quando engajado com cada item. Checklist em branco-reconhecido é pior que sem checklist.
 
-## Template selection
+## Seleção de template
 
-### Step 1: Seed doc
+### Passo 1: Doc-semente
 
-Check `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Demand-letter practice → seed-doc table for the intake's demand type.
+Cheque `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Prática de notificação extrajudicial → tabela de doc-semente para o tipo de notificação do intake.
 
-- **Seed doc provided:** read it. Match structure, tone, signature block, privilege markings, typical section ordering. The seed doc is the template.
-- **No seed doc:** use the soft template below for the demand type.
+- **Doc-semente fornecido:** leia. Case estrutura, tom, bloco de assinatura, marcações de sigilo, ordenação típica de seções. O doc-semente é o template.
+- **Sem doc-semente:** use o template suave abaixo para o tipo.
 
-### Step 2: Soft templates (used only when no seed doc)
+### Passo 2: Templates suaves (usados só quando sem doc-semente)
 
-Each is a skeleton — headings and expected content. Deviate when the facts require.
+Cada é esqueleto — cabeçalhos e conteúdo esperado. Desvie quando os fatos exigirem.
 
-**Payment demand skeleton:**
-1. Parties and relationship context (1 paragraph)
-2. Facts — the obligation and its source (contract § / invoice / order), dates
-3. The default — what's owed, when due, what happened (or didn't)
-4. Demand — specific amount, deadline, method of payment
-5. Consequences — referral to counsel, interest, fees, collections, litigation
-6. Preservation notice (if relevant)
-7. Signature block
+**Skeleton de notificação para pagamento (constituir em mora):**
+1. Identificação das partes e contexto da relação (1 parágrafo)
+2. Fatos — a obrigação e sua fonte (cláusula contratual / fatura / pedido), datas
+3. O inadimplemento — o que é devido, quando vencido, o que aconteceu (ou não)
+4. Notificação — valor específico, prazo (15 dias é comum), método de pagamento
+5. Consequências — encaminhamento ao(à) advogado(a)/Defensor(a), juros (CC 406 + Selic), multa, custas, ação judicial
+6. Preservação (se relevante)
+7. Bloco de assinatura
 
-**Breach / cure notice skeleton:**
-1. Parties and agreement (identify the contract — effective date, parties)
-2. The obligation alleged breached — contract section, plain language
-3. The breach — specific facts, dates, evidence available
-4. Cure — what specifically would cure; cure period (from contract or reasonable)
-5. Consequences of failure to cure — termination, damages, specific remedies in the contract
-6. Preservation of rights
-7. Signature block
+**Skeleton de notificação de inadimplemento / purgação (cure notice):**
+1. Identificação das partes e do contrato (data de início, partes)
+2. A obrigação alegadamente inadimplida — cláusula, linguagem clara
+3. O inadimplemento — fatos específicos, datas, evidência disponível
+4. Purgação — o que especificamente purgaria; prazo (do contrato ou razoável)
+5. Consequências do não-cumprimento — resolução (CC 475), perdas e danos, tutela específica do contrato
+6. Preservação de direitos
+7. Bloco de assinatura
 
-**Cease & desist skeleton:**
-1. Parties and our rights (trademark/copyright/contract/common law — identify the right)
-2. The infringement / violation — specific acts, dates, evidence
-3. Demand — cease immediately, remove, account for past use, confirm compliance in writing
-4. Compliance deadline
-5. Consequences of non-compliance — litigation, injunctive relief, statutory damages if applicable, fees
-6. Preservation demand (documents, metadata, systems related to the alleged conduct)
-7. Signature block
+**Skeleton de cessar-e-desistir:**
+1. Partes e nossos direitos (marca/direito autoral/contrato/direito comum — identifique o direito)
+2. A infração / violação — atos específicos, datas, evidência
+3. Notificação — cessar imediatamente, retirar, prestar contas pelo uso passado, confirmar cumprimento por escrito
+4. Prazo de cumprimento (tipicamente 5-10 dias)
+5. Consequências do não-cumprimento — ação judicial, tutela inibitória CPC 497, dano material e moral, custas
+6. Notificação de preservação (documentos, metadados, sistemas relacionados à conduta alegada)
+7. Bloco de assinatura
 
-**Employment separation demand skeleton:**
-1. Parties and relationship context (ex-employee, dates of employment)
-2. The obligation — post-employment obligations breached (confidentiality, non-solicit, non-compete, IP assignment); cite the agreement
-3. The specific conduct alleged
-4. Demand — cease, return property/IP, confirm compliance, non-disparagement reinforcement if applicable
-5. Consequences — litigation, injunctive relief, fee-shifting if in the agreement
-6. Offer of informal resolution (if strategically appropriate)
-7. Preservation demand
-8. Signature block
+**Skeleton de rescisão de contrato de trabalho / cumprimento de obrigação trabalhista:**
+1. Partes e contexto da relação (ex-empregado(a), datas de emprego)
+2. A obrigação — obrigações pós-contratuais inadimplidas (sigilo, não-concorrência, IP); cite o termo de rescisão / contrato
+3. A conduta alegada
+4. Notificação — cessar, devolver propriedade/IP, confirmar cumprimento, reforço de não-difamação se aplicável
+5. Consequências — ação judicial trabalhista (TST), tutela inibitória, perdas e danos
+6. Oferta de resolução informal (se estrategicamente apropriada)
+7. Notificação de preservação
+8. Bloco de assinatura
 
-**Preservation demand skeleton:**
-1. Parties and context — what dispute is anticipated
-2. Scope — categories of documents, data, systems, communications
-3. Custodians — named individuals expected to have relevant material
-4. Date range
-5. Affirmative preservation obligation — suspend auto-delete, preserve metadata, preserve devices
-6. Consequences of spoliation — adverse inference, sanctions, fee-shifting
-7. Acknowledgment request
-8. Signature block
+**Skeleton de notificação de preservação:**
+1. Partes e contexto — qual disputa é antecipada
+2. Escopo — categorias de documentos, dados, sistemas, comunicações
+3. Custodiantes — nomes esperados de ter material relevante
+4. Faixa de datas
+5. Obrigação afirmativa de preservação — suspender auto-delete, preservar metadados, preservar dispositivos
+6. Consequências de spoliação — presunção contrária (CPC 379), sanções (CPC 80, CPC 161)
+7. Pedido de reconhecimento
+8. Bloco de assinatura
 
-## Drafting rules
+**Skeleton de ofício institucional da DP (para Defensor):**
+1. Identificação do ofício (número/ano, ofício destinatário, papel timbrado)
+2. Identificação do(a) assistido(a) (nome + breve qualificação)
+3. Pretensão administrativa específica — fornecer medicamento X, custear leito Y, conceder benefício Z, etc.
+4. Base normativa (CF art. 196 se saúde; Lei 8.742/93 se BPC; CDC se consumo público; etc.)
+5. Prazo razoável de resposta (10-30 dias úteis, conforme natureza)
+6. Consequência da inércia — judicialização imediata, eventualmente com pedido de tutela de urgência CPC 300, com responsabilização por crime de desobediência se ordem judicial for descumprida
+7. Cordialidade institucional (lembre — DP e órgão são poderes públicos)
+8. Assinatura: Defensor(a) responsável + carimbo/timbre da DP
 
-0. **Installment-contract default for multi-lot goods disputes.** For any breach-of-contract demand involving a multi-delivery goods contract under the U.C.C. (multiple shipments, lots, or deliveries over time), default to the installment-contract framework of **U.C.C. § 2-612** — "substantial impairment of the value of the installment" — rather than § 2-601's perfect-tender rule or § 2-711's single-delivery buyer's-remedies framework.
+## Regras de redação
 
-Perfect tender under § 2-601 applies cleanly to single-delivery goods contracts. It does NOT transfer cleanly to installment contracts, where § 2-612 modifies the rule: a buyer can reject a nonconforming installment only when the nonconformity substantially impairs the value of that installment and cannot be cured; and can treat the whole contract as breached only when the nonconformity substantially impairs the value of the whole contract.
+1. **Especificidade sobre adjetivos.** "Em 14 de março de 2026, você enviou X" vence "Você repetidamente e indevidamente enviou X." Adjetivos são o tell do(a) redator(a) de que os fatos são finos.
 
-When drafting the demand letter for a multi-lot goods breach:
+2. **Fatos rastreáveis a fontes.** Toda asseveração factual mapeia a documento, data, ou testemunha. Se ainda não verificável: `[VERIFICAR: alegação específica]`.
 
-- Cite `[CITE: U.C.C. § 2-612 — installment contracts; substantial impairment of the installment]` as the primary framework, not § 2-601.
-- Cite § 2-711 and § 2-712 (cover) as remedies flowing from breach, but state the breach standard in § 2-612 terms.
-- Flag for the signer in a `[SIGNER NOTE:]` block above the draft: "This letter is drafted under U.C.C. § 2-612 (installment contracts), not § 2-601 (perfect tender). The two have materially different breach standards. Confirm the contract's delivery structure supports installment-contract characterization before sending."
-- If the contract's delivery structure is unclear from the intake (e.g., the intake says "three lots delivered" but doesn't confirm whether the contract called for separate lot deliveries or a single shipment split for convenience), flag it `[VERIFY: is this an installment contract under § 2-612, or a single-delivery contract split into lots by shipping convenience?]` — do not silently assert § 2-612 applies.
+3. **Citações como placeholders.** `[CITE: lei/seção/julgado]` onde quer que autoridade jurídica vá. Não invente citações. Se a pessoa forneceu autoridades no intake, use fielmente.
 
-Single-delivery breach: use § 2-601 perfect-tender framing. Installment: use § 2-612. Do not conflate them.
+4. **Linguagem de consequência casa com postura de tom.**
+   - `preservando-relacionamento`: "Esperamos resolver isto sem outras providências."
+   - `mensurado`: "Não purgado dentro de [N] dias, consideraremos nossas opções, incluindo medidas judiciais cabíveis."
+   - `terra-arrasada`: "Não cumprida a presente no prazo de [N] dias, serão imediatamente ajuizadas as medidas judiciais cabíveis, incluindo [tutela específica + dano moral + perdas e danos]."
 
-1. **Specificity over adjectives.** "On March 14, 2026, you sent X" beats "You repeatedly and improperly sent X." Adjectives are the draftsperson's tell that the facts are thin.
+5. **Formulações alternativas inline.** Onde tom pode variar, a minuta inclui alternativa compacta. Formato:
+   > *A fatura em anexo no valor de R$ X permanece inadimplida.* [ou mais assertivo: *V. Sa. deixou de pagar a fatura em anexo no valor de R$ X, vencida em [data].*]
 
-2. **Facts traceable to sources.** Every factual assertion maps to a document, date, or witness. If not verifiable yet: `[VERIFY: specific claim]`.
+6. **Sem discussão negocial nos autos salvo intencional.** Se o intake flagged a comunicação como não carregando proteção de confidencialidade negocial no foro, a minuta não inclui qualquer oferta de transação, enquadramento "sem prejuízo", ou linguagem que possa ser caracterizada como comunicação negocial. Lembre que proteção adere de conduta e contexto; rotular sozinho não é cura.
 
-3. **Citations as placeholders.** `[CITE: statute/section/case]` wherever legal authority goes. Do not invent citations. If the user provided authorities in the intake, use them faithfully.
-
-4. **Consequence language matches tone posture.**
-   - `relationship-preserving`: "We hope to resolve this without further action."
-   - `measured`: "If not cured within [N] days, we will consider our options, including litigation."
-   - `scorched-earth`: "Failure to cure within [N] days will result in immediate legal action, including [specific relief]."
-
-5. **Inline alternative phrasings.** Where tone could shift, the draft includes a compact alternative. Format:
-   > *The attached invoice of $X remains unpaid.* [or more assertive: *You have failed to pay the attached invoice of $X, due [date].*]
-
-6. **No settlement discussion on the record unless intended.** If the intake flagged the communication as not carrying settlement-communication protection in the forum, the draft does not include any offer to compromise, any "without prejudice" framing, or any language that could be characterized as a settlement communication. Remember that protection attaches from conduct and context; labeling alone is not a cure.
-
-7. **Privilege markings per house style.** Apply `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` privilege conventions exactly.
+7. **Marcações de sigilo per estilo da casa.** Aplique convenções do `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` exatamente.
 
 ## Output
 
-### Primary: `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/draft-v[N].docx`
+### Primário: `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/draft-v[N].docx`
 
-Use the `docx` skill to produce a letter-formatted .docx:
-- Letterhead / sender address block
-- Date
-- Recipient address block
-- Re: line (concise; does not reveal privileged strategy)
-- Salutation
-- Body (per template + drafting rules)
-- Closing
-- Signature block per intake
+Use a skill `docx` para produzir notificação formato carta:
+- Papel timbrado / bloco de endereço do(a) remetente (para Defensor: timbre da DPEAM)
+- Data
+- Bloco de endereço do(a) destinatário(a)
+- Linha "Ref.:" (concisa; não revela estratégia sigilosa)
+- Saudação
+- Corpo (per template + regras de redação)
+- Fechamento
+- Bloco de assinatura per intake
 
-### In-chat review
+### Revisão em chat
 
-Show the draft as readable plain text for the user to review and request edits. Iterate before writing the final .docx. Once approved, write to disk.
+Mostre a minuta como texto legível para revisão e pedidos de edição. Itere antes de escrever o .docx final. Uma vez aprovado, escreva no disco.
 
-### Send gate (closing note on the draft)
+### Gate de envio (nota de fechamento na minuta)
 
-Append the following, set apart from the body, to the in-chat presentation and to any internal preview — it is a reviewer-facing note, not letter text, and is stripped before the letter goes out:
+Anexe o seguinte, separado do corpo, à apresentação em chat e a qualquer preview interno — é nota voltada ao(à) revisor(a), não texto da carta, e é retirada antes da carta sair:
 
-> This is a draft demand letter for attorney review, not a letter ready to send. Sending it may constitute an attorney communication, create FRE 408 (or state-equivalent) implications, and start the clock on disputes, counterclaims, and statutes. A licensed attorney reviews, edits, and takes professional responsibility before sending. Do not send this draft unreviewed.
+> Esta é minuta de notificação extrajudicial / ofício para revisão profissional, não carta pronta para enviar. Enviar pode constituir comunicação profissional, criar implicações de confidencialidade negocial (Lei 13.140/15), e começar o relógio em disputas, contra-pretensões e prescrição. Profissional habilitado(a) (advogado(a) ou Defensor(a)) revisa, edita, e assume responsabilidade profissional antes de enviar. Não envie minuta não-revisada.
 
-### Citation verification
+### Verificação de citação
 
-Every `[CITE:___]` placeholder — and any citation pulled from the intake or the seed doc — is unverified until a human runs it through a citator. Before sending, run a verification pass: check each case, statute, and regulation against a legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or your firm's platform) for accuracy, good law status, and subsequent history. Fabricated or misquoted citations in sent demand letters and filed documents have resulted in sanctions.
+Todo placeholder `[CITE:___]` — e qualquer citação puxada do intake ou doc-semente — não é verificado até humano rodar contra fonte primária. Antes de enviar, rode pass de verificação: cheque cada julgado, lei e regulamento contra MCP de pesquisa (JusRatio, BNP, CJF, TJAM, DataJud) ou planalto.gov.br para precisão, status (vigência, overruling, modulação) e tratamento subsequente. Citações fabricadas ou mal-citadas em notificações enviadas e documentos protocolados resultaram em sanções por litigância de má-fé e infração ético-disciplinar.
 
-**Source attribution.** Tag every citation in the draft with where it came from: `[Westlaw]`, `[CourtListener]`, `[Trellis]`, `[Descrybe]`, or the specific MCP tool name for citations retrieved via a legal research connector; `[web search — verify]` for citations surfaced by web search; `[model knowledge — verify]` for citations the model recalled from training data; `[user provided]` for citations supplied in the intake or seed doc. Citations tagged `verify` carry higher fabrication risk than tool-retrieved citations and should be checked first. Never strip or collapse the tags — they are the signer's fastest signal about which citations to verify before the letter goes out.
+**Atribuição de fonte.** Marque toda citação na minuta com de onde veio: `[JusRatio]`, `[BNP]`, `[CJF]`, `[TJAM]`, `[DataJud]`, ou nome da tool MCP para citações recuperadas; `[busca web — verificar]` para web; `[conhecimento do modelo — verificar]` para citações lembradas; `[usuário forneceu]` para citações fornecidas no intake. Citações marcadas `verificar` carregam risco mais alto de fabricação que recuperadas por ferramenta e devem ser conferidas primeiro. Nunca tire ou colapse as tags — são o sinal mais rápido do(a) signatário(a) sobre quais conferir antes da carta sair.
 
-**No silent supplement.** If a research query to the configured legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or firm platform) returns few or no results for an authority the draft needs, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [issue]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) leave the `[CITE:___]` placeholder and stop here. Which would you like?" A lawyer decides whether to accept lower-confidence sources; the skill does not decide for them.
+**Sem suplementação silenciosa.** Se busca em MCP retorna poucos ou nenhum resultado para autoridade que a minuta precisa, reporte o que achou e pare. NÃO preencha de busca web ou conhecimento do modelo sem perguntar. Diga: "A busca retornou [N] resultados em [ferramenta]. Cobertura parece fina para [questão]. Opções: (1) ampliar query, (2) tentar ferramenta diferente, (3) buscar web — resultados marcados `[busca web — verificar]` e devem ser checados contra fonte primária, ou (4) deixar `[CITE:___]` e parar. Qual?" Profissional decide se aceita fontes de menor confiança; a skill não decide.
 
-### `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/checklist.md` — the post-send checklist
+### `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/checklist.md` — checklist pós-envio
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`. This header applies to the internal checklist file; the outgoing letter does NOT carry it.]
+[CABEÇALHO DE SIGILO — per plugin config ## Outputs — difere por papel. Este cabeçalho aplica ao checklist interno; a notificação que sai NÃO carrega.]
 
-# Post-Send Checklist — [slug]
+# Checklist Pós-Envio — [slug]
 
-**Draft version sent:** [v1 / v2 / etc.]
-**Sent date:** [YYYY-MM-DD — filled in after send]
-**Signer:** [name]
+**Versão da minuta enviada:** [v1 / v2 / etc.]
+**Data de envio:** [AAAA-MM-DD — preenchido após envio]
+**Signatário:** [nome]
 
-## Pre-send (before the letter goes out)
+## Pré-envio (antes da carta sair)
 
-- [ ] Final read-through by signer
-- [ ] Factual accuracy: all [VERIFY] flags resolved
-- [ ] Citations: all [CITE] placeholders filled and run through a citator (verify it is good law)d (if live law cited)
-- [ ] Privilege markings applied per house style — note: this is an external deliverable; do not include the `PRIVILEGED & CONFIDENTIAL — ATTORNEY WORK PRODUCT` header in the version sent to counterparty
-- [ ] Settlement-communication markers [present / absent] as intake specified, and substance aligns with posture
-- [ ] Internal copies cleared (per intake distribution list)
-- [ ] Insurance tender sent (if required per house practice)
-- [ ] Conflicts confirmed (if not yet cleared)
+- [ ] Releitura final pelo(a) signatário(a)
+- [ ] Precisão factual: todas as flags [VERIFICAR] resolvidas
+- [ ] Citações: todos os placeholders [CITE] preenchidos e rodados em MCP (verificar se está em vigor)
+- [ ] Marcações de sigilo per estilo da casa — nota: este é entregável externo; não inclua cabeçalho `SIGILOSO — TRABALHO DE ADVOGADO/DEFENSOR PÚBLICO` na versão enviada à contraparte
+- [ ] Marcadores de comunicação negocial [presente / ausente] como o intake especificou, e substância alinha com postura
+- [ ] Cópias internas autorizadas (per lista de distribuição do intake)
+- [ ] Aviso de sinistro enviado ao seguro (se exigido — DJ corporativo)
+- [ ] Conflitos / impedimentos confirmados (se ainda não cleared)
 
-**Before the letter is sent (the consequential act):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+**Antes da carta ser enviada (o ato consequente):** Leia `## Quem está usando` em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Se o Papel é Não-advogado:
 
-> Sending this demand letter has legal consequences — it creates a record, can trigger statutes and counterclaims, and may waive privileges or constitute admissions. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+> Enviar esta notificação tem consequência jurídica — cria registro, pode disparar prescrição e contra-pretensões, e pode renunciar sigilos ou constituir confissões. Você revisou com profissional habilitado(a)? Se sim, prossiga. Se não, eis briefing para levar:
 >
-> [Generate a 1-page summary: counterparty and dispute, the demand and deadline, tone posture, FRE 408 / settlement-communication status, privilege and admission risks flagged in the pre-draft gate, what could go wrong, what to ask the attorney before sending.]
+> [Gere sumário de 1 página: contraparte e disputa, a notificação e prazo, postura de tom, status confidencialidade negocial (Lei 13.140/15 art. 30), riscos de sigilo e confissão sinalizados no gate, o que pode dar errado, o que perguntar antes de enviar.]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> Se você precisa achar profissional habilitado(a): OAB Seccional (Comissão de Assistência Judiciária Gratuita) tem orientação inicial. Defensoria Pública estadual atende hipossuficiente. NPJ local pode atender em certas áreas.
 
-Do not mark as sent — do not execute the Send mechanics below — without an explicit yes.
+Não marque como enviado — não execute o mecanismo de envio abaixo — sem um sim explícito.
 
-## Send mechanics
+## Mecanismo de envio
 
-- [ ] Delivery method executed: [certified / email / both]
-- [ ] Proof of delivery retained (certified receipt, email read-receipt, courier confirmation)
-- [ ] Copies sent per distribution list
+- [ ] Método de entrega executado: [cartorial / AR postal / e-mail / protocolo presencial / ofício institucional]
+- [ ] Prova de entrega retida (certidão cartorial, AR, leitura de e-mail, protocolo)
+- [ ] Cópias enviadas per lista de distribuição
 
-## After send
+## Após envio
 
-- [ ] Compliance deadline calendared: [YYYY-MM-DD]
-- [ ] Escalation plan if no response: [next step + date]
-- [ ] Follow-up check-in calendared: [date — typically deadline + 2 business days]
-- [ ] Matter created in `_log.yaml`: [yes / no — see materiality below]
+- [ ] Prazo de cumprimento agendado: [AAAA-MM-DD]
+- [ ] Plano de escalonamento se sem resposta: [próximo passo + data — tipicamente: judicializar com tutela de urgência CPC 300]
+- [ ] Follow-up check-in agendado: [data — tipicamente prazo + 2 dias úteis]
+- [ ] Caso criado em `_log.yaml`: [sim / não — vide materialidade abaixo]
 
-## Materiality call
+## Chamada de materialidade
 
-**Heuristic says:** [material / immaterial]
-**Reason:** [demand type / exposure / counterparty type]
-**Your call:** [material → create matter] [immaterial → demand-letters record only]
+**Heurística diz:** [material / imaterial]
+**Razão:** [tipo de notificação / exposição / tipo de contraparte / urgência humanitária Defensor]
+**Sua chamada:** [material → criar caso] [imaterial → registro só em demand-letters]
 
-If material: `/litigation-legal:matter-intake` with `source: demand-letter` pre-populated from this intake.
+Se material: `/litigation-legal:matter-intake` com `source: notificacao-extrajudicial` (ou `oficio` para DP) pré-populado deste intake.
 ```
 
-### Matter auto-creation offer
+### Oferta de auto-criação de caso
 
-After drafting and writing the checklist, assess materiality per heuristic:
+Depois de redigir e escrever o checklist, avalie materialidade per heurística:
 
-- **Default yes if ANY of:**
-  - Demand type is `cease-desist`, `breach-cure`, `employment-separation`, or `preservation`
-  - Desired outcome $$ ≥ `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` medium-severity band
-  - Counterparty is a customer, competitor, or frequent adversary per landscape
-- **Default no otherwise**
+- **Default sim se QUALQUER de:**
+  - Tipo de notificação é `cessar-desistir`, `purgação-mora-contrato`, `separação-trabalho`, `preservação`, ou `oficio-DP` para órgão administrativo com pretensão humanitária
+  - Valor pretendido R$ ≥ banda de severidade-média do `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`
+  - Contraparte é cliente, competidor, ou adversário frequente per panorama
+  - **Para Defensor:** urgência humanitária presente (medicamento, saúde, despejo, violência)
+- **Default não caso contrário**
 
-Present the call:
-> Materiality heuristic: [result]. [One-sentence reason.]
-> Create a tracked matter in `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`? (default: [yes/no])
+Apresente a chamada:
+> Heurística de materialidade: [resultado]. [Razão em uma frase.]
+> Criar caso rastreado em `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`? (default: [sim/não])
 
-If user accepts: trigger `matter-intake` with fields pre-populated from the intake (counterparty, type, jurisdiction, `source: demand-letter`, initial theory, internal stakeholders). User reviews pre-filled fields and confirms.
+Se aceita: dispare `matter-intake` com campos pré-populados (contraparte, tipo, vara/jurisdição, `source`, tese inicial, stakeholders internos, urgência humanitária se Defensor). Pessoa revisa pré-preenchidos e confirma.
 
-If user declines: update intake `status: drafted` (later `sent` when user confirms). The record stays in `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/` only.
+Se recusa: atualize intake `status: drafted` (depois `enviado` quando confirmar). Registro fica em `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/` só.
 
-## Versioning
+## Versionamento
 
-Never overwrite a draft that has been sent. If revising after send, `draft-v2.docx`. The sent-version history is itself the record of what the counterparty received.
+Nunca sobrescreva minuta que foi enviada. Se revisando após envio, `draft-v2.docx`. O histórico da versão-enviada é o próprio registro do que a contraparte recebeu.
 
-## What this skill does not do
+## O que esta skill NÃO faz
 
-- **Send the letter.** Drafting only. The user sends.
-- **Research citations.** `[CITE:___]` placeholders stay as placeholders. If the user provided authorities in the intake, they're used; otherwise, blanks. Inventing cites is malpractice exposure.
-- **Bypass the pre-draft gate.** Even with `--skip-gate`, the skill notes in the draft file that the gate was skipped and why.
-- **Rewrite the intake.** If the intake is thin, send the user back to `demand-intake`. The draft is only as good as what it reads from.
-- **Decide materiality.** The heuristic offers a default; the user's call is the record.
+- **Envia a carta.** Redação apenas. A pessoa envia.
+- **Pesquisa citações.** Placeholders `[CITE:___]` ficam como placeholders. Se a pessoa forneceu autoridades no intake, são usadas; senão, em branco. Inventar é exposição ético-disciplinar.
+- **Bypassa o gate pré-redação.** Mesmo com `--skip-gate`, a skill anota no arquivo da minuta que o gate foi pulado e por quê.
+- **Reescreve o intake.** Se o intake é fino, volte para `demand-intake`. A minuta é só tão boa quanto o que ela lê.
+- **Decide materialidade.** A heurística oferece default; a chamada do(a) usuário(a) é o registro.

@@ -1,514 +1,594 @@
 ---
 name: cold-start-interview
-description: House cold-start for the litigation plugin — branches by role (in-house, firm associate, solo) and side (plaintiff, defense, both), captures risk calibration, landscape, and house style, and writes the practice profile CLAUDE.md. Use on a fresh install, when the user wants to set up or redo the practice profile, or to re-check available integrations.
+description: Cold-start do plugin de contencioso — bifurca por papel (Defensor Público, departamento jurídico, advogado em sociedade, advogado autônomo) e por posição processual (autor, réu, ambos), captura calibração de risco, panorama e estilo da casa, e escreve o perfil de atuação no CLAUDE.md. Use em instalação fresca, quando o usuário quiser rodar setup ou refazê-lo, ou para re-checar integrações disponíveis.
 argument-hint: "[--redo | --check-integrations]"
 ---
 
 # /cold-start-interview
 
-1. Check `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If already populated and no `--redo`, ask before overwriting.
-2. Follow the workflow and reference below.
-3. Run Part 0 (role, side, integration check). The interview branches by role and side.
-   - **Role** routes the practice profile structure: **in-house** (portfolio of matters, outside counsel oversight, reserve methodology, board/audit reporting), **firm associate** (case work — matter context, case theory and pivot fact, seed brief in house style, eDiscovery/priv-log setup), or **solo** (caseload + contingency or retainer economics + client expectations + SOL tracking, then the case-theory and brief-style sections).
-   - **Side** routes calibration vocabulary: **plaintiff** (asserting, case value, contingency, SOL cliff), **defense** (responding, exposure, reserves where applicable, insurance tender), or **both/varies** (captures a default and lets per-matter skills re-ask).
+1. Cheque `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Se já populado e sem `--redo`, pergunte antes de sobrescrever.
+2. Siga o workflow e a referência abaixo.
+3. Rode a Parte 0 (papel, posição, checagem de integrações). A entrevista bifurca por papel e posição.
+   - **Papel** roteia a estrutura do perfil de atuação: **defensor-público** (portfólio por vara da atribuição, intake do(a) assistido(a), teses repetitivas, escalonamento institucional ao Defensor Público-Geral), **departamento-jurídico** (portfólio de casos, supervisão de escritórios externos, metodologia de provisão CPC 25, reporte a diretoria/conselho), **advogado-em-sociedade** (trabalho de caso — contexto do caso, tese e fato-pivô, peça-semente em estilo da casa, instrução probatória e rol de sigilosos), ou **advogado-autônomo** (carteira pessoal + economia de honorários ad exitum ou retainer + expectativas do(a) cliente + prescrição, depois as seções de tese e estilo de peça).
+   - **Posição** roteia o vocabulário de calibração: **autor** (afirmando, valor da causa, ad exitum, prescrição/decadência), **réu** (respondendo, exposição, provisões quando aplicável, aviso de sinistro), ou **ambos/varia** (captura default e deixa skills por-caso re-perguntar).
 
-   After Part 0, walk the sections that match the selected role. Do not run the in-house path for solo users — reserves, ASC 450, and board-memo framing are not the right frame for a solo practice. Offer defaults; capture freeform overrides. Ask for seed documents at each section (non-pushy; note that sharing sharpens every downstream skill).
-4. Surface gaps. If the user doesn't have an articulated risk framework or reporting threshold, note it and offer to think through it now or leave `[PLACEHOLDER]` to fill later.
-5. Migration: if a populated CLAUDE.md (no `[PLACEHOLDER]` markers) exists at `~/.claude/plugins/cache/claude-for-legal/litigation-legal/*/CLAUDE.md` but not at the config path, copy it to the config path and show the user what was migrated.
-6. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Date the footer.
-7. Confirm with the user before finalizing: "Here's what I captured — anything wrong?"
+   Depois da Parte 0, percorra as seções que casam com o papel selecionado. Não rode o caminho de departamento-jurídico para advogado autônomo — provisões CPC 25 e memo para diretoria não são o frame certo para advocacia individual. Não rode o caminho corporativo para Defensor Público — CPC 25 / CVM / D&O não se aplicam; o equivalente é escalonamento institucional ao DPG. Ofereça defaults; capture overrides livres. Peça documentos-semente em cada seção (sem pressão; note que compartilhar afia toda skill downstream).
+4. Surface lacunas. Se o(a) usuário(a) não tem framework articulado de risco ou limiar de reporte, anote e ofereça pensar agora ou deixar `[PLACEHOLDER]` para preencher depois.
+5. Migração: se houver um CLAUDE.md populado (sem marcadores `[PLACEHOLDER]`) em `~/.claude/plugins/cache/claude-for-legal/litigation-legal/*/CLAUDE.md` mas não no caminho config, copie para o caminho config e mostre ao(à) usuário(a) o que foi migrado.
+6. Escreva `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Date o rodapé.
+7. Confirme com o(a) usuário(a) antes de finalizar: "Aqui está o que capturei — algo errado?"
 
 ## Flags
 
-- `--redo` — re-run the full interview and overwrite `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.
-- `--check-integrations` — re-scan available MCP connectors and refresh the `## Available integrations` table in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` without re-running the full interview. Use after setting up a new connector (DMS, document storage, Gmail, scheduled-tasks, CLM).
+- `--redo` — re-roda a entrevista completa e sobrescreve `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.
+- `--check-integrations` — re-escaneia conectores MCP disponíveis e atualiza a tabela `## Integrações disponíveis` em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` sem rodar a entrevista completa. Use depois de configurar um conector novo (DataJud, tjam-jurisprudencia, JusRatio, Sapiens-DPGU, armazenamento documental, Gmail, agenda).
 
-When probing: only report ✓ if an MCP tool call actually succeeded. Configured-but-untested connectors should be marked ⚪ with a one-line how-to for confirming. Never report ✓ based on `.mcp.json` declarations alone — that misleads users into thinking something is wired up when it isn't.
+Quando sondando: só reporte ✓ se uma tool MCP efetivamente respondeu com sucesso. Conectores configurados-mas-não-testados devem ser marcados ⚪ com uma linha de "como confirmar". Nunca reporte ✓ baseado só em declarações no `.mcp.json` — isso engana usuários para acharem que algo está ligado quando não está.
 
 ---
 
-# Cold-Start Interview: Litigation
+# Entrevista Cold-Start: Contencioso
 
-## Purpose
+## Propósito
 
-Every matter intake, every chronology build, every brief draft, every status rollup reads from this file. If the frame isn't captured, the plugin makes weaker triage calls and the user has to think from scratch each time. This interview fills the frame once so everything downstream gets sharper.
+Todo intake de caso, toda construção de cronologia, toda redação de peça, todo rollup de status lê deste arquivo. Se o frame não está capturado, o plugin faz triagem mais fraca e o(a) usuário(a) tem que pensar do zero a cada vez. Esta entrevista preenche o frame uma vez para que tudo downstream fique mais afiado.
 
-The plugin serves three distinct litigation roles — in-house counsel managing a portfolio of matters, firm associates doing the underlying brief / deposition / discovery work, and solo practitioners running a caseload directly. The vocabulary is different for each, and the interview branches to match. Solo practitioners do not get the in-house path compressed — they get a dedicated solo path (caseload, contingency or retainer economics, client expectations) plus the brief / case-theory sections that apply to anyone who drafts.
+O plugin atende quatro papéis distintos no contencioso — **Defensor(a) Público(a)** atendendo unidade com várias varas, **departamento jurídico interno** gerenciando portfólio de casos, **advogado(a) em sociedade** redigindo peças e fazendo instrução, e **advogado(a) autônomo(a)** rodando carteira. O vocabulário é diferente para cada um, e a entrevista bifurca para casar. Defensores Públicos têm caminho próprio (portfólio por vara, intake do(a) assistido(a), teses repetitivas, escalonamento ao DPG) — não rodar o caminho corporativo neles. Advogados autônomos têm caminho dedicado (carteira pessoal, contratação por ad exitum ou retainer, expectativas do(a) cliente) mais as seções de tese e peça que aplicam a quem redige.
 
-The interview also asks which side the user mostly represents — plaintiff (asserting claims), defense (responding to claims), both, or varies by matter. Risk calibration, demand-letter posture, discovery stance, and chronology framing all differ by side, and the practice profile carries the default so downstream skills don't have to ask every time.
+A entrevista também pergunta qual posição o(a) usuário(a) majoritariamente representa — autor (afirmando pretensão), réu (respondendo), ambos, ou varia por caso. Calibração de risco, postura de notificação extrajudicial, postura na instrução probatória e enquadramento da cronologia diferem por posição, e o perfil carrega o default para skills downstream não re-perguntarem toda vez.
 
-**Tone:** socratic, not checklist. If the user doesn't have a written framework, this is often the thing that forces articulation. Lean into that. Don't rush past gaps — name them, offer to think through, allow "leave for later."
+**Tom:** socrático, não checklist. Se o(a) usuário(a) não tem framework escrito, esta costuma ser a coisa que força a articulação. Aproveite. Não pule lacunas rapidamente — nomeie, ofereça pensar, permita "deixar para depois".
 
-## Cold-start check
+## Checagem cold-start
 
-Read `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
-- **Does not exist** → start the interview.
-- **Contains `<!-- SETUP PAUSED AT: -->`** → greet the user and offer to resume from that section.
-- **Contains `[PLACEHOLDER]` markers but no pause comment** → the template was never completed; offer to start fresh or resume from wherever the placeholders begin.
-- **Populated (no placeholders, no pause comment)** → already configured; skip unless `--redo`.
+Leia `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
+- **Não existe** → comece a entrevista.
+- **Contém `<!-- SETUP PAUSED AT: -->`** → cumprimente e ofereça retomar daquela seção.
+- **Contém marcadores `[PLACEHOLDER]` mas sem comentário de pausa** → o template nunca foi completado; ofereça começar do zero ou retomar de onde os placeholders começam.
+- **Populado (sem placeholders, sem comentário de pausa)** → já configurado; pule salvo `--redo`.
 
-The template structure lives at `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md` — use it as the section scaffold. Write the completed practice profile to the config path, creating parent directories as needed. If a CLAUDE.md exists at the old cache path `~/.claude/plugins/cache/claude-for-legal/litigation-legal/*/CLAUDE.md` but not here, copy it forward.
+A estrutura do template vive em `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md` — use como scaffold de seção. Escreva o perfil completado no caminho config, criando diretórios-pai conforme necessário. Se um CLAUDE.md existe no caminho cache antigo `~/.claude/plugins/cache/claude-for-legal/litigation-legal/*/CLAUDE.md` mas não aqui, copie para frente.
 
-## Check for the shared company profile
+## Checagem do perfil compartilhado da unidade/empresa
 
-Look for `~/.claude/plugins/config/claude-for-legal/company-profile.md`.
+Procure `~/.claude/plugins/config/claude-for-legal/company-profile.md`.
 
-- **If it exists:** Read it. Show a one-line confirmation: "You're [name], [practice setting], at [company], [industry], operating in [jurisdictions]. Right? (Or say 'update' to change the shared profile.)" If confirmed, skip the company questions — go straight to the plugin-specific ones.
-- **If it doesn't exist:** You'll be the first plugin this user set up. After the orientation and fork, ask the company questions and write them to the shared profile (per the template at `references/company-profile-template.md` in the plugin root), then continue with the plugin-specific questions. Tell the user: "I've saved your company profile — the other legal plugins will read it and skip these questions."
+- **Se existe:** Leia. Mostre confirmação em uma linha: "Você é [nome], [tipo de atuação], em [unidade/empresa/escritório], [área/setor], atuando em [jurisdições/varas]. Certo? (Ou diga 'atualizar' para mudar o perfil compartilhado.)" Se confirmado, pule as perguntas de empresa/unidade — vá direto para as específicas do plugin.
+- **Se não existe:** Você será o primeiro plugin que esta pessoa configura. Depois da orientação e bifurcação, faça as perguntas de empresa/unidade e escreva no perfil compartilhado (per template em `references/company-profile-template.md` na raiz do plugin), depois continue com as perguntas específicas. Diga: "Salvei seu perfil — os outros plugins jurídicos vão ler e pular estas perguntas."
 
-The company questions that belong in the shared profile (and should NOT be re-asked if it exists): practice setting, company name, industry, what-you-sell, size, jurisdictions, regulators, risk appetite, escalation names. The plugin-specific questions (playbook positions, review framework, house style, supervision model, etc.) stay per-plugin.
+As perguntas que pertencem ao perfil compartilhado (e NÃO devem ser re-perguntadas se ele existe): tipo de atuação, nome, área principal, o-que-faz, porte, jurisdições, reguladores, apetite ao risco, nomes de escalonamento. As específicas do plugin (posições de playbook, framework de revisão, estilo da casa, modelo de supervisão, etc.) ficam por-plugin.
 
-## Install scope check
+## Checagem de escopo de instalação
 
-Before the orientation, if you notice the working directory is inside a project (not the user's home directory), flag it. Say once:
+Antes da orientação, se notar que o diretório de trabalho é dentro de um projeto (não o home do(a) usuário(a)), sinalize. Diga uma vez:
 
-> **Heads up — it looks like this plugin may be project-scoped, which means I can only read files in [current directory]. If you'll want me to read documents from elsewhere (Downloads, Documents, Dropbox), install user-scoped instead — see QUICKSTART.md. You can continue with project scope, but you'll need to move files into this folder.**
+> **Atenção — parece que este plugin pode estar em escopo de projeto, o que significa que eu só posso ler arquivos em [diretório atual]. Se você quiser que eu leia documentos de outros lugares (Downloads, Documentos, Dropbox), instale em escopo de usuário — vide QUICKSTART.md. Você pode continuar com escopo de projeto, mas vai precisar mover arquivos para esta pasta.**
 
-Ask the user to confirm before proceeding: continue with project scope, or pause to reinstall user-scoped. If the working directory *is* the user's home directory, skip this check silently.
+Peça confirmação antes de prosseguir: continuar com escopo de projeto, ou pausar para reinstalar em escopo de usuário. Se o diretório de trabalho *é* o home do(a) usuário(a), pule esta checagem silenciosamente.
 
-## Before the interview starts
+## Antes de começar a entrevista
 
-Open with the fork-first preamble. Keep it to 3-4 short lines. Ask quick-or-full before anything else.
+Abra com o preâmbulo bifurcação-primeiro. Mantenha em 3-4 linhas curtas. Pergunte rápido-ou-completo antes de tudo.
 
-> **`litigation-legal` is for people who work litigation — managing a portfolio of matters in-house, drafting briefs and doing discovery at a firm, or both as a solo practitioner.** Not your area? `/legal-builder-hub:related-skills-surfacer`.
+> **`litigation-legal` é para quem trabalha com contencioso — Defensor Público atendendo unidade com várias varas, departamento jurídico interno gerenciando portfólio, advogado(a) em sociedade ou autônomo(a) rodando carteira.** Não é sua área? `/legal-builder-hub:related-skills-surfacer`.
 >
-> **2 minutes** gets you your role (in-house / firm-associate / solo), practice setting, side default (plaintiff / defense), and active matter count, plus working defaults for risk calibration, house brief style, and privilege conventions. **15 minutes** adds your real severity × likelihood bands, settlement-authority ladder (in-house) or fee economics (solo), outside-counsel roster, house brief style from a seed brief, privilege-log format, demand-letter templates, and landscape notes.
+> **2 minutos** te dá seu papel (defensor-público / departamento-jurídico / advogado-em-sociedade / autônomo), atuação, posição default (autor / réu) e quantidade de casos ativos, mais defaults razoáveis para calibração de risco, estilo de peça e convenções de sigilo. **15 minutos** adiciona suas bandas reais de severidade × probabilidade, escala institucional de escalonamento (Defensor) ou alçada de transação (DJ) ou economia de honorários (autônomo), bench de DPs colaboradoras/escritórios externos, estilo de peça extraído de peça-semente, formato de rol de sigilosos, templates de notificação extrajudicial/ofício, e notas de panorama.
 >
-> Quick or full? (Upgrade any time with `/cold-start-interview --full`.)
+> Rápido ou completo? (Pode atualizar a qualquer momento com `/cold-start-interview --full`.)
 
-**Quick start path:** ask only Part 0 (role, practice setting, integrations) and the path branch. Write the config with `[DEFAULT]` markers on everything else. Close with: "Done. You can start using the commands now. I've used sensible defaults for risk calibration, house style, and case-theory scaffolding. When a skill's output feels off, that's usually a default you should tune — it'll tell you which. Run `/litigation-legal:cold-start-interview --full` anytime to do the whole interview, or `/litigation-legal:cold-start-interview --redo <section>` to re-do one part."
+**Caminho de quick start:** pergunte só a Parte 0 (papel, atuação, integrações) e a bifurcação. Escreva a config com marcadores `[DEFAULT]` em tudo o resto. Feche com: "Pronto. Você já pode usar os comandos. Usei defaults razoáveis para calibração de risco, estilo da casa e scaffold de tese. Quando o output de uma skill parecer estranho, normalmente é um default que você deveria afinar — ela vai te dizer qual. Rode `/litigation-legal:cold-start-interview --full` a qualquer momento para a entrevista completa, ou `/litigation-legal:cold-start-interview --redo <seção>` para refazer uma parte."
 
-**Full setup path:** the existing interview flow below. After the user picks, give the fuller orientation described next, then proceed to Part 0.
+**Caminho de full setup:** o fluxo abaixo. Depois do(a) usuário(a) escolher, dê a orientação mais completa descrita em seguida, e prossiga para a Parte 0.
 
-## After the user picks quick or full
+## Depois do(a) usuário(a) escolher rápido ou completo
 
-Give the fuller orientation. One paragraph, in your own voice:
+Dê a orientação mais completa. Um parágrafo, na sua voz:
 
-> "This plugin maintains: your practice profile (risk calibration, privilege conventions, house style), a matter ledger (`_log.yaml`), per-matter files (chronology, hold notices, histories, priv logs), and a work-product archive. It supports litigation work whether you're in-house managing a portfolio, a firm associate drafting briefs and depo outlines, or a solo practitioner doing both. It learns which role you're in, your risk calibration or case theory, your dispute landscape or production setup, your house conventions, and writes them into a plain-text file the plugin reads from every time. Everything you answer can be changed later."
+> "Este plugin mantém: seu perfil de atuação (calibração de risco, convenções de sigilo, estilo da casa), um ledger de casos (`_log.yaml`), arquivos por caso (cronologia, comunicações de dever de guarda, históricos, rol de sigilosos), e um arquivo de produto de trabalho. Suporta trabalho de contencioso seja você Defensor(a) Público(a) atendendo unidade com várias varas, departamento jurídico gerenciando portfólio, advogado(a) em sociedade redigindo peças e fazendo instrução, ou autônomo(a) fazendo as duas coisas. Aprende qual papel você está, sua calibração de risco ou tese, seu panorama ou setup de instrução, suas convenções da casa, e escreve em arquivo de texto puro que o plugin lê toda vez. Tudo que você responder pode ser mudado depois."
 
-Then the fresh-profile note:
+Depois, a nota de perfil fresco:
 
-> "Setup builds a fresh professional profile from your answers. It does not read your personal Claude history, other conversations, or your home-directory CLAUDE.md. If I notice relevant information in our conversation context — e.g., you mentioned your company or matter earlier — I'll ask before using it. Nothing personal gets folded into your practice configuration unless you type it or approve it."
+> "O setup constrói um perfil profissional fresco das suas respostas. Não lê seu histórico pessoal do Claude, outras conversas, ou seu CLAUDE.md do home. Se eu notar informação relevante no contexto da nossa conversa — ex.: você mencionou sua unidade/empresa ou caso antes — vou perguntar antes de usar. Nada pessoal entra na sua configuração de atuação a menos que você digite ou aprove."
 
-Then: "Ready? A few quick questions first."
+Depois: "Pronto? Algumas perguntas rápidas primeiro."
 
-**Why this matters** (offer if the user pushes back on the time cost). Every matter intake, every portfolio status, every brief draft reads from the configuration this interview writes. A generic configuration gives generic output — a default risk matrix, a default citation style, a generic priv-log format. Telling the plugin the actual severity bands, the actual settlement authority ladder, the actual brief structure is what makes the difference between "a litigation AI tool" and "a tool that triages and drafts the way you do." Especially load-bearing: the pivot fact (if firm-side) and the seed documents.
+**Por que isso importa** (ofereça se houver resistência ao custo de tempo). Todo intake de caso, todo status de portfólio, toda redação de peça lê da configuração que esta entrevista escreve. Configuração genérica dá output genérico — matriz de risco default, estilo de citação default, formato de rol genérico. Dizer ao plugin as bandas reais de severidade, a escala real de escalonamento, a estrutura real da peça é o que faz a diferença entre "uma ferramenta de IA jurídica" e "uma ferramenta que tria e redige do jeito que você faz". Especialmente load-bearing: o fato-pivô (se em sociedade/autônomo) e os documentos-semente.
 
-Draw the practice profile only from the user's typed answers and documents they upload during the interview. Do not read `~/CLAUDE.md` or pull practice facts from ambient context. If something relevant is already visible in this conversation, ask before using it.
+Construa o perfil de atuação só a partir das respostas digitadas e dos documentos que o(a) usuário(a) subir durante a entrevista. Não leia `~/CLAUDE.md` nem puxe fatos de atuação do contexto ambiente. Se algo relevante já está visível nesta conversa, pergunte antes de usar.
 
-## Interview pacing
+## Cadência da entrevista
 
-- **Assume the answer exists somewhere.** When a question asks for information that's probably written down somewhere — company description, playbook, escalation matrix, style guide, handbook, jurisdiction list, matter portfolio — prompt for a link or a paste before asking the user to type it from memory. "Paste a link or a doc, or give me the short version" is the default ask for anything that's more than a sentence. An interviewer who makes people re-type what they've already written has failed the first job of an interviewer.
+- **Assuma que a resposta existe em algum lugar.** Quando uma pergunta pede informação que provavelmente está escrita em algum lugar — descrição da unidade/empresa, playbook, matriz de escalonamento, guia de estilo, regimento, lista de varas, portfólio de casos — peça um link ou paste antes de pedir para o(a) usuário(a) digitar de memória. "Cole um link ou doc, ou me dê a versão curta" é o pedido default para qualquer coisa que seja mais que uma frase. Um(a) entrevistador(a) que faz a pessoa re-digitar o que ela já escreveu falhou na primeira função de um(a) entrevistador(a).
 
-**Pause for real answers.** Some questions have quick tap-through answers. Others need the user to type something, describe something, or upload an exemplar (board memo, hold template, demand letter, risk memo, case theory memo, seed brief). When a question needs more than a quick tap:
+**Pause para respostas reais.** Algumas perguntas têm respostas tap-through rápidas. Outras precisam que o(a) usuário(a) digite, descreva, ou suba um exemplar (memo de diretoria, template de dever de guarda, notificação extrajudicial, memo de risco, memo de tese, peça-semente). Quando uma pergunta precisa de mais que tap rápido:
 
-- **Batch size — count subparts.** "Never ask more than 2-3 questions in one turn" means 2-3 *answerable prompts*, counting subparts. One question with 5 subparts is 5 questions. The test: can the user answer without scrolling? If the questions don't fit on one screen, it's too many. Prefer structured tap-through questions where possible — they don't require scrolling or typing.
-- **Ask the question and wait.** Say explicitly: "This one needs a typed answer — I'll wait." Do not move to the next question until the user responds. This matters most for the theory section (firm-associate path) — do not paraphrase a half-answer and push on.
-- **For seed-document uploads:** "Paste the contents, share a file path, or say 'skip for now.' If you skip, I'll flag the gap in your practice profile so you can fill it later." Then actually wait.
-- **Before writing the practice profile:** review every captured answer. List any questions that were skipped, answered with placeholders, or produced a contradiction. Say: "Before I write your practice profile, here's what's still open: [list]. Want to fill any of these now, or leave them as placeholders?" Then wait.
-- **Never** write a practice profile with silent gaps. Every `[PLACEHOLDER]` should be a deliberate choice the user made to skip, not a question that scrolled past. The `LIMITED DATA` footer is for seed-document thinness only — not for questions the interview never actually asked.
-- **Pause and resume.** Tell the user up front: "If you need to stop, say 'pause' (or 'stop', or 'let me come back to this') and I'll save your progress. Run `/litigation-legal:cold-start-interview` again later and I'll pick up where you left off." When the user pauses, write a partial configuration with a `<!-- SETUP PAUSED AT: [section name] — run /litigation-legal:cold-start-interview to resume -->` comment at the top and `[PENDING]` markers (distinct from `[PLACEHOLDER]`) on unanswered fields. When setup re-runs and finds a paused config, greet: "Welcome back. You paused at [section]. Your earlier answers are saved. Pick up where we left off, or start over?" Do not re-ask questions already answered.
+- **Tamanho do batch — conte sub-partes.** "Nunca pergunte mais de 2-3 perguntas em um turno" significa 2-3 *prompts respondíveis*, contando sub-partes. Uma pergunta com 5 sub-partes é 5 perguntas. O teste: o(a) usuário(a) consegue responder sem rolar? Se as perguntas não cabem em uma tela, são muitas. Prefira perguntas estruturadas tap-through quando possível.
+- **Faça a pergunta e espere.** Diga explicitamente: "Esta precisa de resposta digitada — vou esperar." Não vá para a próxima até a pessoa responder. Isso importa mais na seção de tese (caminho em sociedade/autônomo) — não parafraseie uma meia-resposta e empurre.
+- **Para uploads de documento-semente:** "Cole o conteúdo, compartilhe um caminho de arquivo, ou diga 'pular por ora.' Se pular, vou sinalizar a lacuna no perfil para você preencher depois." Depois efetivamente espere.
+- **Antes de escrever o perfil:** revise toda resposta capturada. Liste qualquer pergunta pulada, respondida com placeholder, ou que produziu contradição. Diga: "Antes de escrever seu perfil, eis o que ainda está aberto: [lista]. Quer preencher algum agora, ou deixar como placeholder?" Depois espere.
+- **Nunca** escreva perfil com lacunas silenciosas. Todo `[PLACEHOLDER]` deve ser escolha deliberada do(a) usuário(a) de pular, não pergunta que rolou para fora da tela. O rodapé `DADOS LIMITADOS` é só para escassez de documentos-semente — não para perguntas que a entrevista nunca de fato fez.
+- **Pause e retome.** Diga ao(à) usuário(a) de antemão: "Se precisar parar, diga 'pause' (ou 'pare', ou 'deixa pra depois') e eu salvo seu progresso. Rode `/litigation-legal:cold-start-interview` de novo depois e eu pego de onde paramos." Quando pausar, escreva configuração parcial com comentário `<!-- SETUP PAUSED AT: [nome da seção] — rode /litigation-legal:cold-start-interview para retomar -->` no topo e marcadores `[PENDING]` (distintos de `[PLACEHOLDER]`) em campos não respondidos. Quando setup rerodar e achar config pausada, cumprimente: "Bem-vindo(a) de volta. Você pausou em [seção]. Suas respostas anteriores estão salvas. Pegar de onde paramos, ou começar do zero?" Não re-pergunte perguntas já respondidas.
 
-**Verify user-stated legal facts as they come up in setup.** When the user answers an interview question with a specific rule citation, statute number, case name, deadline, threshold, jurisdiction, or registration number — and it's something you can sanity-check — do the check before writing it into the configuration. If what they said conflicts with your understanding or with something they've pasted, surface it: "You said the threshold is X; my understanding is Y — can you confirm which goes in the profile? `[premise flagged — verify]`" A wrong fact written into CLAUDE.md propagates into every future output; catching it here is one of the highest-leverage moments in the product.
+**Verifique fatos jurídicos declarados pelo(a) usuário(a) à medida que aparecem no setup.** Quando responder a pergunta com citação específica de regra, número de dispositivo, nome de caso, prazo, limiar, jurisdição ou número de registro — e for algo que você pode sanity-check — faça a checagem antes de escrever na configuração. Se o que disse conflita com seu entendimento ou com algo que coloou, surface: "Você disse que o prazo é X; meu entendimento é Y — pode confirmar qual vai no perfil? `[premissa marcada — verificar]`" Fato errado escrito no CLAUDE.md propaga em todo output futuro; pegar aqui é um dos momentos de maior alavancagem do produto.
 
-## Part 0: Who's using this + role routing
+## Parte 0: Quem está usando + roteamento de papel
 
-### Who's using this?
+### Quem está usando?
 
-> Who'll be using this plugin day to day? (This feeds the work-product header on every matter briefing, chronology, priv log, and demand draft — lawyer outputs get the privilege header, non-lawyer outputs get the "research notes, review with counsel" header.)
+> Quem vai usar este plugin no dia-a-dia? (Isso alimenta o cabeçalho de sigilo em todo briefing de caso, cronologia, rol de sigilosos e minuta de notificação — outputs de Defensor recebem o cabeçalho LC 80/94 art. 4º XI + Lei 8.906/94 art. 7º XIX; outputs de advogado(a) habilitado(a) recebem o cabeçalho Lei 8.906/94 art. 7º XIX; outputs de não-advogado recebem o cabeçalho "notas de pesquisa, revisar com advogado(a)/Defensor(a)".)
 >
-> 1. **Lawyer or legal professional** — attorney, paralegal, legal ops working under attorney oversight.
-> 2. **Non-lawyer with attorney access** — founder, business lead, contracts manager, HR, procurement; you have an in-house or outside attorney you can consult.
-> 3. **Non-lawyer without regular attorney access** — you're handling this yourself.
+> 1. **Defensor(a) Público(a) (membro de unidade)** — você atua institucionalmente na Defensoria. Volume alto, teses repetitivas, atribuição definida por resolução do CSDPGE local.
+> 2. **Advogado(a) habilitado(a) ou Estagiário(a) de Direito inscrito(a) na OAB** — advocacia privada ou interna, atuando sob direção de quem é habilitado(a).
+> 3. **Não-advogado com acesso a advogado(a)/Defensor(a)** — fundador(a), líder de negócio, manager de contratos, RH, compras; tem acesso a profissional habilitado(a) que pode consultar.
+> 4. **Não-advogado sem acesso regular a profissional habilitado(a)** — você está lidando com isso por conta própria.
 
-If the answer is 2 or 3, say this once (don't repeat it on every output):
+Se a resposta é 3 ou 4, diga isso uma vez (não repita em todo output):
 
-> You can use every feature here — research, review, drafting, tracking. Two things change in how I work:
+> Você pode usar todas as features aqui — pesquisa, revisão, redação, acompanhamento. Duas coisas mudam em como eu trabalho:
 >
-> 1. **I'll frame outputs as research for attorney review, not as verdicts.** Instead of "GREEN — sign it," you'll get "here's what I found and here are the questions to ask before you sign." That's more useful than a green light you can't be sure of.
-> 2. **I'll pause before steps that have legal consequences** — sending a demand, responding to a subpoena, issuing or releasing a legal hold, filing a brief, submitting a privilege log, designating documents in discovery, closing a matter, accepting a settlement. I'll ask whether you've reviewed with an attorney, and I'll put together a short brief so the conversation with them is fast.
+> 1. **Vou enquadrar outputs como pesquisa para revisão por profissional habilitado(a), não como veredictos.** Em vez de "VERDE — assine", você vai receber "eis o que achei e eis as perguntas para fazer antes de assinar". Mais útil que sinal verde do qual você não pode ter certeza.
+> 2. **Vou pausar antes de passos com consequência jurídica** — enviar notificação extrajudicial, responder a ofício, emitir ou liberar dever de guarda, protocolar peça, designar documentos como sigilosos, encerrar caso, aceitar acordo. Pergunto se você revisou com profissional habilitado(a), e monto briefing curto para a conversa ser rápida.
 >
-> This isn't a disclaimer. It's the plugin knowing the difference between what it's good at — research, organization, structure — and licensed legal judgment about your specific situation, which a tool can't give you. A few hours of a lawyer's time at the right moment is usually cheaper than the mistake.
+> Isso não é disclaimer. É o plugin sabendo a diferença entre o que ele faz bem — pesquisa, organização, estrutura — e juízo jurídico habilitado sobre sua situação específica, que ferramenta não dá. Algumas horas de profissional habilitado(a) no momento certo costumam ser mais baratas que o erro.
 
-If the answer is 3, add:
+Se a resposta é 4, adicione:
 
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent). Many offer free or low-cost initial consultations.
+> Se você precisa encontrar profissional habilitado(a) na sua jurisdição: a OAB Seccional do seu estado tem serviço de orientação inicial (Comissão de Assistência Judiciária Gratuita, em geral). Defensoria Pública estadual atende quem comprovar hipossuficiência. NPJ (Núcleo de Prática Jurídica) de faculdade local pode atender em certas áreas. Muitos serviços oferecem consulta inicial gratuita ou de baixo custo.
 
-### Role (the branching question — ask early)
+### Papel (a pergunta de bifurcação — pergunte cedo)
 
-> **How do you work litigation?** (This determines which pillars of the interview run — in-house gets reserves and board memos, firm-associate gets case theory and seed briefs, solo gets caseload economics plus the firm-associate brief work. It also sets defaults for /matter-intake, /portfolio-status, /oc-status, and every other skill's vocabulary.)
+> **Como você trabalha com contencioso?** (Isso determina quais pilares da entrevista rodam — Defensor Público pega portfólio por vara + intake do(a) assistido(a) + teses repetitivas + escalonamento institucional ao DPG; departamento jurídico pega provisão CPC 25 e memo para diretoria; advogado(a) em sociedade pega tese de caso e peça-semente; autônomo(a) pega economia de carteira mais o trabalho de peça em sociedade. Também seta defaults para /matter-intake, /portfolio-status, /oc-status e o vocabulário de toda outra skill.)
 >
-> **(a) In-house managing a portfolio** — matters, outside counsel, deadlines, demands, holds. You own many matters at once, most of which are run by outside firms. Status rollups and board memos are part of your job.
+> **(a) Defensor(a) Público(a) (membro de unidade)** — você atua institucionalmente em vara(s) da sua atribuição. Volume alto, assistidos(as) ao longo da semana, teses repetitivas dominantes (BPC/LOAS, saúde, consumidor, alimentos, posse). Escalonamento institucional ao Defensor Público-Geral em casos específicos.
 >
-> **(b) At a firm doing brief drafting, discovery, deposition prep, document review** — you're the associate or paralegal responsible for actually producing the work product. One or a few matters, deep on each.
+> **(b) Em departamento jurídico interno gerenciando portfólio** — casos, escritórios externos, prazos, notificações, deveres de guarda. Você gerencia muitos casos ao mesmo tempo, a maioria conduzida por escritórios externos. Rollups de status e memos para diretoria fazem parte do seu trabalho.
 >
-> **(c) Solo / small firm running a caseload** — you intake, triage, advise, and draft. No partner above you; no in-house reserve / board-memo layer. Economics are contingency or retainer, not billable hours to a large client.
+> **(c) Em escritório fazendo redação de peças, instrução, preparação de oitiva, revisão documental** — você é o(a) advogado(a) em sociedade ou auxiliar responsável por de fato produzir o produto de trabalho. Um ou poucos casos, profundo em cada.
 >
-> **(d) Something else** — describe in a sentence.
-
-Record the answer in the practice profile's `## Role` section at the top (`in-house | firm-associate | solo | other`). Downstream skills read this to pick defaults (e.g., chronology mode, which commands are primary, which vocabulary to use).
-
-**Branching rules for the rest of this interview:**
-
-- `in-house` → run the **In-house path** (Pillars 1–3 below). Skip the firm-associate and solo sections.
-- `firm-associate` → run the **Firm-associate path** (Parts A–D below). Skip the in-house portfolio / OC / board-memo questions and the solo caseload / economics questions.
-- `solo` → run the dedicated **Solo path** (Sections S1–S3 below) — caseload, client expectations, contingency or retainer economics, office management — **then** run the Firm-associate path (Parts A–D) because solo practitioners still write briefs and work cases. Do NOT run the In-house path — reserves, ASC 450, board memos, and settlement-authority ladders up to a GC are not the right frame for a solo practice.
-- `other` → ask for a one-sentence description, then pick the closest branch.
-
-### Which side do you mostly represent?
-
-Ask this right after the role question. It's load-bearing for risk-calibration framing, demand-letter posture, discovery stance, and the way chronologies are built.
-
-> **Which side do you mostly represent?** (This feeds /demand-draft, /demand-received, /subpoena-triage, /chronology, and /claim-chart — plaintiff framing treats demand letters as assertions and discovery as offensive, defense framing treats them as received and responsive.)
+> **(d) Autônomo(a) / pequeno escritório rodando carteira** — você faz intake, tria, aconselha e redige. Sem sócio acima; sem camada de provisão / memo para diretoria. Economia é ad exitum ou retainer, não horas faturadas para grande cliente.
 >
-> **(a) Plaintiff / claimant** — you bring claims for individuals or businesses. Demand letters are assertions you draft and send. Discovery is offensive. Statute of limitations is a cliff you work against. Economics are often contingency.
+> **(e) Outro** — descreva em uma frase.
+
+Registre a resposta na seção `## Papel na advocacia` do topo do perfil (`defensor-publico | departamento-juridico | advogado-em-sociedade | advogado-autonomo | outro`). Skills downstream leem isto para escolher defaults (ex.: modo de cronologia, quais comandos são primários, qual vocabulário usar).
+
+**Regras de bifurcação para o resto da entrevista:**
+
+- `defensor-publico` → rode o **caminho Defensor Público** (Pilares D1–D4 abaixo). Pule as seções de departamento jurídico (CPC 25, memo para diretoria) e as de autônomo (honorários ad exitum, carteira pessoal).
+- `departamento-juridico` → rode o **caminho Departamento Jurídico** (Pilares 1–3 abaixo). Pule as seções de em-sociedade/autônomo e Defensor.
+- `advogado-em-sociedade` → rode o **caminho Em Sociedade** (Partes A–D abaixo). Pule as seções de DJ, autônomo e Defensor.
+- `advogado-autonomo` → rode o caminho dedicado **Autônomo** (Seções S1–S3 abaixo) — carteira, expectativas do(a) cliente, ad exitum ou retainer, gestão do escritório — **depois** rode o caminho Em Sociedade (Partes A–D) porque autônomos(as) também redigem. NÃO rode o caminho DJ.
+- `outro` → peça descrição em uma frase, depois pegue o caminho mais próximo.
+
+### Qual posição você majoritariamente representa?
+
+Pergunte logo depois da pergunta de papel. Load-bearing para enquadramento de calibração de risco, postura de notificação, postura na instrução e jeito que cronologias são construídas.
+
+> **Qual posição você majoritariamente representa?** (Isso alimenta /demand-draft, /demand-received, /subpoena-triage, /chronology e /claim-chart — enquadramento autor trata notificações como afirmações e instrução como ofensiva; enquadramento réu trata como recebidas e responsivas.)
 >
-> **(b) Defense / respondent** — you defend businesses or individuals against claims. Demand letters are received and triaged. Discovery is defensive. Exposure is assessed, reserved (in-house), tendered to insurance (where applicable).
+> **(a) Autor / Requerente** — você deduz pretensão para pessoas ou empresas. Notificações extrajudiciais e ofícios são afirmações que você redige e envia. Instrução é ofensiva. Prescrição é um penhasco contra o qual você trabalha. Para Defensor: assistido(a) é o(a) autor(a) na grande maioria dos casos.
 >
-> **(c) Both** — your practice regularly includes both. Ask for a default (plaintiff or defense); individual skills will ask per-matter when it matters.
+> **(b) Réu / Requerido** — você defende empresas ou indivíduos contra pretensão. Notificações são recebidas e triadas. Instrução é defensiva. Exposição é avaliada, provisionada (DJ corporativo), comunicada ao seguro (quando aplicável). Para Defensor: defesa em ação de cobrança, em despejo, em embargos à execução, ou em ação penal por escala.
 >
-> **(d) Varies by matter** — no strong default; every matter gets asked.
-
-Record under `## Side` in the practice profile (`plaintiff | defense | both [default plaintiff/defense] | varies`). Branching rules for calibration that follows:
-
-- **Plaintiff:** risk calibration is about case value, contingency economics, client expectations, statute of limitations exposure. Demand letters are the assertion. Discovery is offensive. Settlement-authority conversations are with the client, not a GC/board. (For firm-associate plaintiff-side: partner review replaces GC escalation.)
-- **Defense:** risk calibration is about exposure, reserves (in-house only), settlement authority, insurance coverage. Demand letters are received and triaged. Discovery is defensive — responding, asserting privilege, narrowing.
-- **Both / varies:** the interview captures the default and the skills (`demand-draft`, `subpoena-triage`, `matter-intake`, `chronology`, `claim-chart`) ask per-matter when the side changes the output.
-
-### Practice setting
-
-> Which best describes where you're practicing?
+> **(c) Ambos** — sua prática regularmente inclui as duas. Peça um default (autor ou réu); skills individuais perguntam por caso quando importa.
 >
-> 1. **Solo practitioner**
-> 2. **Small firm (2–10)**
-> 3. **Midsize firm**
-> 4. **Large firm / Am Law**
-> 5. **In-house** (company legal department)
-> 6. **Government**
-> 7. **Legal aid**
-> 8. **Clinic**
-> 9. **Other**
+> **(d) Varia por caso** — sem default forte; toda skill pergunta por caso.
 
-This refines escalation / supervision language in the practice profile:
+Registre em `## Posição processual` no perfil (`autor | réu | ambos [default autor/réu] | varia`). Regras de bifurcação para calibração que segue:
 
-- **Solo / small without hierarchy (1, 2):** Reframe authority-ladder questions as "when do you call in outside counsel or a colleague for a second opinion." Escalation maps to *consult* not *route for approval*.
-- **Midsize / large firm / in-house / government (3, 4, 5, 6):** Ask the full escalation chain, authority ladder, and internal-contacts table.
-- **Legal aid / clinic (7, 8):** Route toward the supervision model — supervising attorney of record, sign-off chain, review-queue mechanics.
-- **Other (9):** Ask for a one-sentence description, then pick the closest branch.
+- **Autor:** calibração de risco é valor da causa, economia de honorários ad exitum (não se aplica a Defensor — sucumbência vai ao Fundo da DP), expectativas do(a) cliente/assistido(a), exposição à prescrição. Notificações são a afirmação. Instrução é ofensiva. Conversas de transação são com o(a) cliente/assistido(a), não com DJ/Conselho (salvo escalonamento institucional do Defensor ao DPG em hipóteses específicas). (Para em-sociedade autor: revisão do sócio substitui escalonamento DJ.)
+- **Réu:** calibração de risco é exposição, provisões (DJ corporativo só), alçada de transação, cobertura de seguros. Notificações são recebidas e triadas. Instrução é defensiva — respondendo, asseverando sigilo, restringindo.
+- **Ambos / varia:** entrevista captura o default e as skills (`demand-draft`, `subpoena-triage`, `matter-intake`, `chronology`, `claim-chart`) perguntam por caso quando a posição muda o output.
 
-**Practices that don't fit the boxes.** If the user's practice doesn't match the options above (international arbitration, public international law, amicus-only, academic consulting, pro bono panel, tribal court, military justice, maritime, or anything else the standard categories assume away), offer: "It sounds like your practice doesn't fit my usual categories. Tell me about it in your own words — what you do, who for, what jurisdictions and forums, what the work looks like — and I'll build your profile from that instead of forcing you into boxes that don't fit. I'll skip or adapt the questions that don't apply." Then build the profile from the free-form description, flagging which template fields were filled, adapted, or left empty because they don't apply. A profile built from a forced fit is worse than a sparse profile built from what's actually true.
+### Atuação
 
-### What's connected?
+> Qual descreve melhor onde você está atuando?
+>
+> 1. **Defensoria Pública estadual ou federal**
+> 2. **Núcleo de Prática Jurídica (NPJ)** (acadêmico, com supervisor[a] habilitado[a])
+> 3. **Solo / pequeno escritório (2–10)**
+> 4. **Médio porte**
+> 5. **Grande banca / escritório consolidado**
+> 6. **In-house** (departamento jurídico de empresa)
+> 7. **Governo / Procuradoria** (estadual, municipal, federal)
+> 8. **Outro**
 
-> This plugin can work with: DMS (iManage), document storage (Google Drive, SharePoint, Box), Gmail, scheduled-tasks, CLM (Ironclad), eDiscovery (Everlaw, Relativity, DISCO, Aurora), legal research (CourtListener, Descrybe, Trellis), outside-counsel recommendations (TopCounsel). Let me check which connectors you have configured — features that need them will work, and features that don't will fall back gracefully instead of failing silently.
+Isso afina linguagem de escalonamento / supervisão no perfil:
 
-**Check what's actually connected, not what's configured.** A connector listed in `.mcp.json` is *available*. A connector that's actually responding is *connected*. These are different, and confusing them destroys trust. For each connector this plugin uses:
+- **Defensoria (1):** vocabulário institucional — assistido(a), atribuição por resolução, DPG, Conselho Superior, Corregedoria-Geral, núcleos especializados, DPs colaboradoras.
+- **NPJ (2):** rote para o plugin `legal-clinic` — este aqui é para a banca/atuação habilitada, não para supervisão didática de estagiário(a). Se o(a) usuário(a) também é Defensor(a)-Supervisor(a) de estágio, configure os dois plugins separadamente.
+- **Solo / pequeno sem hierarquia (3):** reenquadre perguntas de cadeia de autoridade como "quando você convida banca externa ou colega para segunda opinião". Escalonamento mapeia para *consulta* não *roteamento para aprovação*.
+- **Médio / grande banca / in-house / governo (4, 5, 6, 7):** faça a cadeia completa de escalonamento, alçada de autoridade, tabela de contatos internos.
+- **Outro (8):** peça descrição em uma frase, pegue o caminho mais próximo.
 
-- If you can test the connection (call a simple MCP tool like a list or search), report ✓ only on a successful response.
-- If you can't test (no way to probe from here), report ⚪ "configured but not verified — open your MCP settings to confirm" with a one-line how-to.
-- Never report ✓ based on configuration alone.
+**Atuações que não cabem nas caixas.** Se sua atuação não casa (arbitragem internacional, direito público internacional, amicus-only, consultoria acadêmica, advogado(a) dativo(a) só, justiça militar, marítimo, ou qualquer outra coisa que as categorias padrão assumam que não existe), ofereça: "Parece que sua atuação não cabe nas minhas categorias usuais. Me conte na sua voz — o que você faz, para quem, em que jurisdições e foros, como é o trabalho — e eu vou construir seu perfil disso em vez de te forçar em caixas que não casam. Vou pular ou adaptar as perguntas que não se aplicam." Depois construa o perfil da descrição livre, marcando quais campos foram preenchidos, adaptados, ou deixados vazios porque não se aplicam. Perfil construído por encaixe forçado é pior que perfil esparso construído do que é efetivamente verdadeiro.
 
-For connectors that show as not connected, tell the user how to connect. Example phrasing: "Box isn't connected. In Claude Cowork: Settings → Connectors → Add → Box → sign in. In Claude Code: add the Box MCP to your config or via `/mcp`. This plugin works without it — you'll paste documents instead of pulling them — but connecting it makes document pulls automatic."
+### O que está conectado?
 
-Then report findings in this form:
+> Este plugin trabalha com: sistema interno (Sapiens-DPGU para DPU, sistema próprio para DPEs, software de gestão para escritórios), armazenamento documental (Google Drive, SharePoint, Box), Gmail, agenda, MCPs de pesquisa jurídica brasileira (JusRatio proprietário com níveis A-E; e os 4 open-source do consulta-jurisprudencia-mcp — BNP/STF-STJ vinculantes, CJF/STF-STJ-TRFs, TJAM/e-SAJ, DataJud/CNJ 61 tribunais com cascata e-SAJ TJAM). Vou checar quais conectores você tem configurados — features que precisam deles vão funcionar, e features que não, vão cair graciosamente em fallback em vez de falhar silenciosamente.
 
-> - ✓ [Integration] — connected (tested)
-> - ⚪ [Integration] — configured but not verified. Open your MCP settings to confirm.
-> - ✗ [Integration] — not found. [Feature] will fall back to [manual alternative]. [How to connect.]
+**Cheque o que está efetivamente conectado, não o que está configurado.** Conector listado no `.mcp.json` está *disponível*. Conector que está efetivamente respondendo está *conectado*. São coisas diferentes, e confundir destrói confiança. Para cada conector que este plugin usa:
 
-You don't need all of these. Core features work with file access alone.
+- Se você pode testar (chamar uma tool MCP simples como list ou search), reporte ✓ só em resposta bem-sucedida.
+- Se não pode testar (sem jeito de sondar daqui), reporte ⚪ "configurado mas não verificado — abra suas configurações MCP para confirmar" com uma linha de como.
+- Nunca reporte ✓ baseado só em configuração.
 
-Write a `## Role`, `## Who's using this`, and `## Available integrations` section into the plugin config immediately after the opening. Add `## Outputs` with the work-product header rule per the CLAUDE.md template.
+Para conectores que aparecem como não conectados, diga ao(à) usuário(a) como conectar. Frase exemplo: "O DataJud não está conectado. Você precisa: (1) clonar `https://github.com/eamamtd/consulta-jurisprudencia-mcp` localmente, (2) `pip install -r requirements.txt`, (3) obter chave gratuita do DataJud em https://datajud-wiki.cnj.jus.br/api-publica/acesso/, (4) exportar `CONSULTA_JURISPRUDENCIA_MCP_DIR=<path do clone>` e `DATAJUD_API_KEY=<chave>`. Este plugin funciona sem — o acompanhamento processual cai para manual no e-SAJ — mas com, o `docket-watcher` agent puxa as movimentações automaticamente."
+
+Depois reporte achados nesta forma:
+
+> - ✓ [Integração] — conectada (testada)
+> - ⚪ [Integração] — configurada mas não verificada. Abra suas configurações MCP para confirmar.
+> - ✗ [Integração] — não encontrada. [Feature] vai cair em [alternativa manual]. [Como conectar.]
+
+Você não precisa de todas. Features core funcionam só com acesso a arquivo.
+
+Escreva uma seção `## Papel na advocacia`, `## Quem está usando`, e `## Integrações disponíveis` na config do plugin imediatamente depois da abertura. Adicione `## Outputs` com a regra do cabeçalho de sigilo per o template do CLAUDE.md.
 
 ---
 
-## In-house path (role == `in-house`)
+## Caminho Defensor Público (papel == `defensor-publico`)
 
-*Skip this whole section if the user's role is `firm-associate` or `solo`.*
+*Pule esta seção inteira se o papel é `departamento-juridico`, `advogado-em-sociedade` ou `advogado-autonomo`.*
 
-> I want to capture the frame you triage matters against — your risk calibration, the dispute landscape, and how you write. Once, so every matter intake reads from it. I'll offer defaults where there are reasonable ones. You can accept, edit, or leave blank to come back to.
+> Quero capturar o frame contra o qual você tria os casos da unidade — atribuição, varas, teses repetitivas, escalonamento institucional, estilo de peça. Uma vez, para que todo intake de assistido(a) leia daqui. Vou oferecer defaults onde houver razoáveis. Você aceita, edita, ou deixa em branco para voltar depois.
 >
-> I'll also ask for seed documents along the way — prior board memos, reserve memos, litigation hold templates, exemplar demand letters, a sample risk memo. Ten to twenty total across the interview is the target. Anything below ten and I'll flag the practice profile as LIMITED DATA in the footer — skills will still run, but their outputs will be thinner because they're matching on weaker patterns. Templates-first: if you upload an exemplar, I'll read it and only ask about gaps rather than walking the full structure from scratch.
+> Vou pedir documentos-semente ao longo — peças exemplares de petição inicial JEC, contestação, recurso inominado, ofício de DP, formulário social usado no intake do(a) assistido(a). Dez a vinte total ao longo da entrevista é o alvo. Abaixo de dez, vou marcar o perfil como DADOS LIMITADOS no rodapé — skills ainda vão rodar, mas outputs mais finos. Templates-primeiro: se você subir exemplar, eu leio e pergunto só sobre lacunas em vez de andar a estrutura completa.
 
-### Pillar 0 — Company profile
+### Pilar D1 — Perfil da unidade
 
-Team-level context. If another `-legal` plugin already has a `## Company profile` block populated, copy it here rather than re-enter.
+Contexto institucional. Se outro plugin `-legal` já tem bloco `## Perfil da unidade` populado, copie em vez de re-perguntar.
 
-- Org / legal entity
-- Industry
-- Public / private / subsidiary
-- Regulated status
-- Core jurisdictions (operational + frequent-fora)
-- Headcount + legal team size
-- Key internal contacts (GC, CFO, HR lead, Comms, CISO, Board lit/audit chair) — names + when to loop in
-- This counsel's name and reporting line
+- Unidade (ex.: "DPEAM — 4ª DP dos JECs + 17ª e 34ª DPs Cíveis")
+- Resolução de criação / atribuição (ex.: "Resolução 004/2019 DPEAM")
+- Capital / interior (relevante para escala e cobertura)
+- Defensor(a) titular + substituto(a) / suplência
+- Quantidade de Defensores(as) na unidade
+- Estagiários(as) sob supervisão (se houver — sinaliza para também rodar `legal-clinic`)
+- Sistema interno (Sapiens-DPGU / sistema próprio AM / outro)
 
-### Pillar 1 — Risk calibration
+### Pilar D2 — Varas atendidas e atribuição
 
-> Before the structured questions: do you have an existing risk-calibration memo, a reserve-policy document, or an outside-counsel billing-guidelines doc I can read? Paste the contents, share file paths, or say 'no' and I'll walk the pillar question by question. If you share one, I'll extract the severity bands, materiality thresholds, and authority ladder and only ask about gaps.
+> Quais varas você atende, sob qual rito, e qual a cadência típica de audiência?
 
-If not:
+| Vara | Competência (Lei 9.099/95 ou CPC) | Tipo | Cadência típica de audiência |
+|---|---|---|---|
+| (preencher) | (JEC até 40 SM / Cível comum) | (JEC / Cível Comum / Família / Sucessões) | (semanal / quinzenal) |
 
-**Risk appetite (2 min)** — in a sentence, how does this company approach litigation? (This feeds /matter-briefing and /portfolio-status — sets how conservative or aggressive every matter briefing is when calling a matter's risk tier.)
+Para Defensor cível comum (CPC 2015):
+- Audiência de conciliação CPC 334 obrigatória salvo dispensa expressa de ambos
+- Prazos em dias úteis CPC 219 + suspensão CPC 220 (20/12-20/1)
+- Prazo em dobro Defensor CPC 186
 
-**Severity × likelihood (3–5 min)** — offer the default 3×3. Severity bands (dollar and non-dollar triggers). Likelihood bands. If unarticulated: "Fair. A lot of counsel don't. Want to sketch now, or leave the default?"
+Para Defensor JEC (Lei 9.099/95):
+- Audiência de conciliação primeiro, depois instrução e julgamento (se contestar)
+- Prazos em dias corridos (jurisprudência STJ; Lei 9.099 art. 12-A)
+- Valor de alçada 40 SM; ius postulandi até 20 SM (Lei 9.099 art. 9º)
+- Sentença com fundamentação sucinta admitida
 
-**Materiality thresholds (2–3 min)** — reserve trigger, disclosure trigger, board/audit committee, GC-only escalation. *Seed doc opportunity:* reserve memo template or disclosure checklist.
+### Pilar D3 — Calibração de risco humanitária
 
-**Settlement authority (1–2 min)** — dollar ladder, special carve-outs (structural relief requires board regardless of dollar).
+> Diferente do DJ corporativo (provisão CPC 25 / divulgação CVM) e do autônomo (valoração de causa), a calibração de risco do Defensor é majoritariamente humanitária. O frame:
 
-**Plain-English escalation (1 min).** Ask directly:
+**Apetite (1 min)** — qual a postura geral da unidade? Defensa de teses repetitivas até judicialização? Conciliação maximizada para reduzir caseload? Priorização de tutela de urgência?
 
-> When a matter needs something above your authority — a settlement offer above your band, a demand you can't answer alone, a hold decision that needs the GC — who does that go to? Give me a name, a role, or "I decide myself."
+**Bandas de severidade humanitária (3 min):**
+- **Alta:** risco imediato à vida/saúde (negativa de medicamento essencial, leito UTI, internação), despejo iminente de família com criança, violência doméstica em curso, prescrição em 30 dias para tese principal, BPC/LOAS negado a idoso(a) ou pessoa com deficiência sem outra fonte
+- **Média:** risco humanitário relevante mas não imediato (cobrança indevida cíclica, vício de produto durável, alimentos atrasados sem urgência, conflito de guarda sem violência, prescrição em 6 meses)
+- **Baixa:** matéria patrimonial menor sem urgência, divergência negocial recuperável por mediação
 
-(Solo practitioners: "I decide myself" is the right answer; the question still matters for the record. If you loop in outside counsel for second opinions, name the firm.)
+**Escalonamento institucional (2 min)** — pergunte direto:
 
-**Insurance profile (1–2 min)** — lines in force (D&O, EPL, Cyber, GL/E&O), carriers, limits, retentions, tendering protocol.
+> Quando um caso pede algo acima da sua autoridade — tese inédita com impacto coletivo, acordo que renuncia parcela material do direito do(a) assistido(a), Termo de Ajustamento de Conduta (TAC), Ação Civil Pública — para quem vai?
+>
+> - Defensor(a) Coordenador(a) da área?
+> - Defensor(a) Público(a)-Geral (LC 80/94 art. 8º)?
+> - Conselho Superior da Defensoria?
+> - Núcleo Especializado (Saúde, Idoso, Mulher, etc.)?
 
-**Offer:** "If you didn't upload a risk-calibration memo, want me to write your risk calibration and authority ladder up as a standalone memo you can share and maintain?"
+**Vedações institucionais (LC 80/94 art. 46)** — confirme: você não exerce advocacia privada, não recebe honorário por advocacia paralela, não emite parecer remunerado para parte privada, não exerce atividade político-partidária? Marca para confirmar antes de aprovar intake (impedimento por LC 80/94 art. 134).
 
-### Pillar 2 — Landscape
+### Pilar D4 — Estilo da casa Defensoria
 
-*Company profile lives in Pillar 0. Landscape is litigation-specific.*
+> Antes das perguntas estruturadas: você tem manual interno da unidade, template de petição inicial JEC, template de contestação, ofício-modelo da DP, formulário social do intake do(a) assistido(a)? Cole o conteúdo, compartilhe caminhos, ou diga 'não' e eu vou pergunta a pergunta.
 
-- Business context (30 sec) — one-paragraph on what we do and why we get sued.
-- Dispute patterns (2–3 min) — matter types, frequency, posture.
-- Frequent adversaries (1–2 min).
-- Outside counsel bench (2–3 min) — firms, lead partners, matter type, rate posture, engagement letter status. *Seed doc:* outside counsel guidelines. (This feeds /oc-status — the skill later drafts weekly status requests to these firms.)
-- Frequent fora (30 sec).
-- Document storage (2–3 min) — where matter docs live (filesystem, Drive, SharePoint, Box, Gmail, CLM, DMS, eDiscovery), default matter folder pattern, how docs get shared with OC.
-- Conflicts clearance (1–2 min) — how this shop runs conflicts; who does it; hard block on intake or parallel.
+Se não:
 
-### Pillar 3 — House style
+- **Petição inicial JEC** (Lei 9.099/95 simplificada) — formato, tom (objetivo + sucinto), pedidos cumuláveis típicos. *Doc-semente:* petição inicial JEC anonimizada exemplar.
+- **Petição inicial Comum** (CPC 319) — formato, requisitos do art. 319 + pedido de tutela de urgência CPC 300 quando aplicável, gratuidade CPC 98. *Doc-semente:* petição inicial cível comum.
+- **Contestação** — formato, organização (preliminares + mérito), pedido contraposto se cabível. *Doc-semente:* contestação exemplar.
+- **Recurso inominado** (JEC) ou **apelação** (Cível) ou **agravo** — quando usar cada, formato, prazos. *Docs-semente:* uma de cada.
+- **Ofício institucional da DP** — formato, papel timbrado, signatário. *Doc-semente:* ofício para órgão administrativo (concessionária, hospital, secretaria).
+- **Convenções de sigilo** — cabeçalho LC 80/94 art. 4º-A V + Lei 8.906/94 art. 7º XIX. Sigilo do(a) assistido(a) é regra; segredo de justiça CPC 189 quando cabível.
+- **Padrão de citação** — padrão CNJ + ABNT NBR 6023/10520. Citação de jurisprudência: "STJ, REsp [número], Rel. Min. [nome], j. [data], DJe [data]".
 
-> Before the structured questions: do you have a house-style guide, a template board memo, a hold-notice template, or exemplar demand letters I can read? Paste the contents, share file paths, or say 'no' and I'll walk the questions.
-
-If not:
-
-- Board / audit committee memo (2 min) — format, tone, cadence. *Seed doc:* recent board memo (redacted fine).
-- Reserve memo — format and approver. *Seed doc:* sample reserve memo.
-- Outside counsel directives — email format, cadence, budget posture.
-- Privilege conventions — marking; default subjective-call posture (mark and flag); review mechanic (inline / queue / both). (This feeds /privilege-log-review — the skill applies your marking rules and review mechanic on every priv-log pass.)
-- Legal hold — template, issuance protocol, refresh cadence. *Seed doc:* hold template. (This feeds /legal-hold — the skill issues, refreshes, and releases holds using your house template.)
-- Escalation — channel norms, subject-line convention.
-- Demand-letter practice — *not asked here.* Demand posture (tone, time limits, marking, signer) is set per matter, not per practice. `/litigation-legal:demand-intake` and `/litigation-legal:demand-draft` will ask when they need it — those calls depend on the relationship, the amount, and whether litigation is likely, and a practice-level default tends to mis-calibrate the specific letter. What the setup interview *does* want here: insurance-tender timing (who you notify and when, before sending) and materiality threshold for matter creation (below $X, record only; above, create a matter). Those are practice-level.
-
-**Offer:** "If you didn't upload a house-style guide or templates, want me to write your house-style rules up as a standalone style memo?"
+**Oferta:** "Se você não subiu manual da unidade ou templates, quer que eu escreva suas regras de estilo da casa como memo separado para você compartilhar com a equipe / coordenação?"
 
 ---
 
-## Solo path (role == `solo`)
+## Caminho Departamento Jurídico (papel == `departamento-juridico`)
 
-*Skip this whole section if the user's role is `in-house` or `firm-associate`. Solo users run this path **and** the Firm-associate path that follows.*
+*Pule esta seção inteira se o papel é `defensor-publico`, `advogado-em-sociedade` ou `advogado-autonomo`.*
 
-> Solo practice is its own frame — caseload, client expectations, retainer or contingency economics, office management. The in-house world (ASC 450 reserves, board memos, outside-counsel oversight, settlement-authority ladders up to a GC) doesn't apply here, and I'm not going to pretend it does. The firm-world reserves questions don't apply either. What I need from you is the shape of your actual caseload and how you run your practice.
+> Quero capturar o frame contra o qual você tria casos — calibração de risco, panorama do contencioso, e estilo de escrita. Uma vez, para que todo intake leia daqui. Vou oferecer defaults onde houver razoáveis. Você aceita, edita, ou deixa em branco.
 >
-> A few seed documents help — a prior demand letter, a retainer agreement, a client-update email you'd be willing to share as an exemplar. Anything we can learn from saves a round trip later.
+> Vou pedir documentos-semente — memos antigos para diretoria, memos de provisão, templates de dever de guarda, notificações exemplares, memo de risco. Dez a vinte total. Abaixo de dez, sinalizo DADOS LIMITADOS.
 
-### Section S1 — Practice shape and caseload
+### Pilar 0 — Perfil da empresa
 
-- **Caseload size** — roughly how many active matters do you carry at once? What's too many?
-- **Matter mix** — rough percentages: plaintiff vs defense, practice areas (e.g., PI, family, employment, small business disputes, landlord/tenant). No need to be precise; a sentence is enough.
-- **Jurisdictions** — the state(s) and courts you primarily practice in. Include federal if relevant.
-- **Typical case duration** — weeks, months, years? Useful for downstream skills to scale effort and deadline horizons.
-- **Capacity flags** — is there a point where you stop accepting cases? How do you know you're over capacity?
+Se outro plugin `-legal` tem bloco populado, copie.
 
-### Section S2 — Client expectations and economics
+- Pessoa jurídica / razão social
+- Setor de atuação
+- Capital aberto / fechado / subsidiária
+- Status regulatório (CVM / ANS / ANPD / Bacen / RFB / etc.)
+- Jurisdições principais
+- Headcount + tamanho do DJ
+- Contatos-chave (DJ, CFO, RH, Comunicação, CISO, Conselho)
+- Seu nome e linha de reporte
 
-*This replaces what the in-house path calls "risk calibration / reserve methodology / settlement authority ladder." Solos don't run reserves and don't escalate to a GC; the same decisions show up as client-facing economics.*
+### Pilar 1 — Calibração de risco
 
-**Fee structure (the main driver).** Pick the one that fits most of your work:
+> Antes das perguntas estruturadas: você tem memo de calibração de risco existente, política de provisão (CPC 25), ou diretrizes de billing para escritório externo que eu possa ler? Cole conteúdo, compartilhe caminhos, ou diga 'não' e eu vou pilar pergunta a pergunta. Se compartilhar um, eu extraio as bandas, limiares e alçada e pergunto só sobre lacunas.
 
-- **Contingency** (default assumption for plaintiff-side PI, employment, consumer): what's your standard percentage? Pre-suit vs post-suit? What's the cost advance posture — client, firm, hybrid? At what exposure do you stop taking a case on contingency?
-- **Hourly / retainer**: hourly rate, standard retainer, trust-account mechanics.
-- **Flat fee**: which matter types, and the fee range.
-- **Mixed**: describe the mix.
+Se não:
 
-**Client expectations (2 min).** Ask directly:
+**Apetite (2 min)** — em uma frase, como a empresa aborda contencioso? (Alimenta /matter-briefing e /portfolio-status — seta conservadorismo ou agressividade em todo briefing.)
 
-- How often do you update clients on their matters (weekly, monthly, event-based)?
-- What form do updates take — phone call, email, letter, client portal?
-- What's your default posture on settlement conversations with the client (aggressive push to settle, let the client drive, case-dependent)?
+**Severidade × probabilidade (3-5 min)** — ofereça matriz 3×3 default. Bandas de severidade (em R$ e não-monetárias). Bandas de probabilidade. Se não articulado: "Justo. Muitos advogados não têm. Quer esboçar agora, ou deixar o default?"
 
-**Exposure / case-value read (plaintiff-side).** What's your quick mental framework for deciding a case is worth taking? Examples: "liability clear, damages > $50K, statute has a year or more, client credible" — no judgment on the specifics; just capture yours.
+**Limiares de materialidade (2-3 min)** — gatilho de provisão CPC 25, gatilho de divulgação Formulário de Referência CVM (se aplicável), memo para diretoria/conselho, escalonamento só ao DJ. *Doc-semente:* template de memo de provisão.
 
-**Exposure read (defense-side solo — less common but possible).** What's your mental model of acceptable exposure vs reportable to client? Solo defense is usually for individuals or small businesses without an insurance layer — capture how you actually think about it.
+**Alçada de transação (1-2 min)** — escala em R$, exceções estruturais.
 
-**When you call for help.** Solos don't have a GC or a partner above them, but most have someone — co-counsel, a mentor, a local listserv, a bar committee. Who do you call for a second opinion, and on what kinds of matters?
+**Escalonamento em português claro (1 min):**
 
-> Give me a name, a role, or "nobody — I decide on my own."
+> Quando um caso pede algo acima da sua autoridade — acordo acima da banda, notificação que você não pode responder sozinho(a), decisão de dever de guarda que precisa do DJ — para quem vai? Me dê nome, função, ou "eu decido sozinho(a)".
 
-**Client updates in writing (1 min).** *Seed doc opportunity:* a recent client update email or letter (redacted). This is the solo equivalent of an in-house board memo — it's how you communicate status to your stakeholder. If the user shares one, read it and extract the structure and tone for the house-style section.
+**Perfil de seguros (1-2 min)** — linhas em vigor (D&O, RC Profissional, Cyber, RC Geral), seguradoras, limites, franquias, protocolo de aviso de sinistro.
 
-### Section S3 — Office management and landscape
+**Oferta:** "Se não subiu memo de calibração, quer que eu escreva sua calibração e cadeia de autoridade como memo standalone para compartilhar e manter?"
 
-*Skip any question where the answer is obvious from earlier context.*
+### Pilar 2 — Panorama
 
-- **Statute of limitations tracking** — how do you track SOL cutoffs across the caseload? (Calendar, case-management software, a paper docket, memory — whatever's real.) This is the solo equivalent of the in-house "materiality / reserve trigger" because missing a SOL is the failure mode that ends a solo career.
-- **Case management software** — Clio, MyCase, PracticePanther, Smokeball, Rocket Matter, paper files, spreadsheets, other.
-- **Document storage** — Google Drive, Dropbox, OneDrive, local filesystem, the case-management tool's storage. Where do matter documents actually live?
-- **Frequent fora** — courts you actually appear in.
-- **Frequent adverse parties / counsel** — repeat players you regularly see on the other side.
-- **Bench of co-counsel / referral attorneys** — who do you associate in for cases outside your comfort zone? Who refers out to you?
-- **Conflicts clearance** — how do you run conflicts? A solo's version is usually informal (memory + a client list check), which is fine — capture what it is.
+- Contexto de negócio (30s) — parágrafo único sobre o que fazemos e por que somos demandados.
+- Padrões de demanda (2-3 min) — tipos, frequência, posição.
+- Contrapartes frequentes (1-2 min).
+- Bench de escritórios externos (2-3 min) — escritórios, sócios líderes, tipo de matéria, postura de honorários, contrato. *Doc-semente:* diretrizes ao escritório externo. (Alimenta /oc-status — redige status semanal a esses escritórios.)
+- Foros frequentes (30s).
+- Armazenamento documental (2-3 min) — onde vivem docs (filesystem, Drive, SharePoint, Box, Gmail, CLM, eDiscovery), padrão de pasta por caso, como compartilha com escritório externo.
+- Checagem de conflitos (1-2 min) — como vocês rodam; quem; bloqueio duro ou paralelo.
 
-### Solo house style
+### Pilar 3 — Estilo da casa
 
-Skip the board-memo / reserve-memo / outside-counsel-directive questions entirely. Solo house style is:
+> Antes das perguntas estruturadas: você tem guia de estilo da casa, template de memo para diretoria, template de dever de guarda, ou notificações exemplares? Cole / compartilhe / 'não'.
 
-- **Client update** — format, tone, cadence. *Seed doc:* a recent update letter or email.
-- **Retainer / engagement agreement** — template. *Seed doc:* the exemplar (redacted fine).
-- **Privilege conventions** — marking; review mechanic.
-- **Legal hold** — even for a solo, preservation matters when litigation is anticipated. Template, if any. *Seed doc:* hold notice if issued.
-- **Demand-letter practice** — *not asked here.* Demand posture (tone, time limits, marking, signer) is set per matter, not per practice — the solo equivalent of "who signs" answers itself (you), and tone/marking/timing depend on the specific dispute. `/litigation-legal:demand-intake` will ask when it drafts.
+Se não:
+- Memo para diretoria/conselho — formato, tom, cadência. *Doc-semente:* memo recente (anonimizado).
+- Memo de provisão — formato e aprovador. *Doc-semente:* memo exemplar.
+- Diretrizes ao escritório externo — formato de e-mail, cadência, postura orçamentária.
+- Convenções de sigilo — marcação; postura default em chamadas subjetivas (marcar e flag); mecânica de revisão.
+- Dever de guarda — template, protocolo de emissão, cadência de renovação. *Doc-semente:* template.
+- Escalonamento — canal, convenção de assunto.
+- Notificação extrajudicial — *não perguntar aqui.* Postura por caso, não por prática. `/litigation-legal:demand-intake` e `/litigation-legal:demand-draft` perguntam quando precisam. O que cabe aqui: timing de aviso de sinistro ao seguro, e limiar de materialidade para criação de caso.
 
-**Offer:** "If you didn't upload a client-update exemplar or retainer, want me to write your house-style rules up as a standalone memo you can reuse?"
-
-After Section S3, continue to the **Firm-associate path** below. Solo practitioners write briefs, build chronologies, and prep depositions like firm associates do — the case-theory and seed-brief work applies.
+**Oferta:** "Se não subiu guia de estilo, quer que eu escreva suas regras como memo standalone?"
 
 ---
 
-## Firm-associate path (role == `firm-associate` or `solo`)
+## Caminho Autônomo (papel == `advogado-autonomo`)
 
-> Before I touch a document, I need the theory. What's our story? What's theirs? What does the case turn on? Then I need to see how your firm writes — a brief you're proud of — so my drafts don't look like they came from somewhere else.
+*Pule esta seção inteira se o papel é `defensor-publico`, `departamento-juridico` ou `advogado-em-sociedade`. Autônomos(as) rodam este caminho **e** o Em Sociedade que segue.*
 
-### Part A: The matter (2 min)
-
-- Matter name, client, case number, court
-- Our side (plaintiff / defendant)
-- Partner and senior associate (skip if solo / small without hierarchy)
-- Stage (pleadings, discovery, summary judgment, trial prep)
-- Key dates coming up
-
-### Part B: The theory — this is everything (3–4 min)
-
-> Tell me our theory of the case. Not the complaint — the story. If you had to tell a jury why we win in two sentences, what are they?
-
-- Our theory in a paragraph
-- Their theory in a paragraph (know the other side)
-- **The pivot fact** — the fact the case turns on
-- Key facts for us
-- Key facts against us (the ones you're worried about)
-- The legal issue that matters most
-
-### Part C: Seed documents (3–4 min)
-
-> Two things:
+> Advocacia autônoma é seu próprio frame — carteira, expectativas do(a) cliente, economia ad exitum ou contratual, gestão do escritório. O mundo corporativo (CPC 25, memo para diretoria, oversight de escritório externo, alçada até DJ) não se aplica, e eu não vou fingir que sim. As perguntas em-sociedade de provisão também não. O que eu preciso é o formato da sua carteira efetiva e como você roda a prática.
 >
-> 1. **The case theory memo**, if one exists. If the theory lives in someone's head and not on paper, that's fine — we just captured it above.
->
-> 2. **A prior brief in house style.** Not from this case — any case. The best one you've got. I'll learn your citation style, structure, tone, how you organize arguments. (This feeds /brief-section-drafter — every future brief section gets drafted in your extracted citation format, heading structure, and tone, not a generic template.)
+> Alguns documentos-semente ajudam — notificação anterior, contrato de honorários, e-mail de atualização ao(à) cliente. Tudo que conseguirmos aprender poupa volta depois.
 
-**From the brief:** citation format (Bluebook, ALWD, local rules), section structure, heading conventions, tone (aggressive / measured), length norms.
+### Seção S1 — Formato da prática e carteira
 
-### Part D: Document review setup (1–2 min)
+- **Tamanho da carteira** — aproximadamente quantos casos ativos você carrega ao mesmo tempo? O que é demais?
+- **Mix de casos** — percentual aproximado: autor vs. réu, áreas (ex.: trabalhista, família, consumidor, empresarial pequeno porte, locação). Não precisa ser preciso; uma frase.
+- **Jurisdições** — UF e juízos onde você primariamente atua. Inclua federal se relevante.
+- **Duração típica do caso** — semanas, meses, anos? Útil para skills downstream escalarem esforço e horizonte de prazos.
+- **Flags de capacidade** — há um ponto onde você para de aceitar casos? Como você sabe que está acima da capacidade?
 
-> Before the questions: do you have a privilege-log format, a chronology format, or a review-protocol doc I can read? Paste the contents, share file paths, or say 'no' and I'll ask one at a time.
+### Seção S2 — Expectativas do(a) cliente e economia
 
-If not:
-- eDiscovery platform (Everlaw, Relativity, DISCO, Aurora)
-- Review protocol — coding categories, who makes priv calls
-- Privilege log format
-- Key custodians and date range
+*Isso substitui o que o caminho DJ chama de "calibração de risco / metodologia de provisão / alçada de transação". Autônomos(as) não rodam provisão e não escalam para DJ; as mesmas decisões aparecem como economia voltada ao(à) cliente.*
 
-**Offer:** "If you didn't upload a priv-log or chronology format, want me to write your review protocol and priv-log format up as a standalone reference you can share with a review team?"
+**Estrutura de honorários (o principal driver).** Pegue a que casa com a maioria do seu trabalho:
+
+- **Ad exitum / contingenciado** (default em civil para autor — danos, trabalhista, consumidor): qual seu percentual padrão? Pré-suit vs. pós-suit? Postura de custas — cliente, escritório, híbrido? Em qual exposição você para de aceitar caso em ad exitum? Lembrar: Código de Ética OAB art. 38 limita; quota litis pura (>50% do proveito) é vedada.
+- **Hora / retainer**: valor-hora, retainer padrão, mecânica de conta-vinculada (se houver).
+- **Fixo**: tipos de caso, faixa de valor.
+- **Misto**: descreva.
+
+**Expectativas do(a) cliente (2 min).** Pergunte direto:
+
+- Frequência com que atualiza o(a) cliente (semanal, mensal, por evento)?
+- Forma da atualização — telefone, e-mail, carta, portal?
+- Postura default em conversas de transação com o(a) cliente (impulso forte para acordo, deixar cliente liderar, depende do caso)?
+
+**Leitura de valor da causa (autor).** Qual seu framework mental rápido para decidir se um caso vale a pena? Exemplos: "responsabilidade clara, danos > R$ 50K, prescrição com 1 ano ou mais, cliente crível" — sem julgamento sobre as específicas; só capturar a sua.
+
+**Leitura de exposição (réu — menos comum mas possível).** Qual seu modelo mental de exposição aceitável vs. reportável ao(à) cliente?
+
+**Quando você liga pedindo ajuda.** Autônomos(as) não têm DJ ou sócio acima, mas a maioria tem alguém — co-counsel, mentor, listserv local, comissão de OAB. Quem você liga para segunda opinião, e em que tipo de matéria?
+
+> Me dê nome, função, ou "ninguém — decido por conta própria."
+
+**Atualizações ao(à) cliente por escrito (1 min).** *Doc-semente:* e-mail ou carta de atualização recente (anonimizada). Isto é o equivalente autônomo do memo para diretoria — é como você comunica status ao(à) seu(sua) stakeholder.
+
+### Seção S3 — Gestão do escritório e panorama
+
+*Pule qualquer pergunta onde a resposta é óbvia do contexto anterior.*
+
+- **Controle de prescrição** — como você acompanha cortes de prescrição na carteira? (Calendário, software de gestão, agenda em papel, memória — o que for real.) Equivalente autônomo do "materialidade / gatilho de provisão" DJ, porque perder prescrição é o failure mode que encerra carreira.
+- **Software de gestão** — LawDesk, Themis, Projuris, ADVBOX, Astrea, Tikal Tech, arquivo em papel, planilha, outro.
+- **Armazenamento documental** — Google Drive, Dropbox, OneDrive, filesystem local, storage do software de gestão.
+- **Foros frequentes** — juízos onde você efetivamente comparece.
+- **Contrapartes / banca contrária frequentes** — repeat players que você regularmente vê do outro lado.
+- **Bench de co-counsel / banca de referência** — quem você associa para casos fora da sua área? Quem refere para você?
+- **Checagem de conflitos** — como você roda? A versão autônoma costuma ser informal (memória + lista de clientes), tudo bem — capture o que é. Base normativa: EAOAB art. 17 + Código de Ética OAB arts. 19-21.
+
+### Estilo da casa autônomo
+
+Pule as perguntas de memo para diretoria / memo de provisão / diretrizes ao escritório externo. Estilo da casa autônomo é:
+
+- **Atualização ao(à) cliente** — formato, tom, cadência. *Doc-semente:* carta ou e-mail recente.
+- **Contrato de honorários** — template. *Doc-semente:* exemplar (anonimizado).
+- **Convenções de sigilo** — marcação; mecânica de revisão.
+- **Dever de guarda** — mesmo para autônomo, preservação importa quando litigação é antecipada. Template, se houver.
+- **Notificação extrajudicial** — *não perguntar aqui.* Postura por caso.
+
+**Oferta:** "Se não subiu exemplar de atualização ou contrato, quer que eu escreva suas regras de estilo como memo reutilizável?"
+
+Depois da Seção S3, continue para o **Caminho Em Sociedade** abaixo. Autônomos(as) redigem peças, constroem cronologias, e preparam oitivas como em-sociedade.
 
 ---
 
-## Before writing — re-read
+## Caminho Em Sociedade (papel == `advogado-em-sociedade` ou `advogado-autonomo`)
 
-Before committing the plugin config, re-read every captured answer in order. This catches three categories of mistake:
+> Antes de tocar em documento, eu preciso da tese. Qual nossa história? Qual a deles? Em que o caso pivota? Depois eu preciso ver como seu escritório escreve — uma peça que você está orgulhoso — para minhas minutas não parecerem que vieram de outro lugar.
 
-1. **Contradictions between answers** — e.g., user said "fight everything" in risk appetite and "settle quickly" in demand-letter default. Surface both, ask which governs.
-2. **Drifted specifics** — names, dates, thresholds that changed between sections. Confirm the final value.
-3. **Skipped gaps worth naming** — sections left blank that the user might want to complete now rather than via `--redo`.
+### Parte A: O caso (2 min)
 
-Also: if the role is `firm-associate`, double-check that the pivot fact and the seed brief were captured. These are load-bearing. If either is missing, name it explicitly before writing.
+- Nome do caso, cliente, número CNJ, juízo
+- Nossa posição (autor / réu)
+- Sócio(a) e advogado(a) sênior (pule se autônomo / pequeno sem hierarquia)
+- Fase (postulatória, instrução, fase decisória, recurso)
+- Datas-chave próximas
 
-## Writing the practice profile
+### Parte B: A tese — isso é tudo (3-4 min)
 
-Write the completed practice profile to the plugin config, using the template at `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md` as the section scaffold. Fill every section captured; leave `[PLACEHOLDER]` for sections the user skipped. Date the footer.
+> Me conte a tese do caso. Não a petição — a história. Se você tivesse que contar a um(a) juiz(a) em duas frases por que ganhamos, quais são?
 
-**Section gating by role:**
+- Nossa tese em um parágrafo
+- A tese deles em um parágrafo (saber o outro lado)
+- **O fato-pivô** — o fato no qual o caso pivota
+- Fatos-chave a favor de nós
+- Fatos-chave contra nós (os que te preocupam)
+- A questão jurídica que mais importa
 
-- `in-house` → full in-house structure (Company profile, Risk calibration with ASC 450 / reserve / board-memo rows, Outside counsel bench, Board/audit committee memo). Omit or mark N/A for solo-only sections (fee structure, retainer, contingency).
-- `firm-associate` → firm-world structure (case theory, pivot fact, partner review, seed brief). Omit reserve / board-memo / ASC 450 sections; omit solo fee / retainer sections.
-- `solo` → solo structure (caseload, fee structure, client expectations, SOL tracking, retainer or contingency, office management) **plus** the firm-associate sections (case theory, seed brief). Omit in-house reserve / ASC 450 / board-memo / settlement-authority-ladder-to-GC sections entirely — they are not the right frame for a solo practice and including them as placeholders adds noise rather than structure.
+### Parte C: Documentos-semente (3-4 min)
 
-Where a template section carries in-house-only vocabulary ("ASC 450 reserves", "board / audit committee memo"), either omit the section for non-in-house roles or translate the vocabulary into the equivalent solo or firm-associate concept. Solo equivalent of "board memo" is "client update letter." Solo equivalent of "reserve methodology" is "case-value read" (plaintiff) or "exposure read" (defense). Do not carry the accounting-standard language into a solo profile.
-
-**LIMITED DATA flag:** if fewer than 10 seed documents were shared across the interview, add a `> LIMITED DATA` note at the top (under the written-on date): "This practice profile was written from [N] seed documents and interview answers. Downstream skills will operate but outputs will be thinner until more exemplars are added. Re-run `/cold-start-interview --redo` after collecting more templates to sharpen calibration."
-
-## Gap surfacing
-
-After the interview, before writing, summarize and **wait for an answer**:
-
-> Here's what I captured. Gaps I noticed:
-> - [list any skipped sections, placeholders left blank, questions where the user said "come back later"]
+> Duas coisas:
 >
-> Want to fill any of these now, or leave them as placeholders? You can also fill them later via `/litigation-legal:cold-start-interview --redo` or by editing the plugin config directly. This one is worth thinking about before I write: [name the most important gap and why].
-
-Do not proceed to writing until the user answers.
-
-## After writing
-
-**Show what this plugin can do.** Before closing, offer:
-
-> **Want to see what I can help with?**
-
-If yes, show this tailored list (not a generic template — these are the concrete things this plugin does best):
-
-> **Here's what I'm good at in litigation practice:**
+> 1. **O memo de tese**, se existir. Se a tese vive na cabeça de alguém e não no papel, tudo bem — acabamos de capturar acima.
 >
-> - **Intake a new matter** — e.g., "Uniform intake questions, writes matter.md + history.md, appends to the portfolio log." Try: `/litigation-legal:matter-intake`
-> - **Triage an inbound demand** — e.g., "Options analysis, portfolio cross-check, handoff to matter intake if it graduates." Try: `/litigation-legal:demand-received`
-> - **Draft a demand letter** — e.g., "Privilege / FRE 408 gate, .docx output, post-send checklist, matter-creation offer." Try: `/litigation-legal:demand-draft`
-> - **Build a deposition outline** — e.g., "Docs + topics + impeachment + exhibits, tied to case theory." Try: `/litigation-legal:deposition-prep`
-> - **Issue or refresh a legal hold** — e.g., "Draft the hold memo, update the log, schedule a refresh." Try: `/litigation-legal:legal-hold`
-> - **Portfolio rollup** — e.g., "Risk distribution, upcoming deadlines, stale matters across the active portfolio." Try: `/litigation-legal:portfolio-status`
+> 2. **Uma peça anterior em estilo da casa.** Não deste caso — qualquer caso. A melhor que você tem. Eu vou aprender seu padrão de citação, estrutura, tom, organização de argumentos. (Alimenta /brief-section-drafter — toda seção futura é redigida no seu padrão de citação extraído, estrutura de cabeçalho e tom, não em template genérico.)
+
+**Da peça:** padrão de citação (padrão CNJ + ABNT NBR 6023/10520, ou misto por tipo de peça), estrutura de seções, convenções de cabeçalho, tom (incisivo / mensurado), normas de extensão.
+
+### Parte D: Setup de instrução probatória (1-2 min)
+
+> Antes das perguntas: você tem formato de rol de sigilosos, formato de cronologia, ou doc de protocolo de revisão? Cole / compartilhe / 'não'.
+
+Se não:
+- Plataforma de gestão documental (LegalDesk, Themis, Projuris, Astrea, ADVBOX, Tikal Tech)
+- Protocolo de revisão — categorias de codificação, quem decide sigilo
+- Formato de rol de sigilosos
+- Custodiantes-chave e faixa de datas
+
+**Oferta:** "Se não subiu formato de rol ou cronologia, quer que eu escreva seu protocolo de revisão e formato como referência standalone para compartilhar com equipe?"
+
+---
+
+## Antes de escrever — re-leia
+
+Antes de comitar a config do plugin, re-leia toda resposta capturada em ordem. Pega três categorias de erro:
+
+1. **Contradições entre respostas** — ex.: usuário(a) disse "litiga tudo" em apetite e "transaciona rápido" em default de notificação. Surface ambas, peça qual governa.
+2. **Específicos que derivaram** — nomes, datas, limiares que mudaram entre seções. Confirme o valor final.
+3. **Lacunas puladas que merecem ser nomeadas** — seções deixadas em branco que o(a) usuário(a) talvez queira completar agora em vez de via `--redo`.
+
+Também: se o papel é `advogado-em-sociedade`, confira se o fato-pivô e a peça-semente foram capturados. Eles são load-bearing. Se algum está ausente, nomeie explicitamente antes de escrever.
+
+## Escrevendo o perfil de atuação
+
+Escreva o perfil completado na config do plugin, usando o template em `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md` como scaffold de seção. Preencha toda seção capturada; deixe `[PLACEHOLDER]` para seções puladas. Date o rodapé.
+
+**Gating de seção por papel:**
+
+- `defensor-publico` → estrutura Defensor (Perfil da unidade D1, Varas atendidas D2, Calibração humanitária D3, Estilo da casa D4 com peças JEC/Comum/recurso/ofício). Omita seções de CPC 25 / CVM / D&O.
+- `departamento-juridico` → estrutura DJ corporativa completa (Perfil da empresa, Calibração de risco com CPC 25 / provisão / memo para diretoria, Bench de escritórios externos). Omita ou marque N/A seções autônomo-only.
+- `advogado-em-sociedade` → estrutura em-sociedade (tese de caso, fato-pivô, revisão por sócio, peça-semente). Omita seções de provisão / memo para diretoria / CPC 25; omita seções autônomo.
+- `advogado-autonomo` → estrutura autônomo (carteira, estrutura de honorários, expectativas do(a) cliente, prescrição, retainer ou ad exitum, gestão do escritório) **mais** as seções em-sociedade (tese, peça-semente). Omita seções DJ / CPC 25 / memo para diretoria / alçada-até-DJ — não são frame certo, e incluir como placeholder adiciona ruído.
+
+Onde uma seção do template carrega vocabulário DJ-only ("provisões CPC 25", "memo para diretoria / conselho"), ou omita a seção para papéis não-DJ ou traduza o vocabulário no equivalente autônomo ou em-sociedade. Equivalente autônomo de "memo para diretoria" é "carta de atualização ao(à) cliente". Equivalente autônomo de "metodologia de provisão" é "leitura de valor da causa" (autor) ou "leitura de exposição" (réu). Para Defensor, "memo para diretoria" não tem equivalente direto — é comunicação ao Defensor Público-Geral em casos específicos da LC 80/94 art. 8º. Não carregue linguagem de norma contábil em perfil autônomo ou Defensor.
+
+**Flag DADOS LIMITADOS:** se menos de 10 documentos-semente foram compartilhados, adicione nota `> DADOS LIMITADOS` no topo (sob a data): "Este perfil de atuação foi escrito de [N] documentos-semente e respostas da entrevista. Skills downstream vão rodar mas outputs serão mais finos até que mais exemplares sejam adicionados. Re-rode `/cold-start-interview --redo` depois de coletar mais templates para afiar calibração."
+
+## Surface de lacunas
+
+Depois da entrevista, antes de escrever, sumarize e **espere uma resposta**:
+
+> Aqui está o que capturei. Lacunas que notei:
+> - [lista de seções puladas, placeholders deixados, perguntas onde a pessoa disse "deixa pra depois"]
 >
-> **My suggestion for your first one:** Run `/portfolio-status` — it shows you at a glance where the portfolio sits, and it's zero-input to try. Or tell me what's on your plate and I'll pick.
+> Quer preencher alguma agora, ou deixar como placeholder? Você também pode preencher depois via `/litigation-legal:cold-start-interview --redo` ou editando direto a config do plugin. Esta vale a pena pensar antes de eu escrever: [nomeie a lacuna mais importante e o porquê].
 
-This solves the cold-start problem (the supervisor doesn't know what to do first) and the value-prop problem (they don't know what the plugin can do) in one offer. Make the list specific. Skip this step if the supervisor already named a concrete first task during the interview.
+Não prossiga para escrever até a pessoa responder.
 
+## Depois de escrever
 
-- If `in-house`: "The in-house practice profile is now written. Every matter intake will read from it. Want to run `/litigation-legal:matter-intake` on your most live matter to see it in action?"
-- If `firm-associate`: "Here's the theory as I captured it. Read the pivot fact — did I get it right? What's the next deadline? Let's start there."
-- If `solo`: "Your solo practice profile is written — caseload shape, fee economics, how you run the office — plus the case-theory and brief-style work for a live matter. Want to run `/litigation-legal:matter-intake` on your most live matter and see what the intake looks like with your configuration?"
+**Mostre o que este plugin pode fazer.** Antes de fechar, ofereça:
 
-### Close with the "you can change anything later" note
+> **Quer ver com o que eu posso ajudar?**
 
-> "Your practice profile is at `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — a plain text file you can read and edit directly. Anything you answered can be changed:
+Se sim, mostre esta lista calibrada (não template genérico — são as coisas concretas que este plugin faz melhor):
+
+> **No que eu sou bom em prática de contencioso:**
 >
-> - Edit the file directly for a quick change
-> - Run `/litigation-legal:cold-start-interview --redo` for a full re-interview
-> - Run `/litigation-legal:cold-start-interview --new-matter` to reuse the practice profile on a new matter (firm-associate / solo)
-> - Run `/litigation-legal:cold-start-interview --check-integrations` to re-check what's connected
+> - **Fazer intake de um caso novo** — ex.: "Perguntas uniformes de intake, escreve matter.md + history.md, anexa no log do portfólio. Para Defensor: formulário social do(a) assistido(a), hipossuficiência presumida (Súmula 481 STJ), urgência humanitária." Try: `/litigation-legal:matter-intake`
+> - **Triar notificação recebida** — ex.: "Análise de opções, cross-check com portfólio, handoff para criação de caso se graduar." Try: `/litigation-legal:demand-received`
+> - **Redigir notificação extrajudicial / ofício** — ex.: "Gate de confidencialidade negocial (Lei 13.140/15 art. 30), gera .docx, checklist pós-envio, oferta de criação de caso. Para Defensor: ofício institucional ou notificação extrajudicial com timbre da DP." Try: `/litigation-legal:demand-draft`
+> - **Construir roteiro de oitiva (AIJ)** — ex.: "Docs + tópicos + impugnação + exibições, amarrado à tese." Try: `/litigation-legal:deposition-prep`
+> - **Emitir ou renovar dever de guarda** — ex.: "Redigir memo de dever de guarda, atualizar o log, agendar renovação." Try: `/litigation-legal:legal-hold`
+> - **Rollup de portfólio** — ex.: "Distribuição de risco, prazos próximos (CPC 219 dias úteis), casos parados, audiências agendadas no portfólio ativo. Para Defensor: por vara da atribuição." Try: `/litigation-legal:portfolio-status`
 >
-> The sections people adjust most: for in-house, the **severity × likelihood thresholds** and the **outside counsel bench**; for firm associate, the **case theory** (especially the pivot fact) and the **house brief style** extracted from the seed brief; for solo, the **fee structure** (contingency percentage or hourly rate) and the **side default** (plaintiff / defense) — a wrong default there skews every demand-letter and chronology output. When an output feels off, the fix is usually here."
+> **Minha sugestão para sua primeira:** Rode `/portfolio-status` — mostra rapidamente onde o portfólio está, e custa zero input. Ou me diga o que está na sua mesa e eu escolho.
 
-### Before your first matter
+Isso resolve o problema cold-start (a pessoa não sabe o que fazer primeiro) e o problema de proposta-de-valor (não sabe o que o plugin pode fazer) em uma oferta. Faça a lista específica. Pule este passo se a pessoa já nomeou tarefa concreta durante a entrevista.
 
-**Connect a research tool.** Without one, I'll flag every citation as unverified — with one, I verify them against a current database. In Cowork: Settings → Connectors. In Claude Code: authorize when a skill prompts you.
 
-<!-- COLLATERAL LINKS: when onboarding collateral exists, add here:
-     "Want a walkthrough? [Watch the 3-minute intro](URL) or [read the getting-started guide](URL)." -->
+- Se `defensor-publico`: "O perfil Defensor está escrito — atribuição, varas, calibração humanitária, escalonamento institucional. Todo intake do(a) assistido(a) vai ler daqui. Quer rodar `/litigation-legal:matter-intake` no(a) primeiro(a) assistido(a) que aparecer na escala para ver?"
+- Se `departamento-juridico`: "O perfil DJ corporativo está escrito. Todo intake vai ler daqui. Quer rodar `/litigation-legal:matter-intake` em seu caso mais ativo para ver em ação?"
+- Se `advogado-em-sociedade`: "Aqui está a tese como eu capturei. Leia o fato-pivô — peguei certo? Qual o próximo prazo? Vamos começar daí."
+- Se `advogado-autonomo`: "Seu perfil autônomo está escrito — formato da carteira, economia de honorários, como você roda o escritório — mais o trabalho de tese e estilo para um caso ativo. Quer rodar `/litigation-legal:matter-intake` no seu caso mais ativo?"
 
-### Your practice profile learns
+### Feche com nota "você pode mudar tudo depois"
 
-After writing the practice profile, close with this note:
-
-> **Your practice profile learns.** It gets better as you use the plugins:
+> "Seu perfil de atuação está em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — arquivo de texto puro que você lê e edita diretamente. Tudo que você respondeu pode ser mudado:
 >
-> - When a skill's output feels off, that's usually a position to tune. The output will tell you which one.
-> - You can always say "update my playbook to prefer X" or "change my escalation threshold to Y" and the relevant skill will write the change.
-> - Run `/cold-start-interview --redo <section>` to re-interview one part, or edit the config file directly.
+> - Edite o arquivo diretamente para mudança rápida
+> - Rode `/litigation-legal:cold-start-interview --redo` para re-entrevista completa
+> - Rode `/litigation-legal:cold-start-interview --new-matter` para reusar o perfil em um caso novo (em-sociedade / autônomo)
+> - Rode `/litigation-legal:cold-start-interview --check-integrations` para re-checar o que está conectado
 >
-> Ten minutes of setup gets you a working profile. A month of use gets you one that reads like you wrote it yourself.
+> As seções que pessoas mais ajustam: para Defensor, as **bandas de severidade humanitária** e os **núcleos especializados de referência**; para DJ, os **limiares de severidade × probabilidade** e o **bench de escritórios externos**; para em-sociedade, a **tese do caso** (especialmente o fato-pivô) e o **estilo de peça da casa** extraído da peça-semente; para autônomo, a **estrutura de honorários** (percentual ad exitum ou valor-hora) e a **posição default** (autor / réu) — default errado aí enviesa todo output de notificação e cronologia. Quando output parece estranho, a correção costuma estar aqui."
 
-## What this skill does not do
+### Antes do seu primeiro caso
 
-- Decide the framework for the user. Defaults are starting points; the user's judgment is the actual content.
-- Pretend gaps aren't there. Better to leave `[PLACEHOLDER]` honestly than to invent a threshold.
-- Fight the user. If they say "I don't have that yet," note it and move on.
-- Read personal `~/CLAUDE.md` or other ambient context without asking.
+**Conecte um MCP de pesquisa.** Sem um, eu vou marcar toda citação como não verificada — com um, eu verifico contra base atual. Para Defensor / BR: rode `pip install -r requirements.txt` no clone do `consulta-jurisprudencia-mcp` e exporte as env vars; JusRatio (proprietary) também ajuda com níveis A-E de autoridade.
+
+<!-- COLLATERAL LINKS: quando colateral de onboarding existir, adicione:
+     "Quer um walkthrough? [Assista ao intro de 3 minutos](URL) ou [leia o getting-started guide](URL)." -->
+
+### Seu perfil aprende
+
+Depois de escrever o perfil, feche com esta nota:
+
+> **Seu perfil de atuação aprende.** Melhora à medida que você usa os plugins:
+>
+> - Quando o output de uma skill parecer estranho, normalmente é posição a afinar. O output vai te dizer qual.
+> - Você sempre pode dizer "atualize meu playbook para preferir X" ou "mude meu limiar de escalonamento para Y" e a skill relevante escreve a mudança.
+> - Rode `/cold-start-interview --redo <seção>` para re-entrevista de uma parte, ou edite a config diretamente.
+>
+> Dez minutos de setup te dá perfil funcional. Um mês de uso te dá um que lê como se você tivesse escrito você mesmo(a).
+
+## O que esta skill NÃO faz
+
+- Decidir o framework pelo(a) usuário(a). Defaults são pontos de partida; o juízo da pessoa é o conteúdo efetivo.
+- Fingir que lacunas não estão lá. Melhor deixar `[PLACEHOLDER]` honesto que inventar limiar.
+- Brigar com o(a) usuário(a). Se diz "ainda não tenho isso", anote e siga.
+- Ler `~/CLAUDE.md` pessoal ou contexto ambiente sem perguntar.

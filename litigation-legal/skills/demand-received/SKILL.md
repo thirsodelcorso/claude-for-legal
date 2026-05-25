@@ -1,235 +1,235 @@
 ---
 name: demand-received
-description: Triage an inbound demand letter — extract fields, cross-check the portfolio, assess merit, present response options with a recommendation, and hand off to matter-intake or demand-intake if escalation is warranted. Use when the user says "we got a demand letter", "triage this demand", or shares an incoming demand to evaluate.
+description: Triagem de notificação extrajudicial recebida — extrai campos, cross-check com portfólio, avalia mérito, apresenta opções de resposta com recomendação, e handoff para matter-intake ou demand-intake se escalonamento se justifica. Use quando o usuário diz "recebemos notificação", "triagem desta notificação", ou compartilha notificação recebida para avaliar.
 argument-hint: "[path-to-incoming] [--slug=custom-slug]"
 ---
 
 # /demand-received
 
-1. Read the incoming document from provided path.
-2. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for portfolio cross-check.
-3. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → risk calibration, landscape, demand-letter practice.
-4. Follow the workflow and reference below.
-5. Extract fields; cross-check portfolio; assess merit; present options with recommendation.
-6. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/triage.md`. Copy or link incoming to `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/incoming.[ext]`.
-7. Hand off per user choice:
-   - Create matter → `matter-intake` pre-populated
-   - Respond with counter-demand → `demand-intake` pre-populated
-   - Link to existing matter → update `related_matters` in log
-   - Standalone → no further action
+1. Leia o documento recebido do path fornecido.
+2. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` para cross-check de portfólio.
+3. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → calibração de risco, panorama, prática de notificação.
+4. Siga o workflow e a referência abaixo.
+5. Extraia campos; cross-check portfólio; avalie mérito; apresente opções com recomendação.
+6. Grave `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/triage.md`. Copie ou linke o recebido para `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/incoming.[ext]`.
+7. Handoff per escolha do usuário:
+   - Criar caso → `matter-intake` pré-populado
+   - Responder com contranotificação → `demand-intake` pré-populado
+   - Linkar a caso existente → atualize `related_matters` no log
+   - Standalone → sem ação adicional
 
 ---
 
-# Demand Received
+# Notificação Recebida
 
-## Purpose
+## Propósito
 
-Inbound demand letters are the bread and butter of an in-house litigation practice. A small fraction need escalation; most can be handled with a structured response or a holding letter. The failure mode is treating them all alike. This skill triages, cross-checks the portfolio, and produces options.
+Notificações extrajudiciais recebidas são o feijão-com-arroz de contencioso. Uma pequena fração precisa escalonamento; a maioria pode ser tratada com resposta estruturada ou notificação de retenção. O failure mode é tratar todas igual. Esta skill triagia, faz cross-check com portfólio, e produz opções.
 
-## Load context
+## Carregar contexto
 
-- The incoming document (user provides path or drops it in-session)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — scan for related matters (same counterparty, overlapping counterparties via entity relationships, or matter type + recent date)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → risk calibration (for merit assessment), landscape (is the sender a frequent adversary?), demand-letter practice (house tone and response defaults)
+- O documento recebido (usuário fornece path ou dropa in-session)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — escaneie casos relacionados (mesma contraparte, contrapartes sobrepostas via relações entitárias, ou tipo de caso + data recente)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → calibração de risco (para avaliação de mérito), panorama (o remetente é adversário frequente?), prática de notificação (tom da casa e defaults de resposta)
 
-## Workflow
+## Fluxo de trabalho
 
-### Step 1: Read the demand
+### Passo 1: Leia a notificação
 
-Extract from the incoming:
+Extraia do recebido:
 
-- **Sender** — entity, signer, counsel (if signed by outside firm)
-- **Recipient** — which entity/person at our company
-- **Delivery** — certified, email, courier (matters for deadline calculation)
-- **Date received** vs. **date signed**
-- **Demand type** — payment, breach/cure, C&D, preservation, settlement, other
-- **Specific asks** — what they want, by when
-- **Facts alleged** — their version of what happened
-- **Legal basis** — statutes, contract provisions, theories they cite
-- **Threats** — what they say they'll do if we don't comply
-- **Settlement-communication framing** — research the settlement-communication protections applicable in the forum (FRE 408 in federal, the state equivalent otherwise). Note whether the demand is marked as a settlement communication, but remember: protection attaches from conduct and context, not merely from labeling. Capture both the label (if any) and a first-pass read of whether the substance is in fact a compromise discussion.
+- **Remetente** — entidade, signatário, advogado(a) (se assinada por escritório externo) / DP (se assinada por Defensor(a))
+- **Destinatário** — qual entidade/pessoa na nossa parte
+- **Entrega** — cartorial, e-mail, AR (importa para cálculo de prazo)
+- **Data de recebimento** vs. **data de assinatura**
+- **Tipo de notificação** — pagamento, mora/purgação, cessação, preservação, acordo, outro
+- **Pedidos específicos** — o que querem, até quando
+- **Fatos alegados** — versão deles do que aconteceu
+- **Base jurídica** — leis, cláusulas, teses que citam
+- **Ameaças** — o que dizem que farão se não cumprirmos
+- **Framing de comunicação negocial** — pesquise as proteções de comunicação negocial aplicáveis ao foro (Lei 13.140/2015 art. 30 — confidencialidade em mediação; CPC art. 166 §3º). Note se a notificação está marcada como comunicação negocial, mas lembre: proteção decorre da conduta e contexto, não meramente do rótulo. Capture tanto o rótulo (se houver) quanto leitura de primeira passagem se a substância é de fato discussão de composição.
 
-### Step 2: Portfolio cross-check
+### Passo 2: Cross-check de portfólio
 
-Search `_log.yaml` for:
+Busque `_log.yaml` por:
 
-- **Direct match** — matter with same counterparty (their slug matches the sender)
-- **Type match** — similar matter type with this counterparty in the past (closed matters count — they inform pattern)
-- **Subject overlap** — matters where the subject might be the same dispute (e.g., same contract, same product, same project)
+- **Match direto** — caso com mesma contraparte (slug bate com remetente)
+- **Match por tipo** — caso similar com esta contraparte no passado (casos fechados contam — informam padrão)
+- **Sobreposição de objeto** — casos onde o objeto pode ser a mesma disputa (ex.: mesmo contrato, mesmo produto, mesmo projeto)
 
-Present findings:
+Apresente achados:
 
-- If **direct match + active:** flag as almost certainly the same matter; recommend adding incoming to the existing matter, not opening a new one. Update `related_matters` if it's a tangent.
-- If **direct match + closed:** flag — counterparty is back. May be a new dispute (open new matter) or a resurrected one (reopen or amend). User decides.
-- If **type match:** note as precedent/context; probably distinct matter but inform the response strategy.
-- If **no match:** novel. Treat as fresh.
+- Se **match direto + ativo:** sinalize como quase certamente o mesmo caso; recomende anexar recebido ao caso existente, não abrir novo. Atualize `related_matters` se for tangente.
+- Se **match direto + fechado:** sinalize — contraparte voltou. Pode ser disputa nova (abrir caso novo) ou ressuscitada (reabrir ou aditar). Usuário decide.
+- Se **match por tipo:** anote como precedente/contexto; provavelmente caso distinto mas informa estratégia de resposta.
+- Se **sem match:** novo. Trate como fresco.
 
-### Step 3: Merit assessment
+### Passo 3: Avaliação de mérito
 
-Not a legal opinion — a structured read:
+Não é parecer jurídico — leitura estruturada:
 
-- **Facts** — do the alleged facts align with what we know? Where's the disconnect?
-- **Legal basis** — are the cited provisions/statutes actually applicable? (Flag cites for user verification — do not attempt to validate law autonomously.)
-- **Strength on their side** — if they went to court tomorrow, what's their story?
-- **Strength on our side** — what are our likely defenses?
-- **Damages demanded vs. likely** — is the ask proportionate to what a court would award if they won?
-- **Leverage and pressure** — are they credibly prepared to sue? Do they have capacity? Are they a repeat-litigant adversary per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`?
+- **Fatos** — os fatos alegados se alinham com o que sabemos? Onde está o desencontro?
+- **Base jurídica** — as cláusulas/leis citadas são efetivamente aplicáveis? (Sinalize cites para verificação do usuário — não tente validar lei autonomamente.)
+- **Força no lado deles** — se fossem a juízo amanhã, qual a história?
+- **Força no nosso lado** — quais defesas prováveis?
+- **Danos pedidos vs. danos prováveis** — o pedido é proporcional ao que o juízo concederia se ganhassem?
+- **Leverage e pressão** — estão credivelmente preparados a litigar? Têm capacidade? São adversário litigante repetido per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`?
 
-Output a triage rating: **substantial merit / debatable / weak / frivolous**. Be blunt. The user is triaging, not writing the brief.
+Output rating de triagem: **mérito substancial / debatível / fraco / temerário**. Seja direto. O usuário está triando, não escrevendo a peça.
 
-### Step 4: Response options
+### Passo 4: Opções de resposta
 
-Present 3-4 options with tradeoffs:
+Apresente 3-4 opções com tradeoffs:
 
-**Option A — substantive response**
-- When: their demand has merit or is at least debatable; a reasoned reply protects the record
-- Tradeoff: commits us to a position in writing
-- Next step: `/demand-intake` with pre-populated fields for a counter-response letter
+**Opção A — resposta substantiva**
+- Quando: a notificação tem mérito ou é ao menos debatível; resposta fundamentada protege o registro
+- Tradeoff: nos compromete a uma posição por escrito
+- Próximo passo: `/demand-intake` com campos pré-populados para contranotificação
 
-**Option B — holding letter**
-- When: need time to investigate; don't want to concede anything or trigger their deadline math
-- Tradeoff: doesn't resolve anything; buys 2-4 weeks
-- Next step: short acknowledgment draft
+**Opção B — notificação de retenção / ciência sem mérito**
+- Quando: precisamos de tempo para investigar; não queremos conceder nada nem disparar a matemática dos prazos deles
+- Tradeoff: não resolve nada; ganha 2-4 semanas
+- Próximo passo: minuta curta de acuse de recebimento
 
-**Option C — settlement response**
-- When: early resolution is cheaper than litigation; willing to discuss without admitting
-- Tradeoff: settlement-communication posture required — research the applicable rule (FRE 408 or state equivalent) and structure the response so the substance, not just the label, qualifies as a compromise discussion. Must be careful not to waive claims.
-- Next step: `/demand-intake` with `type: settlement-response`
+**Opção C — resposta de tentativa de composição**
+- Quando: resolução antecipada é mais barata que litigar; disposto a discutir sem admitir
+- Tradeoff: postura de comunicação negocial exigida — pesquise a regra aplicável (Lei 13.140/2015 art. 30 ou equivalente) e estruture a resposta para que a substância, não só o rótulo, qualifique como discussão de composição. Precisa cuidar para não renunciar pretensões.
+- Próximo passo: `/demand-intake` com `type: settlement-response`
 
-**Option D — ignore + preserve**
-- When: demand is frivolous or the deadline doesn't create legal prejudice
-- Tradeoff: silence can be used against us in some contexts (e.g., account stated); legal hold still required
-- Next step: issue legal hold via `/legal-hold --issue` if not already; log the demand and move on
+**Opção D — ignorar + preservar**
+- Quando: notificação é temerária ou o prazo deles não cria prejuízo jurídico
+- Tradeoff: silêncio pode ser usado contra nós em alguns contextos (ex.: presunção em conta-corrente); dever de guarda ainda exigido
+- Próximo passo: emitir dever de guarda via `/legal-hold --issue` se não emitido; logar a notificação e tocar adiante
 
-Recommend one. Be specific about why.
+Recomende uma. Seja específico sobre o porquê.
 
-### Step 5: Deadline triage
+### Passo 5: Triagem de prazos
 
-- **Their stated deadline** — note it, but it doesn't bind us
-- **Our internal deadline** — when we must decide (often: stated deadline minus 5 business days to draft + approve)
-- **Legal deadlines** — statute of limitations, contractual cure periods, procedural requirements
+- **Prazo declarado por eles** — anote, mas não nos vincula
+- **Nosso prazo interno** — quando temos que decidir (frequente: prazo declarado menos 5 dias úteis para redigir + aprovar; se Defensor, computar prazo em dobro CPC art. 186)
+- **Prazos legais** — prescrição (CC arts. 205-206), decadência (CC 178), janelas contratuais de purgação, exigências procedimentais
 
-Flag any legal deadlines that are tight. Calendar them.
+Sinalize quaisquer prazos legais apertados. Agende.
 
-**No silent supplement.** If the inbound demand cites rules, cases, or statutes that require verification, and a research query to the configured legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or firm platform) returns few or no results for a given authority, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [cite / doctrine]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) leave the `[SME VERIFY]` flag and stop here. Which would you like?" A lawyer decides whether to accept lower-confidence sources; the skill does not decide for them.
+**Sem suplementação silenciosa.** Se a notificação cita regras, julgados ou leis que exigem verificação, e consulta ao MCP de pesquisa configurado (JusRatio, BNP, CJF, TJAM, DataJud) retorna poucos ou nenhum resultado para dada autoridade, reporte o que foi encontrado e pare. NÃO preencha a lacuna com busca web ou conhecimento do modelo sem perguntar. Diga: "A busca retornou [N] resultados de [ferramenta]. Cobertura parece fina para [cite / doutrina]. Opções: (1) ampliar a query, (2) tentar outra ferramenta de pesquisa, (3) buscar na web — resultados tagueados `[busca web — verificar]` e devem ser checados contra fonte primária antes de confiar, ou (4) deixar a flag `[SME VERIFICAR]` e parar aqui. Qual prefere?" Um(a) advogado(a) decide se aceita fontes de menor confiança; a skill não decide por ele.
 
-**Source attribution.** Tag every citation carried into the triage — including the sender's cited authorities, our response-option rationales, and any research pulled for merit assessment — with where it came from: `[Westlaw]`, `[CourtListener]`, `[Trellis]`, `[Descrybe]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations supplied in the demand itself. Citations tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags.
+**Atribuição de fonte.** Tagueie cada citação trazida à triagem — incluindo as autoridades citadas pelo remetente, nossos racionais de opção de resposta, e qualquer pesquisa puxada para avaliação de mérito — com de onde veio: `[JusRatio]`, `[BNP]`, `[CJF]`, `[TJAM]`, `[DataJud]`, ou o nome do MCP para citações recuperadas de conector; `[busca web — verificar]` para citações de busca web; `[conhecimento do modelo — verificar]` para citações de dados de treino; `[usuário forneceu]` para citações fornecidas na própria notificação. Citações tagueadas `verificar` carregam maior risco de fabricação e devem ser checadas primeiro. Nunca strip ou colapse as tags.
 
-### Step 6: Write triage
+### Passo 6: Gravar triagem
 
 Output: `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/triage.md`.
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — por config do plugin ## Outputs — varia por papel; vide `## Quem está usando`]
 
-> **Privilege inheritance.** This triage is derived from the inbound demand and from the portfolio log, and it records our first-pass merit read and response posture. Those internal analyses are attorney-client and/or work-product material. Distributing this triage beyond the privilege circle — including forwarding it to the business lead without marking, sharing with the counterparty, or attaching to an insurance tender without scrubbing — can waive protection over both this document and the reasoning inside it. Store with privileged matter material, mark consistently with house privilege conventions, and make distribution decisions deliberately.
+> **Herança de sigilo.** Esta triagem deriva da notificação recebida e do log de portfólio, e registra nossa leitura de mérito de primeira passagem e postura de resposta. Aquelas análises internas são comunicação advogado-cliente e/ou trabalho preparatório. Distribuí-la além do círculo de sigilo — inclusive encaminhar a líder de negócio sem marcação, compartilhar com a contraparte, ou anexar a aviso de sinistro sem sanitizar — pode quebrar proteção tanto deste documento quanto do raciocínio dentro dele. Armazene com material sigiloso do caso, marque consistente com convenções da casa, e tome decisões de distribuição deliberadamente.
 
-# Demand Received — Triage
+# Notificação Recebida — Triagem
 
-> **READ FOR TRIAGE, NOT OPINION.** This document is an intake scan and an options analysis — not a legal merit opinion. The `Triage rating` below is a structured read to support the counsel's decision on how to route the demand. It is not a recommendation on the merits and does not substitute for case-specific legal analysis. Every cited statute, rule, or case is flagged for SME verification; every merit call is the counsel's, not this skill's.
+> **LER PARA TRIAGEM, NÃO COMO OPINIÃO.** Este documento é varredura de intake e análise de opções — não opinião sobre mérito jurídico. O `Rating de triagem` abaixo é leitura estruturada para apoiar a decisão de como rotear a notificação. Não é recomendação sobre o mérito e não substitui análise jurídica específica do caso. Toda lei, regra ou julgado citado é flagueado para verificação por SME; toda chamada de mérito é do(a) advogado(a), não desta skill.
 
 **Slug:** [slug]
-**Received:** [YYYY-MM-DD]
-**Received by:** [entity / person]
-**Incoming file:** [path]
+**Recebida:** [YYYY-MM-DD]
+**Recebida por:** [entidade / pessoa]
+**Arquivo recebido:** [path]
 
 ---
 
-## The demand
+## A notificação
 
-**Sender:** [entity, signer, counsel]
-**Demand type:** [type]
-**Specific asks:** [list]
-**Their stated deadline:** [date]
-**Settlement-communication framing:** [labeled / substantively / neither / ambiguous] — *protection turns on conduct and context, not the label; `[SME VERIFY]` against the forum's applicable rule*
+**Remetente:** [entidade, signatário, advogado(a) / DP]
+**Tipo:** [tipo]
+**Pedidos específicos:** [lista]
+**Prazo declarado por eles:** [data]
+**Framing de comunicação negocial:** [rotulada / substantivamente / nenhuma / ambígua] — *proteção decorre da conduta e contexto, não do rótulo; `[SME VERIFICAR]` contra a regra aplicável (Lei 13.140/2015 art. 30 ou equivalente)*
 
-## Facts alleged
+## Fatos alegados
 
-[their version, in one paragraph]
+[versão deles, em um parágrafo]
 
-## Legal basis cited
+## Base jurídica citada
 
-[citations — each inline-flagged with `[SME VERIFY: applicability / currency / jurisdiction]` — do not rely on any citation here without independent check]
+[citações — cada uma inline-flagged com `[SME VERIFICAR: aplicabilidade / atualidade / jurisdição]` — não confie em nenhuma citação aqui sem checagem independente]
 
-## Threats / next steps they state
+## Ameaças / próximos passos que declaram
 
-[list]
-
----
-
-## Portfolio cross-check
-
-**Direct match:** [slug if exists, or "none"]
-**Type match / precedent:** [list or "none"]
-**Subject overlap:** [list or "none"]
-**Recommendation:** [new matter / add to existing / link via related_matters / standalone inbound]
+[lista]
 
 ---
 
-## Merit assessment
+## Cross-check de portfólio
 
-**Facts:** [alignment with our version; disconnects]
-**Legal basis:** [applicability, with flags]
-**Their case if litigated:** [one paragraph]
-**Our defenses:** [one paragraph]
-**Damages proportionality:** [assessment]
-**Credibility of threat:** [will they sue? capacity? repeat litigant?]
-
-**Triage rating:** [substantial / debatable / weak / frivolous] — *structured read for routing, not a merit opinion; `[SME VERIFY: counsel to confirm before relying on this]`*
+**Match direto:** [slug se existe, ou "nenhum"]
+**Match por tipo / precedente:** [lista ou "nenhum"]
+**Sobreposição de objeto:** [lista ou "nenhuma"]
+**Recomendação:** [caso novo / anexar ao existente / linkar via related_matters / standalone inbound]
 
 ---
 
-## Response options
+## Avaliação de mérito
 
-### A. Substantive response
-[Rationale, tradeoffs, next step]
+**Fatos:** [alinhamento com nossa versão; desencontros]
+**Base jurídica:** [aplicabilidade, com flags]
+**Caso deles se litigado:** [um parágrafo]
+**Nossas defesas:** [um parágrafo]
+**Proporcionalidade do dano:** [avaliação]
+**Credibilidade da ameaça:** [vão processar? capacidade? litigante repetido?]
 
-### B. Holding letter
-[Rationale, tradeoffs, next step]
-
-### C. Settlement response
-[Rationale, tradeoffs, next step]
-
-### D. Ignore + preserve
-[Rationale, tradeoffs, next step]
-
-**Recommendation:** [A/B/C/D] — [two sentences why] — `[SME VERIFY: counsel to confirm before executing]`
+**Rating de triagem:** [substancial / debatível / fraco / temerário] — *leitura estruturada para roteamento, não opinião de mérito; `[SME VERIFICAR: advogado(a) a confirmar antes de confiar]`*
 
 ---
 
-## Deadlines
+## Opções de resposta
 
-- **Their stated deadline:** [date]
-- **Our internal decision deadline:** [date]
-- **Legal deadlines:** [SoL, cure periods, procedural — with dates]
+### A. Resposta substantiva
+[Racional, tradeoffs, próximo passo]
+
+### B. Notificação de retenção / acuse de recebimento
+[Racional, tradeoffs, próximo passo]
+
+### C. Resposta de tentativa de composição
+[Racional, tradeoffs, próximo passo]
+
+### D. Ignorar + preservar
+[Racional, tradeoffs, próximo passo]
+
+**Recomendação:** [A/B/C/D] — [duas frases por que] — `[SME VERIFICAR: advogado(a) a confirmar antes de executar]`
 
 ---
 
-## Immediate actions
+## Prazos
 
-- [ ] Legal hold issued — [yes/no] — if no, run `/legal-hold [slug] --issue`
-- [ ] Matter created in log — [yes/no/TBD]
-- [ ] Counsel assigned — [who]
-- [ ] Insurance tendered — [yes/no/N-A]
-- [ ] Internal escalation (GC/CFO/business lead) — [who/when]
+- **Prazo declarado por eles:** [data]
+- **Nosso prazo interno de decisão:** [data]
+- **Prazos legais:** [prescrição, períodos de purgação, procedimentais — com datas; lembrar prazo em dobro CPC art. 186 se Defensor]
+
+---
+
+## Ações imediatas
+
+- [ ] Dever de guarda emitido — [sim/não] — se não, rode `/legal-hold [slug] --issue`
+- [ ] Caso criado no log — [sim/não/TBD]
+- [ ] Advogado(a) atribuído(a) — [quem]
+- [ ] Seguro tendido — [sim/não/N-A]
+- [ ] Escalonamento interno (Diretor(a) Jurídico(a) / Diretor(a) Financeiro(a) / líder de negócio / Coordenador(a) DP) — [quem/quando]
 ```
 
-### Step 7: Hand off
+### Passo 7: Handoff
 
-Based on recommendation and user confirmation:
+Baseado na recomendação e confirmação do usuário:
 
-- Matter creation → hand off to `/matter-intake` with: counterparty, type, `source: demand-letter` (inbound), initial theory framed defensively, pre-populated.
-- Counter-response as outbound demand → hand off to `/demand-intake` with: counterparty, context from triage, desired outcome as the response.
-- Link to existing matter → update that matter's `related_matters` in `_log.yaml`; append event to its `history.md`.
-- Standalone → leave in `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/`; no portfolio change.
+- Criação de caso → handoff para `/matter-intake` com: contraparte, tipo, `source: demand-letter` (recebida), tese inicial enquadrada defensivamente, pré-populado.
+- Contra-resposta como notificação enviada → handoff para `/demand-intake` com: contraparte, contexto da triagem, pretensão como a resposta.
+- Linkar a caso existente → atualize `related_matters` daquele caso em `_log.yaml`; anexe evento ao seu `history.md`.
+- Standalone → deixe em `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/`; sem mudança de portfólio.
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Feche com a árvore de decisão de próximos passos per CLAUDE.md `## Outputs`. Customize as opções para o que esta skill acabou de produzir — as cinco ramificações default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não trava. A árvore É o output; o(a) advogado(a) escolhe.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Validate cited law.** Flags cites for the user to run through a citator (verify it is good law) or check with outside counsel. Inventing legal analysis on inbound demands is malpractice exposure.
-- **Send a response.** Drafts are drafted in `demand-draft`; this skill stops at the triage decision.
-- **Decide merit definitively.** The rating is a read for triage; a formal merit opinion lives with outside counsel or more thorough analysis.
-- **Make the matter-creation call.** Surfaces the recommendation; user decides.
+- **Valida lei citada.** Sinaliza cites para o usuário rodar contra ferramenta de pesquisa (verificar se ainda é bom direito) ou checar com escritório externo. Inventar análise jurídica sobre notificações recebidas é exposição a responsabilidade profissional.
+- **Envia resposta.** Minutas são redigidas em `demand-draft`; esta skill para na decisão de triagem.
+- **Decide mérito definitivamente.** O rating é leitura para triagem; opinião formal de mérito vive com escritório externo ou análise mais aprofundada.
+- **Toma a decisão de criar caso.** Aflora a recomendação; usuário decide.

@@ -1,165 +1,168 @@
 ---
 name: exam-forecast
 description: >
-  Analyze past exams from the same professor to surface patterns — subject
-  weighting, recurring issue-spot traps, favored hypo types, policy-vs-doctrine
-  mix — and forecast likely emphases for the upcoming exam. Use when the user
-  says "what's on the exam", "analyze past exams", "predict the exam", or
-  shares past exams.
-argument-hint: "[class name, with past exams shared or paths to them]"
+  Analisa provas antigas do(a) mesmo(a) professor(a) ou da mesma banca (FGV
+  na OAB) para surface padrões — peso por disciplina, armadilhas recorrentes
+  de identificação de issue, tipos de hipótese favoritos, mix doutrina-vs-
+  jurisprudência — e prevê ênfases prováveis para a próxima prova. Use
+  quando o(a) usuário(a) disser "o que vai cair na prova", "analisa provas
+  antigas", "prevê a prova", ou compartilhar provas antigas.
+argument-hint: "[nome da disciplina, com provas antigas compartilhadas ou caminhos]"
 ---
 
 # /exam-forecast
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → class, professor, exam format, syllabus.
-2. Apply the workflow below.
-3. Intake past exams (PDF, paste, or paths). Confirm sample size.
-4. Analyze each past exam: format, subject coverage, question style, fact-pattern density, recurring traps.
-5. Cross-exam pattern analysis — what's stable, what varies.
-6. Combine with current syllabus to produce forecast: subject weights, format, hobby horses, study emphasis.
-7. Write `~/.claude/plugins/config/claude-for-legal/law-student/exam-forecasts/[class]/forecast-[YYYY-MM-DD].md`. Framed as weighting heuristic, not prediction.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplina, professor(a), formato da avaliação, plano de aula.
+2. Aplique o workflow abaixo.
+3. Receba as provas antigas (PDF, colado, ou caminhos). Confirme tamanho da amostra.
+4. Analise cada prova: formato, cobertura de tópicos, estilo de questão, densidade de enunciado, armadilhas recorrentes.
+5. Análise cross-prova: o que é estável, o que varia.
+6. Combine com o plano de aula atual para produzir previsão: pesos por tópico, formato, temas-cavalo-de-batalha, ênfase de estudo.
+7. Escreva `~/.claude/plugins/config/claude-for-legal/law-student/exam-forecasts/[disciplina]/forecast-[YYYY-MM-DD].md`. Enquadre como heurística de ponderação, não predição.
 
 ---
 
-## Purpose
+## Propósito
 
-Every professor's exam has fingerprints. The same hypo structures recur. The same traps come back. The same subject ratios repeat. Students who have prior exams study smarter; students who don't, study harder. This skill analyzes the prior exams you have and surfaces the patterns.
+Toda prova de professor(a) tem digital. As mesmas estruturas de hipótese reaparecem. As mesmas armadilhas voltam. As mesmas proporções por matéria se repetem. Estudantes com provas antigas estudam mais inteligentemente; estudantes sem elas estudam mais duro. Esta skill analisa as provas antigas que você tem e surface os padrões.
 
-Not magic. A forecast, not a prediction. The skill cannot tell you what's on the exam — it can tell you what's been on past exams and what's likely to recur based on syllabus coverage.
+Vale também para OAB FGV — a banca tem padrões fortes (peso por disciplina nas 80 questões da 1ª fase, formato de peça e discursivas na 2ª fase) que se repetem entre edições. Para preparação OAB, combine esta skill com sua reta final do cursinho (CERS / Damásio / Estratégia OAB / Mege / Praetorium / Supremo TV / Ênfase).
 
-## Confidence discipline
+Não é mágica. É previsão, não predição. A skill não pode te dizer o que vai cair na prova — pode te dizer o que caiu nas provas anteriores e o que tem chance de recorrer com base na cobertura do plano de aula.
 
-- Pattern analysis (what subjects appeared, how many questions per topic, how often policy vs. rule-application) — confident where the exams are clearly in front of me.
-- Inference about likely emphasis on upcoming exam — `[UNCERTAIN]` is the default; these are forecasts, not certainties. Explicitly frame as "based on the [N] past exams you shared, [topic] appeared in [M]. Your upcoming exam may emphasize it, or the professor may rotate — use this as a weighting for review time, not a prediction."
-- If only 1-2 past exams are available, say so explicitly — any pattern inferred from 1 exam is noise.
-- If the professor is new (no past exams available), skill can't forecast. Say so; fall back to syllabus-based "these are the subjects covered" only.
+## Disciplina de confiança
 
-## Load context
+- Análise de padrão (que matérias apareceram, quantas questões por tópico, frequência política-vs-aplicação-de-regra) — confiante onde as provas estão claramente à minha frente.
+- Inferência sobre ênfase provável na próxima prova — `[INCERTO]` é o default; são previsões, não certezas. Enquadre explicitamente como "com base nas [N] provas antigas que você compartilhou, [tópico] apareceu em [M]. Sua próxima prova pode enfatizar isso, ou o(a) professor(a) pode rotacionar — use como ponderação para tempo de revisão, não predição."
+- Se só 1-2 provas antigas estão disponíveis, diga explicitamente — padrão inferido de 1 prova é ruído.
+- Se o(a) professor(a) é novo(a) (sem provas antigas disponíveis), a skill não pode prever. Diga; recue para "estes são os tópicos cobertos" baseado só no plano de aula.
 
-- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, exam formats, syllabus if captured
-- User-provided past exams (PDF, pasted text, paths)
-- Optional: syllabus for the current class (for "what's been covered to date")
+## Carregar contexto
 
-**If the uploaded past exams have a professor's name, use it to match patterns** (same-professor exams are the highest-signal input). **If not, match on subject and structure.** Don't ask the user to type in the professor's name — use what's in the materials. If the user volunteers it in conversation that's fine; don't prompt for it.
+- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplinas atuais, formatos de prova, plano de aula se capturado
+- Provas antigas fornecidas pelo(a) usuário(a) (PDF, texto colado, caminhos)
+- Opcional: plano de aula da disciplina atual (para "o que foi coberto até agora")
+
+**Se as provas antigas têm nome de professor(a), use para casar padrões** (provas do(a) mesmo(a) professor(a) são o input de maior sinal). **Se não, case por matéria e estrutura.** Não peça para o(a) usuário(a) digitar o nome do(a) professor(a) — use o que está nos materiais. Se voluntariar em conversa, ok; não pergunte.
 
 ## Workflow
 
-### Step 1: Intake
+### Passo 1: Recebimento
 
-- Which class are we forecasting for?
-- How many past exams from this professor are available?
-- Are they from the same course, or different courses by the same professor?
-- Are any of them the take-home / open-book / different-format variants, vs. the typical format for your upcoming exam?
-- Syllabus for your current class?
+- Qual disciplina estamos prevendo?
+- Quantas provas antigas deste(a) professor(a) (ou desta banca, no caso OAB) estão disponíveis?
+- São do mesmo curso, ou de cursos diferentes do(a) mesmo(a) professor(a)?
+- Algumas são da variante prova-com-consulta / livro aberto / formato diferente, vs. o formato típico da sua próxima prova?
+- Plano de aula da disciplina atual?
 
-If fewer than 3 past exams: flag as thin sample. Pattern inference is weaker.
-If exams are across different courses: some patterns transfer (question style, policy vs. doctrine ratio); subject-specific patterns don't.
+Se menos de 3 provas antigas: sinalize amostra fina. Inferência de padrão é mais fraca.
+Se provas são de cursos diferentes: alguns padrões transferem (estilo de questão, proporção política-vs-doutrina); padrões específicos por matéria não.
 
-### Step 2: Read each past exam
+### Passo 2: Leia cada prova antiga
 
-For each past exam:
+Para cada uma:
 
-- Format (number of questions, length, time limit, open/closed book)
-- Subject coverage (which topics tested, in what proportion)
-- Question style (issue-spotter, single-issue deep, policy essay, short-answer MBE-style, mix)
-- Fact pattern density (fact-heavy hypos, sparse facts with doctrinal focus, or policy prompts with no facts)
-- Recurring traps (e.g., professor always hides the jurisdictional issue in an otherwise-clean fact pattern; professor always asks about the exception rather than the rule)
-- Policy vs. doctrine ratio
-- Unusual structures (essays + MBE hybrid, moot court scenario, etc.)
+- Formato (número de questões, extensão, tempo, com/sem consulta)
+- Cobertura de tópicos (que temas testados, em que proporção)
+- Estilo de questão (identificação de issue / questão única em profundidade / ensaio de política / questão objetiva múltipla escolha estilo FGV / mix)
+- Densidade do enunciado (enunciados fato-pesados, fatos esparsos com foco doutrinário, ou prompts de política sem fatos)
+- Armadilhas recorrentes (ex.: professor(a) sempre esconde questão de competência num enunciado de fato limpo; professor(a) sempre pergunta sobre a exceção e não a regra; FGV sempre cobra súmula vinculante específica em Constitucional)
+- Proporção política/princípio vs. doutrina/dispositivo
+- Estruturas incomuns (objetiva + discursiva híbrida, simulação de júri, peça processual etc.)
 
-### Step 3: Cross-exam pattern analysis
+### Passo 3: Análise cross-prova
 
-Roll up what's consistent across exams:
+Consolide o que é consistente entre provas:
 
-**Stable patterns (appeared in most/all past exams):**
-- Subject weights (e.g., "consideration and modification account for 30% of exam points consistently")
-- Question style (e.g., "always one long issue-spotter + two short-answer hypos")
-- Professor hobby horses (e.g., "always tests third-party beneficiaries even when it's a minor topic in class")
+**Padrões estáveis (apareceram na maioria/todas):**
+- Pesos por matéria (ex.: "negócio jurídico e validade respondem por 30% dos pontos consistentemente")
+- Estilo de questão (ex.: "sempre uma questão longa de identificação de issue + duas hipóteses curtas")
+- Temas-cavalo-de-batalha do(a) professor(a) (ex.: "sempre cobra terceiro beneficiário mesmo quando é tópico menor em aula"; para FGV, "sempre cobra prazo decadencial do CDC art. 26")
 
-**Variable patterns (appeared in some but not all):**
-- Policy essays (e.g., "appeared in 2 of 4 past exams — usually when the semester covered a policy-heavy topic late")
-- Open-book vs. closed-book differences
-- Take-home vs. in-class differences
+**Padrões variáveis (apareceram em algumas mas não todas):**
+- Ensaios de política (ex.: "apareceu em 2 de 4 provas antigas — usualmente quando o semestre cobriu tópico denso em política tarde")
+- Diferenças prova-com-consulta vs. sem consulta
+- Diferenças prova em casa vs. em sala
 
-**Absent patterns worth noting:**
-- Topics covered in class that have NEVER been tested in past exams — don't skip these, but don't weight them heavily either
-- Topics tested in past exams that aren't in your current syllabus — probably not coming back
+**Padrões ausentes dignos de nota:**
+- Tópicos cobertos em aula que NUNCA foram testados em provas antigas — não pule, mas não pondere alto
+- Tópicos testados em provas antigas que não estão no seu plano de aula atual — provavelmente não voltam
 
-### Step 4: Forecast for the upcoming exam
+### Passo 4: Previsão para a próxima prova
 
-**Header — required, first line of the forecast, both in-chat and in the saved file.** Per plugin config `## Outputs`, every study output carries the verbatim study-notes header. The forecast is a study output. Do not omit, rephrase, or relocate the header. The header is not a disclaimer the student can ask to drop; it is the output's identity and prevents the forecast from being mistaken for a predicted exam or for legal advice:
+**Cabeçalho — obrigatório, primeira linha da previsão, tanto in-chat quanto no arquivo salvo.** Conforme config do plugin `## Outputs`, todo output de estudo carrega o cabeçalho literal de notas de estudo. A previsão é output de estudo. Não omita, reformule ou realoque. O cabeçalho não é um disclaimer que o(a) estudante pode pedir para tirar; é a identidade do output e evita que a previsão seja confundida com prova prevista ou parecer jurídico:
 
 ```
-STUDY NOTES — NOT LEGAL ADVICE
+MATERIAL DE ESTUDO — NÃO É PARECER JURÍDICO
 ```
 
-Combine pattern analysis with current syllabus:
+Combine análise de padrão com plano de aula atual:
 
 ```markdown
-STUDY NOTES — NOT LEGAL ADVICE
+MATERIAL DE ESTUDO — NÃO É PARECER JURÍDICO
 
-# Exam Forecast — [class / professor] — [date]
+# Previsão de prova — [disciplina / professor(a)] — [data]
 
-**Past exams analyzed:** [N]
-**Sample confidence:** [thin (<3) / moderate (3-5) / strong (6+)]
-**Caveats:** [e.g., "one of the past exams was an open-book final; your upcoming is closed-book. Pattern transfer is partial."]
+**Provas antigas analisadas:** [N]
+**Confiança da amostra:** [fina (<3) / moderada (3-5) / forte (6+)]
+**Ressalvas:** [ex.: "uma das provas antigas foi prova final com consulta; sua próxima é sem consulta. Transferência de padrão é parcial."]
 
 ---
 
-## Subject weighting (historical)
+## Ponderação por matéria (histórica)
 
-| Topic | Past exam weight (avg) | In current syllabus? | Forecast weight |
+| Tópico | Peso histórico em prova (média) | No plano de aula atual? | Peso previsto |
 |---|---|---|---|
-| [topic 1] | [%] | [yes/partial/no] | [heavier / stable / lighter] |
+| [tópico 1] | [%] | [sim/parcial/não] | [mais pesado / estável / mais leve] |
 
-## Question-style forecast
+## Previsão de estilo de questão
 
-- **Format likely:** [X issue-spotters + Y short answers + Z policy, or similar]
-- **Fact-pattern density:** [fact-heavy / sparse / mixed]
-- **Call style:** [one broad call / multiple specific calls / bullet sub-parts]
+- **Formato provável:** [X questões de identificação de issue + Y curtas + Z política, ou similar]
+- **Densidade de enunciado:** [fato-pesado / esparso / misto]
+- **Estilo do chamamento:** [um chamamento amplo / múltiplos específicos / subitens]
 
-## Professor hobby horses to watch
+## Temas-cavalo-de-batalha do(a) professor(a) a observar
 
-- [topic A] — appeared in [M of N] past exams. Weighted 3-5x its syllabus share.
-- [topic B] — [pattern]
-- [trap pattern] — e.g., "hides jurisdictional issue in otherwise-clean facts"
+- [tópico A] — apareceu em [M de N] provas antigas. Pondere 3-5x sua participação no plano de aula.
+- [tópico B] — [padrão]
+- [padrão de armadilha] — ex.: "esconde questão de competência em fatos limpos"
 
-## Topics covered this semester but rarely tested
+## Tópicos cobertos este semestre mas raramente testados
 
-[list — don't skip, but don't over-weight]
+[lista — não pule, mas não super-pondere]
 
-## Study emphasis recommendation
+## Recomendação de ênfase de estudo
 
-Based on past exam patterns AND current syllabus coverage:
+Com base em padrões de provas antigas E cobertura do plano de aula atual:
 
-**Heavy:** [topics likely to anchor the exam — 40-50% of study time]
-**Moderate:** [supporting topics — 30-40%]
-**Sanity check:** [topics covered but historically under-represented — 10-20%, just in case]
+**Pesado:** [tópicos com chance de ancorar a prova — 40-50% do tempo de estudo]
+**Moderado:** [tópicos de apoio — 30-40%]
+**Sanity check:** [tópicos cobertos mas historicamente sub-representados — 10-20%, por garantia]
 
-## [UNCERTAIN — framing]
+## [INCERTO — enquadramento]
 
-This forecast is derived from [N] past exams. Professors vary. Professors rotate. Topics that were emphasized in past years can be de-emphasized when the syllabus shifts. Treat this as a weighting heuristic for study time, not a prediction. The exam will include surprises.
+Esta previsão é derivada de [N] provas antigas. Professores(as) variam. Professores(as) rotacionam. Tópicos enfatizados em anos anteriores podem ser desenfatizados quando o plano de aula muda. Trate como heurística de ponderação para tempo de estudo, não predição. A prova vai incluir surpresas.
 ```
 
-### Step 5: Output location
+### Passo 5: Local de output
 
-Write to `~/.claude/plugins/config/claude-for-legal/law-student/exam-forecasts/[class]/forecast-[YYYY-MM-DD].md`. Versioned — if the student gets another past exam mid-semester, re-run and append.
+Escreva em `~/.claude/plugins/config/claude-for-legal/law-student/exam-forecasts/[disciplina]/forecast-[YYYY-MM-DD].md`. Versionado — se o(a) estudante consegue outra prova antiga no meio do semestre, rode de novo e acrescente.
 
-## Integration
+## Integração
 
-- **outline-builder:** forecast weights feed into outline depth decisions — weight depth on heavy topics
-- **flashcards:** forecast-heavy topics get more cards generated
-- **bar-prep-questions:** irrelevant for bar prep (that has its own forecast model); exam-forecast is for class-specific finals
-- **irac-practice:** use forecast topics as the subject areas for IRAC practice hypos
+- **outline-builder:** pesos da previsão alimentam decisões de profundidade do resumo — concentre profundidade em tópicos pesados
+- **flashcards:** tópicos pesados na previsão geram mais cards
+- **bar-prep-questions:** irrelevante para preparação OAB de 1ª fase aberta (essa tem seu próprio modelo de previsão — padrões do edital FGV); exam-forecast é para provas específicas de disciplina da IES e para 2ª fase de OAB (onde a área é escolhida e a banca FGV tem padrão de peça)
+- **irac-practice:** use os tópicos da previsão como áreas para prática de FIRAC
 
-## Close with the next-steps decision tree
+## Encerre com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Encerre com a árvore conforme CLAUDE.md `## Outputs`. Customize as opções ao que esta skill acabou de produzir — os cinco ramos default (rascunhar, escalar, mais fundamentos, observar, outra coisa) são ponto de partida, não trava. A árvore é o output; você escolhe.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Predict specific questions.** Past exams show patterns; they don't show you tomorrow's prompt.
-- **Work without past exams.** If you don't have prior exams from this professor, the skill can't forecast — it falls back to "here's what the syllabus covers, study that."
-- **Replace studying everything on the syllabus.** Forecast is weighting, not elimination. Skipping a topic because it's historically under-represented is how students get burned.
-- **Account for changes you don't know about.** If the professor has shifted focus this year (e.g., emphasized a new case in class lectures), the skill doesn't see that unless you tell it.
-- **Work reliably with 1-2 past exams.** Thin sample. Flag as such.
+- **Predizer questões específicas.** Provas antigas mostram padrões; não mostram o prompt de amanhã.
+- **Trabalhar sem provas antigas.** Se você não tem provas anteriores deste(a) professor(a), a skill não prevê — recua para "aqui está o que o plano de aula cobre, estude isso."
+- **Substituir estudar tudo do plano de aula.** Previsão é ponderação, não eliminação. Pular tópico porque é historicamente sub-representado é como estudantes se queimam.
+- **Contabilizar mudanças que você não conhece.** Se o(a) professor(a) mudou o foco este ano (ex.: enfatizou um julgado novo em aulas), a skill não vê a menos que você conte.
+- **Trabalhar de forma confiável com 1-2 provas antigas.** Amostra fina. Sinalize como tal.

@@ -1,159 +1,159 @@
 ---
 name: oc-status
-description: Generate weekly status-request email drafts to outside counsel across the active portfolio — markdown per matter, plus Gmail drafts when the MCP is available. Use when the user asks for OC status requests, weekly outside counsel check-ins, or wants per-matter status emails drafted from the portfolio log.
+description: Gera minutas semanais de e-mail de status a escritórios externos / DPs colaboradoras / núcleos especializados no portfólio ativo — markdown por caso, mais drafts Gmail quando o MCP está disponível. Use quando o usuário pede status requests a externos, check-ins semanais, ou quer e-mails de status por caso a partir do log do portfólio.
 argument-hint: "[--all | --slug=foo | --no-gmail]"
 ---
 
 # /oc-status
 
-To run weekly, set a recurring reminder to invoke `/litigation-legal:oc-status`. Automated scheduling requires a scheduled-tasks integration, which is not bundled.
+Para rodar semanalmente, agende lembrete recorrente para invocar `/litigation-legal:oc-status`. Agendamento automatizado exige integração de tarefas agendadas, que não está bundled.
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`, filter per default rules (or per flags).
-2. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → outside counsel directive style, signer defaults, budget posture.
-3. Follow the workflow and reference below.
-4. For each matter in scope: read `matter.md` + `history.md`, draft per-matter email.
-5. Write markdown to `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/[slug].md`.
-6. If Gmail MCP authenticated: create Gmail drafts. Else: markdown-only, note in summary.
-7. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/_summary.md` — what ran, what was skipped and why.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`, filtre per regras default (ou per flags).
+2. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → estilo de diretrizes ao escritório externo / DP colaboradora, defaults de signatário, postura orçamentária.
+3. Siga o workflow e a referência abaixo.
+4. Para cada caso em escopo: leia `matter.md` + `history.md`, redija e-mail por caso.
+5. Grave markdown em `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/[slug].md`.
+6. Se Gmail MCP autenticado: crie drafts no Gmail. Senão: só markdown, anote no sumário.
+7. Grave `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/_summary.md` — o que rodou, o que foi pulado e por quê.
 
 ---
 
 # OC Status
 
-## Purpose
+## Propósito
 
-Writing the same status-request email to outside counsel every week across 5–15 matters is mechanical cognitive tax. The content is consistent per matter (status, decisions pending, budget check). The audience is consistent (OC lead partner). The tone is consistent (per house outside-counsel-directive style). A scheduled task drafts all of them; counsel reviews and sends.
+Escrever o mesmo e-mail de status para escritório externo / núcleo / DP colaboradora toda semana em 5–15 casos é tributo cognitivo mecânico. O conteúdo é consistente por caso (status, decisões pendentes, checagem de orçamento). A audiência é consistente (responsável pelo caso). O tom é consistente (per estilo de diretrizes da casa). Tarefa agendada redige todos; o(a) advogado(a) revisa e envia.
 
-## Load context
+## Carregar contexto
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — the filtering and field source
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — matter context (current posture, open questions)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — recent events to inform what to ask about
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → outside counsel directive style, signer name/email, budget posture
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — fonte de filtragem e campos
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — contexto do caso (postura atual, perguntas em aberto)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — eventos recentes para informar o que perguntar
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → estilo de diretrizes ao escritório externo / núcleo, nome/e-mail do signatário, postura orçamentária
 
-## Filtering — which matters?
+## Filtragem — quais casos?
 
-Default filter:
+Filtro default:
 
 - `status != closed`
-- `outside_counsel.firm != null` AND `outside_counsel.lead != null`
-- Either: last update more than 10 days old (time for something to have happened) OR has a `next_deadline` within 21 days
+- `outside_counsel.firm != null` AND `outside_counsel.lead != null` (escritório externo ou DP colaboradora / núcleo especializado)
+- Ou: última atualização mais que 10 dias atrás (tempo para algo ter acontecido) OU tem `next_deadline` dentro de 21 dias
 
-Skip matters that just had a status update in the last 10 days (no need to re-ping) and matters where `outside_counsel.email` is null (email addresses needed for Gmail draft; still produce markdown).
+Pule casos que tiveram update de status nos últimos 10 dias (sem necessidade de re-ping) e casos onde `outside_counsel.email` é null (endereços de e-mail necessários para draft Gmail; ainda produz markdown).
 
 Flags:
-- `--all` → draft for every active matter regardless of recency
-- `--slug=[slug]` → draft for one matter only (ad-hoc request)
-- `--no-gmail` → skip Gmail draft creation even if MCP is available
+- `--all` → redige para todo caso ativo independente de recência
+- `--slug=[slug]` → redige só para um caso (request ad-hoc)
+- `--no-gmail` → pula criação de draft Gmail mesmo se MCP disponível
 
-## Per-matter email draft
+## Draft de e-mail por caso
 
-Each email has the same skeleton; content is matter-specific.
+Cada e-mail tem o mesmo esqueleto; conteúdo é específico do caso.
 
-**Subject:** per house convention (from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` outside counsel directive style; fallback: `[Matter: [matter name]] — Weekly status update`)
+**Assunto:** per convenção da casa (de `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` estilo de diretrizes; fallback: `[Caso: [nome do caso]] — Update semanal de status`)
 
-**Body skeleton:**
+**Esqueleto do corpo:**
 
 ```
-[lead partner first name],
+[primeiro nome do(a) responsável],
 
-[One sentence opener — natural, matches house tone.]
+[Uma frase de abertura — natural, condiz com tom da casa.]
 
-Checking in on [matter name]. A few items:
+Checando status sobre [nome do caso]. Alguns itens:
 
-1. **Status since [date of last update captured in history.md]** — what's moved, what's pending? Any filings, hearings, correspondence, or calls since we last touched base?
+1. **Status desde [data do último update capturado em history.md]** — o que se moveu, o que está pendente? Alguma peça, audiência, correspondência ou ligação desde que falamos por último?
 
-2. **Upcoming deadlines** — I show [next_deadline from log + any deadlines in matter.md]. Confirm coverage plan and any dates we should add.
+2. **Prazos próximos** — vejo [next_deadline do log + quaisquer prazos em matter.md]. Confirme plano de cobertura e qualquer data que devamos adicionar. (Lembrar prazo em dobro CPC art. 186 se Defensor.)
 
-3. **Decisions pending** — [pull open questions from matter.md that require OC input; if none, omit this numbered item and renumber]
+3. **Decisões pendentes** — [puxe perguntas em aberto de matter.md que exigem input externo; se nenhuma, omita este item numerado e renumere]
 
-4. **Budget** — [monthly / quarterly / on-request per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` budget posture]. Where are we against [budget authorization from matter.md]? Any variance to flag?
+4. **Orçamento** — [mensal / trimestral / sob demanda per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` postura orçamentária]. Onde estamos contra [autorização de orçamento de matter.md]? Variância para sinalizar? (Para DP colaboradora / núcleo: orçamento não se aplica; substitua por "andamento e necessidade de apoio".)
 
-[If material and relevant: 5. Specific ask — e.g., "Please send me the latest draft of the motion to dismiss before [date]" — drawn from matter.md open questions.]
+[Se material e relevante: 5. Pedido específico — ex.: "Por favor envie a última minuta da contestação antes de [data]" — extraído de perguntas em aberto de matter.md.]
 
-[Signoff — name, role, contact. From `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` signer default for OC directives.]
+[Assinatura — nome, função, contato. De `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` signatário default para diretrizes a externos.]
 ```
 
-Adapt tone per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` outside counsel directive style — some shops are "dear counsel" formal; others are first-name-and-bullets. Match.
+Adapte o tom per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` estilo de diretrizes — algumas casas são "Prezado(a) Doutor(a)" formal; outras são primeiro-nome-e-bullets. Combine.
 
 ## Output
 
-### Markdown drafts
+### Drafts markdown
 
-Write to: `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/[slug].md`
+Grave em: `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/[slug].md`
 
-Each file is one email, formatted as:
+Cada arquivo é um e-mail, formatado como:
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — por config do plugin ## Outputs — varia por papel; vide `## Quem está usando`]
 
-# [Matter name] — OC status request — [YYYY-MM-DD]
+# [Nome do caso] — OC status request — [YYYY-MM-DD]
 
-**To:** [outside_counsel.email from log] ([outside_counsel.lead], [outside_counsel.firm])
-**From:** [signer name / email from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`]
-**Subject:** [subject line]
+**Para:** [outside_counsel.email do log] ([outside_counsel.lead], [outside_counsel.firm])
+**De:** [nome / e-mail do signatário de `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`]
+**Assunto:** [linha de assunto]
 
-> The work-product header above applies to this internal record. The outgoing email body below goes to outside counsel on a retained matter, which is itself a privileged communication — apply the house privilege marking (`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` privilege conventions) at the top of the email sent, typically `Privileged & Confidential — Attorney-Client Communication / Attorney Work Product`, not this internal work-product header.
+> O cabeçalho de sigilo acima se aplica a este registro interno. O corpo do e-mail abaixo vai para escritório externo / núcleo / DP colaboradora em caso patrocinado, o que é por si só comunicação sigilosa — aplique a marcação de sigilo da casa (`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` convenções de sigilo) no topo do e-mail enviado, tipicamente `Sigiloso — Art. 7º, XIX, Lei 8.906/94 — Comunicação Advogado-Cliente / Trabalho de Advogado` (ou referência à LC 80/94 art. 4º-A V para Defensor), não este cabeçalho interno.
 
 ---
 
-[body per skeleton]
+[corpo per esqueleto]
 ```
 
-### Send gate (closing note on every draft)
+### Send gate (nota de fechamento em todo draft)
 
-Append the following to each markdown draft, immediately below the body and above the run metadata — strip before sending:
+Anexe o seguinte a cada draft markdown, imediatamente abaixo do corpo e acima dos metadados do run — remover antes de enviar:
 
-> This is a draft status email for attorney review before sending to outside counsel. Check for privileged content you did not intend to share outside the engagement circle, factual accuracy, tone, and budget posture. Do not send unreviewed — even routine weekly check-ins can surface theory, strategy, or concessions the sender didn't mean to put in writing.
+> Esta é minuta de e-mail de status para revisão do(a) advogado(a) antes de enviar ao escritório externo / núcleo / DP colaboradora. Cheque conteúdo sigiloso que você não pretendia compartilhar fora do círculo, acurácia factual, tom, e postura orçamentária. Não envie sem revisão — até check-ins semanais rotineiros podem aflorar tese, estratégia ou concessões que o remetente não pretendia pôr por escrito.
 
-### Gmail drafts (if MCP available)
+### Drafts Gmail (se MCP disponível)
 
-If the Gmail draft-creation MCP is authenticated:
+Se o MCP de criação de draft do Gmail está autenticado:
 
-- Create a draft in the user's Gmail per matter with `to`, `from`, `subject`, `body` populated
-- The draft sits in Drafts folder; user reviews and sends Monday morning
-- If Gmail MCP is NOT available or fails: fall back to markdown-only and tell the user
+- Crie draft no Gmail do usuário por caso com `to`, `from`, `subject`, `body` populados
+- O draft fica na pasta Drafts; usuário revisa e envia segunda-feira de manhã
+- Se Gmail MCP NÃO está disponível ou falha: volte para só markdown e avise o usuário
 
-### Run summary
+### Sumário do run
 
-After processing all matters, write `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/_summary.md`:
+Após processar todos os casos, grave `~/.claude/plugins/config/claude-for-legal/litigation-legal/oc-status/[YYYY-MM-DD]/_summary.md`:
 
 ```markdown
 # OC Status Run — [YYYY-MM-DD]
 
-**Matters processed:** [N]
-**Drafts created:** [N]
-**Gmail drafts:** [created / skipped — reason]
+**Casos processados:** [N]
+**Drafts criados:** [N]
+**Drafts Gmail:** [criados / pulados — razão]
 
-## Drafted for
+## Redigido para
 
-| Matter | OC lead | Last updated | Reason for inclusion |
+| Caso | Responsável externo | Última atualização | Razão da inclusão |
 |---|---|---|---|
-| [slug] | [lead] | [date] | [stale / upcoming deadline / --all / --slug] |
+| [slug] | [responsável] | [data] | [defasado / prazo próximo / --all / --slug] |
 
-## Skipped
+## Pulado
 
-| Matter | Reason |
+| Caso | Razão |
 |---|---|
-| [slug] | recent update (last touched [date]) |
-| [slug] | no OC email in log — update with `/matter-update [slug]` |
+| [slug] | update recente (último toque em [data]) |
+| [slug] | sem e-mail externo no log — atualize com `/matter-update [slug]` |
 
-## Anomalies
+## Anomalias
 
-- Matters without outside counsel assigned: [list — if any are high/critical risk, flagged]
-- Matters with outside counsel but no email in log: [list]
+- Casos sem externo atribuído: [lista — se algum é de risco alto/crítico, sinalizado]
+- Casos com externo mas sem e-mail no log: [lista]
 ```
 
-## Scheduling
+## Agendamento
 
-This skill is designed to run weekly. Automated scheduling requires a scheduled-tasks integration that is not bundled with the plugin. To run weekly, set a recurring reminder to invoke `/litigation-legal:oc-status` — e.g., Monday morning on your calendar.
+Esta skill é desenhada para rodar semanalmente. Agendamento automatizado exige integração de tarefas agendadas que não está bundled com o plugin. Para rodar semanalmente, agende lembrete recorrente para invocar `/litigation-legal:oc-status` — ex.: segunda de manhã no seu calendário.
 
-Ad-hoc: `/oc-status` any time. `/oc-status --slug=foo` for a single matter.
+Ad-hoc: `/oc-status` a qualquer hora. `/oc-status --slug=foo` para caso único.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Send the emails.** Drafts only. Counsel reviews and sends.
-- **Generate content it doesn't have.** If `matter.md` is thin, the email is short and asks broad-status questions. The skill doesn't invent specific questions from nothing.
-- **Retry failures.** If Gmail draft creation fails mid-run, the skill logs the failure and continues with markdown. User can retry after fixing auth.
-- **Rewrite history.md.** Reads it for context; doesn't modify. (If OC's response surfaces new events, use `/matter-update [slug]` to log them.)
-- **Enforce a minimum template.** If the house tone is "one line, first name, done," the draft honors that and skips the bulleted structure. Match `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.
+- **Envia os e-mails.** Só drafts. Advogado(a) revisa e envia.
+- **Gera conteúdo que não tem.** Se `matter.md` é fino, o e-mail é curto e pergunta status amplo. A skill não inventa perguntas específicas do nada.
+- **Tenta novamente em falhas.** Se criação de draft Gmail falha no meio do run, a skill loga a falha e continua com markdown. Usuário pode tentar de novo após corrigir auth.
+- **Reescreve history.md.** Lê para contexto; não modifica. (Se a resposta do externo aflora eventos novos, use `/matter-update [slug]` para logá-los.)
+- **Impõe template mínimo.** Se o tom da casa é "uma linha, primeiro nome, fim", o draft honra e pula a estrutura em bullets. Combine com `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.

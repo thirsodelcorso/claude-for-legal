@@ -1,278 +1,278 @@
 ---
 name: subpoena-triage
-description: Triage a subpoena served on the company — classify it, analyze scope/burden/privilege, cross-check the portfolio, and produce an objections framework, compliance plan, and deadline calendar. Use when the user says "we got a subpoena", "served with a subpoena", or shares a subpoena, CID, or third-party document request to evaluate.
+description: Triagem de ofício requisitório / intimação para terceiro recebida pela parte — classifica, analisa escopo/onerosidade/sigilo, cross-check com portfólio, e produz framework de impugnação, plano de cumprimento e calendário de prazos. Use quando o usuário diz "recebemos ofício", "fomos intimados como terceiros", ou compartilha ofício, requisição administrativa ou pedido de documentos para avaliar.
 argument-hint: "[path-to-subpoena] [--slug=custom-slug]"
 ---
 
 # /subpoena-triage
 
-1. Read the subpoena from provided path.
-2. Classify (third-party-docs / third-party-depo / party / CID / grand-jury).
-3. If grand jury → stop, escalate per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Otherwise continue.
-4. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for cross-check. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → landscape, privilege conventions, escalation norms.
-5. Follow the workflow and reference below.
-6. Extract key fields, analyze scope/burden/privilege, produce objections framework + compliance plan + deadline calendar.
-7. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/triage.md`. Copy or link subpoena to `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/incoming.[ext]`.
-8. Hand off: `/legal-hold --issue` if hold not in place; `/matter-intake` if materiality warrants; `/matter-briefing [slug]` if party subpoena in existing matter.
+1. Leia o ofício do path fornecido.
+2. Classifique (terceiro-docs / terceiro-oitiva / parte / requisição-administrativa / requisição-criminal).
+3. Se requisição criminal → pare, escalone per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Caso contrário continue.
+4. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` para cross-check. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → panorama, convenções de sigilo, normas de escalonamento.
+5. Siga o workflow e a referência abaixo.
+6. Extraia campos-chave, analise escopo/onerosidade/sigilo, produza framework de impugnação + plano de cumprimento + calendário de prazos.
+7. Grave `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/triage.md`. Copie ou linke o ofício para `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/incoming.[ext]`.
+8. Handoff: `/legal-hold --issue` se dever de guarda não está em vigor; `/matter-intake` se materialidade justifica; `/matter-briefing [slug]` se ofício de parte em caso existente.
 
 ---
 
-# Subpoena Triage
+# Triagem de Ofício / Intimação para Terceiro
 
-## Purpose
+## Propósito
 
-Subpoenas arrive with deadlines. The failure modes: missing the deadline, over-producing (privilege waiver, burden we should have objected to), under-producing (contempt exposure), or missing a motion-to-quash window. This skill classifies, analyzes, and produces a compliance plan with objections framework.
+Ofícios chegam com prazos. Os failure modes: perder o prazo, super-produzir (quebra de sigilo, ônus que devíamos ter impugnado), sub-produzir (exposição a multa por desobediência — CP art. 330 e/ou astreintes CPC art. 537), ou perder janela de impugnação. Esta skill classifica, analisa e produz plano de cumprimento com framework de impugnação.
 
-## Jurisdiction assumption
+## Assunção jurisdicional
 
-The rule cited in Step 0 is the operative one for this subpoena in this forum. Subpoena practice varies materially: federal (FRCP 45) vs. state equivalents, state-to-state variants, local rules, court-specific standing orders, and the subpoena type (trial, deposition, document production) all change objection deadlines, place-of-compliance limits, privilege-log requirements, and cost-shifting. Every rule output here is a starting-point heuristic — confirm currency and the local variant before asserting in writing.
+A regra citada no Passo 0 é a operativa para este ofício neste foro. Prática de ofício/requisição varia materialmente: CPC 2015 (cível geral — arts. 380-389 contra terceiros; arts. 396-404 contra partes); Lei 9.099/95 (JEC); rito penal (CPP); rito administrativo (Lei 9.784/99); requisições de regulador (CVM Lei 6.385/76; ANPD Lei 13.709/2018 art. 55-J; ANS, Bacen, RFB); MPF/CGU em improbidade (Lei 8.429/92, Lei 14.230/21). Todo regulamento, regimento interno, ordem permanente do juízo, e o tipo de ofício (cível geral, depoimento, exibição) mudam prazos de impugnação, limites de pertinência, exigências de rol de sigilo, e custeio. Toda regra emitida aqui é heurística ponto-de-partida — confirme atualidade e variante local antes de afirmar por escrito.
 
-## Side context
+## Contexto de polo
 
-This skill is inherently defensive — a subpoena has been served on the recipient and the posture is respond/object/comply. Read `## Side` in the practice profile. If the user's default side is **plaintiff**, note that receiving a subpoena is common for plaintiffs too (witness subpoenas, third-party requests directed at the plaintiff's own records) but the framing here is always "subpoena served on us, how do we respond." If the user is **defense** (typical), the framing aligns with the default. If the matter has a different posture than the default (e.g., defense practitioner receiving a subpoena in a matter where they're pro se for a family member), prompt the user to confirm posture before proceeding.
+Esta skill é inerentemente defensiva — um ofício foi expedido contra a parte recebedora e a postura é responder/impugnar/cumprir. Leia `## Posição processual` no perfil de atuação. Se o polo default do usuário é **autor**, note que receber ofício é comum para autores também (intimações de testemunha, pedidos a terceiro direcionados aos próprios registros do(a) autor(a)) mas o framing aqui é sempre "ofício expedido contra nós, como respondemos". Se o usuário é **réu** (típico), o framing alinha com o default. Se o caso tem postura diferente do default (ex.: profissional defensivo recebendo ofício em caso onde está em jus postulandi por familiar), pergunte ao usuário para confirmar polo antes de prosseguir.
 
-## Load context
+## Carregar contexto
 
-- The subpoena document (user provides path or drops it in-session)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — for related matter lookup and legal hold status
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → landscape (regulators we deal with), house privilege conventions, escalation norms
+- O ofício (usuário fornece path ou dropa in-session)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — para lookup de caso relacionado e status de dever de guarda
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → panorama (reguladores com que lidamos), convenções de sigilo da casa, normas de escalonamento
 
-## Workflow
+## Fluxo de trabalho
 
-### Step 0: Research the applicable rule
+### Passo 0: Pesquise a regra aplicável
 
-**Before analyzing this subpoena, research the applicable rule of civil procedure for the forum (FRCP 45 for federal, the state equivalent otherwise) and the subpoena type (trial, deposition, document production). Identify: place-of-compliance limits, objection deadlines (these often run from the EARLIER of the compliance date or a fixed number of days after service), privilege-log requirements, and who bears costs. Cite with pinpoint references. Verify currency — rules and local variants change. Flag grand-jury subpoenas for immediate criminal-counsel escalation.**
+**Antes de analisar este ofício, pesquise o regulamento aplicável para o foro (CPC arts. 380-389 para exibição contra terceiros; CPC arts. 396-404 contra partes; Lei 9.099/95 para JEC; rito específico para CVM/ANPD/Bacen/RFB) e o tipo de ofício (exibição documental, testemunho, requisição de regulador). Identifique: limites de pertinência (CPC art. 370 — pertinência da prova), prazos de impugnação (estes frequentemente correm da intimação válida — CPC art. 219 prazos em dias úteis; lembrar prazo em dobro CPC art. 186 se Defensor), exigências de rol de sigilo, e quem suporta custos. Cite com pinpoints. Verifique atualidade — regras e variantes mudam. Sinalize requisições criminais para escalonamento imediato a criminalista.**
 
-**No silent supplement.** If a research query to the configured legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or firm platform) returns few or no results for the forum's rule, variant, or pinpoint, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [rule / forum / variant]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) stop here. Which would you like?" A lawyer decides whether to accept lower-confidence sources; the skill does not decide for them.
+**Sem suplementação silenciosa.** Se consulta ao MCP de pesquisa configurado (JusRatio, BNP, CJF, TJAM, DataJud) retorna poucos ou nenhum resultado para a regra, variante ou pinpoint do foro, reporte o que foi encontrado e pare. NÃO preencha a lacuna com busca web ou conhecimento do modelo sem perguntar. Diga: "A busca retornou [N] resultados de [ferramenta]. Cobertura parece fina para [regra / foro / variante]. Opções: (1) ampliar a query, (2) tentar outra ferramenta, (3) buscar na web — resultados tagueados `[busca web — verificar]` e devem ser checados contra fonte primária antes de confiar, ou (4) parar aqui. Qual prefere?" Um(a) advogado(a) decide se aceita fontes de menor confiança; a skill não decide por ele.
 
-**Source attribution.** Tag every rule reference, case, statute, and regulation in the triage output with where it came from: `[Westlaw]`, `[CourtListener]`, `[Trellis]`, `[Descrybe]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for citations from web search; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations the user supplied (e.g., from the subpoena or prior matter work). Citations tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags — they are counsel's fastest signal about which citations to verify before asserting in objections or filings.
+**Atribuição de fonte.** Tagueie cada referência a regra, julgado, lei e regulamento no output da triagem com de onde veio: `[JusRatio]`, `[BNP]`, `[CJF]`, `[TJAM]`, `[DataJud]`, ou o nome do MCP para citações recuperadas; `[busca web — verificar]` para citações de busca web; `[conhecimento do modelo — verificar]` para citações de dados de treino; `[usuário forneceu]` para citações fornecidas pelo usuário (ex.: do ofício ou trabalho prévio). Citações tagueadas `verificar` carregam maior risco de fabricação e devem ser checadas primeiro. Nunca strip ou colapse as tags — são o sinal mais rápido do(a) advogado(a) sobre quais citações verificar antes de afirmar em impugnações ou petições.
 
-### Step 1: Classify
+### Passo 1: Classifique
 
-Subpoenas come in flavors with different rules; confirm the specifics against the rule you just researched:
+Ofícios vêm em sabores com regras diferentes; confirme os específicos contra a regra que acabou de pesquisar:
 
-- **Third-party document subpoena (civil)** — we're not a party to the litigation; someone wants our documents. Usual objection categories: relevance, burden, privilege, place-of-compliance / geographic reach.
-- **Third-party deposition subpoena** — someone wants an employee to testify. Scope, relevance, burden; possible motion to quash; witness prep required.
-- **Party subpoena** — we ARE a party; this is discovery in a litigation we're tracking. Treat as discovery, not inbound — it should map to an existing matter.
-- **Regulatory civil investigative demand (CID)** — FTC, SEC, DOJ, state AG. Different rules, different posture; often more deferential but also more consequential.
-- **Grand jury subpoena** — criminal. Escalate immediately to criminal counsel; different skill path (outside this skill's scope — flag for escalation).
+- **Ofício para exibição contra terceiro (cível)** — não somos parte do litígio; alguém quer nossos documentos. Categorias de impugnação usuais: pertinência (CPC art. 370), onerosidade excessiva (CPC art. 380 §2º), sigilo (CPC art. 388), competência territorial / impossibilidade de cumprimento.
+- **Intimação de terceiro para depor** — alguém quer empregado(a) para testemunhar. Escopo, pertinência, onerosidade; possível pedido de revogação; preparação de testemunha exigida (vide `/litigation-legal:deposition-prep`).
+- **Ofício / intimação dirigida a parte** — SOMOS parte; isto é instrução probatória em litígio que estamos rastreando. Trate como instrução, não como recebido — deve mapear a um caso existente.
+- **Requisição administrativa (RFB/ANPD/CVM/ANS/Bacen/MPF/CGU/AG/PROCON estadual ou municipal)** — regras diferentes, postura diferente; frequentemente mais deferencial mas também mais consequencial. ANPD tem prerrogativa requisitória própria (Lei 13.709/2018 art. 55-J); RFB tem amplos poderes do art. 195 e ss. CTN.
+- **Requisição em sede criminal (delegacia, MPF, juízo criminal)** — escalone imediatamente a criminalista; caminho de skill diferente (fora do escopo desta skill — sinalize para escalonamento).
 
-### Step 2: Extract key fields
+### Passo 2: Extraia campos-chave
 
-- **Issuing authority** — court (which), agency (which), counsel (if civil)
-- **Issuing party** — who requested (if civil)
-- **Case / matter caption** — the litigation we're being asked about
-- **Document categories sought** — numbered list
-- **Testimony topics** (if depo) — Rule 30(b)(6) designations
-- **Deadline for response/objection** — date served + computing the response window per applicable rule
-- **Production date** — date by which documents must be produced
-- **Geographic scope** — custodians, locations, systems implicated
-- **Custodian of record designation** — who at the company is the witness/signatory
+- **Autoridade expedidora** — juízo (qual), órgão (qual), advogado(a) (se cível)
+- **Parte requerente** — quem requereu (se cível)
+- **Autos / capa do caso** — o litígio sobre o qual estamos sendo consultados
+- **Categorias de documentos requeridas** — lista numerada
+- **Tópicos de testemunho** (se oitiva) — escopo
+- **Prazo para resposta/impugnação** — data de intimação + cálculo da janela de resposta per regulamento aplicável (lembrar prazo em dobro CPC art. 186 se Defensor)
+- **Data de cumprimento** — data até a qual documentos devem ser exibidos
+- **Escopo geográfico** — custodiantes, localidades, sistemas implicados
+- **Designação de custódia de registro** — quem na parte é a testemunha/signatário
 
-### Step 3: Portfolio cross-check
+### Passo 3: Cross-check de portfólio
 
-- **Party subpoena → related to existing matter:** verify the caption matches a matter in `_log.yaml`. If yes, route to that matter's workflow; this triage is informational.
-- **Third-party subpoena → caption we don't recognize:** capture the parties; log as standalone inbound.
-- **Multiple subpoenas from same case:** flag coordinated issuance; a single response strategy may apply.
+- **Ofício dirigido a parte → relacionado a caso existente:** verifique que a capa bate com caso em `_log.yaml`. Se sim, route para o workflow daquele caso; esta triagem é informacional.
+- **Ofício a terceiro → capa que não reconhecemos:** capture as partes; logue como standalone inbound.
+- **Múltiplos ofícios do mesmo caso:** sinalize expedição coordenada; estratégia única de resposta pode aplicar.
 
-### Step 4: Analyze scope, burden, privilege
+### Passo 4: Analise escopo, onerosidade, sigilo
 
-**Scope / relevance**
-- Do the categories map to actual documents we plausibly have?
-- Is any category a fishing expedition (overbroad, untethered to claims/defenses of the underlying case)?
-- Place of compliance / geographic reach — apply the researched rule; limits differ by subpoena type (trial vs. document vs. deposition).
+**Escopo / pertinência**
+- As categorias mapeiam para documentos que plausivelmente temos?
+- Alguma categoria é expedição de pesca (excessivamente ampla, desconectada de pretensões/defesas do caso subjacente — CPC art. 370)?
+- Alcance geográfico / lugar de cumprimento — aplique a regra pesquisada; limites diferem por tipo de ofício.
 
-**Burden**
-- Custodians implicated, systems searched, time period
-- Estimated volume (rough: small / medium / large / extreme)
-- Cost — third-party responders may have cost-shifting available; check the researched rule.
+**Onerosidade**
+- Custodiantes implicados, sistemas buscados, período
+- Volume estimado (rough: pequeno / médio / grande / extremo)
+- Custo — terceiros respondentes podem ter custeio disponível; cheque a regra pesquisada (CPC art. 380 §2º — terceiro tem direito a indenização das despesas).
 
-**Privilege**
-- Attorney-client or work product likely implicated? (Almost always yes for anything legal-related; often yes for communications involving in-house or outside counsel.)
-- Other privileges — trade secret, HIPAA (if applicable), state privilege, common interest
-- Privilege log will be required — flag the format per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`
+**Sigilo**
+- Sigilo profissional do(a) advogado(a) ou trabalho preparatório provavelmente implicado? (Quase sempre sim para qualquer coisa jurídica; frequentemente sim para comunicações envolvendo advogado(a) interno(a) ou externo(a) — Lei 8.906/94 art. 7º XIX.)
+- Outros sigilos — segredo industrial / comercial (CC art. 195), sigilo bancário (LC 105/2001), sigilo fiscal (CTN art. 198), sigilo médico (CFM Resolução 1.931/2009 — Código de Ética Médica art. 73), dados pessoais sensíveis LGPD art. 11
+- Rol de sigilo será exigido — sinalize o formato per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`
 
-**Other objection grounds**
-- Confidentiality — protective order needed?
-- Duplicative — do they already have this from another party?
-- Not possessed — we don't have what they're asking for (document with specificity)
-- Improperly served — check the researched rule's service requirements
+**Outros fundamentos de impugnação**
+- Confidencialidade — segredo de justiça CPC art. 189 necessário?
+- Duplicativo — já têm isto de outra parte?
+- Não-possuído — não temos o que pedem (documente com especificidade)
+- Vício de intimação — cheque exigências de intimação da regra pesquisada
 
-### Step 5: Objections framework
+### Passo 5: Framework de impugnação
 
-Draft a structured objections outline — not the final objections letter, but the outline of what objections apply and why. The user (often with outside counsel) finalizes.
+Redija outline estruturado de impugnações — não a peça final de impugnação, mas o outline do que aplica e por quê. O usuário (frequentemente com escritório externo) finaliza.
 
-Each objection:
-- Legal basis — cite the pinpoint from the rule researched in Step 0
-- Specific application to this subpoena (which categories, which custodians)
-- Strength (strong / reasonable / weak)
+Cada impugnação:
+- Fundamento jurídico — cite o pinpoint da regra pesquisada no Passo 0
+- Aplicação específica a este ofício (quais categorias, quais custodiantes)
+- Força (forte / razoável / fraca)
 
-### Step 6: Compliance plan
+### Passo 6: Plano de cumprimento
 
-Even when objecting, we often produce some of what's requested. Plan:
+Mesmo impugnando, frequentemente produzimos algo do que foi pedido. Plano:
 
-- **Scope of likely production** — after objections, what we'd produce
-- **Custodians to search** — names and systems
-- **Date range**
-- **Review protocol** — who reviews for privilege (us, outside counsel, contract reviewers)
-- **Production format** — per the subpoena or per negotiated protocol (TIFF+load file, native, PDF)
-- **Privilege log requirements** — format, fields
+- **Escopo de produção provável** — após impugnações, o que produziríamos
+- **Custodiantes a buscar** — nomes e sistemas
+- **Faixa de data**
+- **Protocolo de revisão** — quem revisa para sigilo (nós, externo, paralegais)
+- **Formato de produção** — per o ofício ou per protocolo negociado (PDF, nativo, com OCR)
+- **Exigências de rol de sigilo** — formato, campos
 
-### Step 7: Deadlines
+### Passo 7: Prazos
 
-Use the deadlines identified in the Step 0 research. Note that objection deadlines often run from the EARLIER of the compliance date or a fixed number of days after service — do not default to a single number without checking the applicable rule and local variant.
+Use os prazos identificados na pesquisa do Passo 0. Note que prazos de impugnação frequentemente correm da intimação válida — não default para um único número sem checar regulamento aplicável e variante local. Lembrar prazo em dobro CPC art. 186 se Defensor.
 
-- **Response deadline** — per researched rule; note if user needs more time (meet-and-confer to extend is standard)
-- **Objection deadline** — per researched rule (federal / state rule + any local variant)
-- **Production date** — if no objections succeed
-- **Motion to quash window** — if pursuing that path, timing is critical
+- **Prazo de resposta** — per regulamento pesquisado; note se usuário precisa de mais tempo (petição de dilação é padrão)
+- **Prazo de impugnação** — per regulamento pesquisado (CPC + variante local)
+- **Data de produção** — se nenhuma impugnação prevalece
+- **Janela de pedido de revogação** — se perseguindo este caminho, timing é crítico
 
-Calendar all of them. Immediate action item.
+Agende tudo. Item de ação imediata.
 
-### Step 8: Write triage
+### Passo 8: Gravar triagem
 
 Output: `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[slug]/triage.md`.
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — por config do plugin ## Outputs — varia por papel; vide `## Quem está usando`]
 
-# Subpoena Triage
+# Triagem de Ofício / Intimação
 
-> **NOT A SUBSTITUTE FOR OUTSIDE COUNSEL.** This is a structured classification and scoping read to support fast decisions on deadlines, holds, and engagement. Every rule reference is a starting-point heuristic; jurisdiction-specific analysis, objections finalization, motions practice, and merit calls on privilege require licensed counsel familiar with the forum. Engage outside counsel for any subpoena above routine third-party document scope.
+> **NÃO SUBSTITUI ESCRITÓRIO EXTERNO.** Esta é classificação estruturada e leitura de escopo para apoiar decisões rápidas sobre prazos, deveres de guarda e contratação. Toda referência a regra é heurística ponto-de-partida; análise específica de jurisdição, finalização de impugnações, prática de pedidos de revogação, e chamadas de mérito sobre sigilo exigem advogado(a) habilitado(a) familiar com o foro. Contrate escritório externo para qualquer ofício acima de escopo rotineiro de docs a terceiro.
 
 **Slug:** [slug]
-**Served:** [YYYY-MM-DD]
-**Served on:** [entity / registered agent]
-**Incoming file:** [path]
-**Classification:** [third-party-docs / third-party-depo / party / CID / grand-jury]
+**Intimação em:** [YYYY-MM-DD]
+**Intimado(a):** [entidade / receptor legal]
+**Arquivo recebido:** [path]
+**Classificação:** [terceiro-docs / terceiro-oitiva / parte / requisição-administrativa / requisição-criminal]
 
 ---
 
-## Key fields
+## Campos-chave
 
-- **Issuing authority:** [court/agency]
-- **Issuing party:** [name]
-- **Case caption:** [caption]
-- **Response deadline:** [date]
-- **Production date:** [date]
-- **Motion-to-quash window:** [date range]
+- **Autoridade expedidora:** [juízo/órgão]
+- **Parte requerente:** [nome]
+- **Capa do caso:** [capa]
+- **Prazo de resposta:** [data — em dobro se Defensor]
+- **Data de produção:** [data]
+- **Janela de pedido de revogação:** [faixa de data]
 
-## Categories sought (summary)
+## Categorias requeridas (sumário)
 
-[numbered list, concise]
+[lista numerada, concisa]
 
-## Custodians / systems likely implicated
+## Custodiantes / sistemas provavelmente implicados
 
-[list]
-
----
-
-## Portfolio cross-check
-
-**Related matter:** [slug or "none"]
-**If party subpoena:** [routed to existing matter or new matter?]
-**If third-party:** [standalone inbound]
+[lista]
 
 ---
 
-## Scope & burden analysis
+## Cross-check de portfólio
 
-**Scope:** [relevance assessment by category]
-**Burden estimate:** [small / medium / large / extreme — with reasoning]
-**Geographic reach issues:** [any]
-
-## Privilege analysis
-
-*Privilege scoping is a first-pass read; final call is counsel's, not this skill's.*
-
-**Attorney-client / work product likely implicated:** [yes/no + which categories] `[SME VERIFY]`
-**Other privileges:** [trade secret, HIPAA, state, common interest] `[SME VERIFY]`
-**Privilege log format required:** [per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`]
+**Caso relacionado:** [slug ou "nenhum"]
+**Se ofício a parte:** [roteado para caso existente ou novo?]
+**Se a terceiro:** [standalone inbound]
 
 ---
 
-## Objections framework
+## Análise de escopo & onerosidade
 
-*Every row below requires `[SME VERIFY]` before asserting in writing — jurisdiction, rule currency, waiver risk.*
+**Escopo:** [avaliação de pertinência por categoria]
+**Estimativa de onerosidade:** [pequeno / médio / grande / extremo — com razão]
+**Issues de alcance geográfico:** [qualquer]
 
-| Objection | Legal basis | Applies to | Strength | SME verified? |
+## Análise de sigilo
+
+*Escopo de sigilo é leitura de primeira passagem; chamada final é do(a) advogado(a), não desta skill.*
+
+**Sigilo profissional / trabalho preparatório provavelmente implicado:** [sim/não + quais categorias] `[SME VERIFICAR]`
+**Outros sigilos:** [segredo comercial, bancário, fiscal, médico, dados sensíveis LGPD] `[SME VERIFICAR]`
+**Formato de rol de sigilo exigido:** [per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`]
+
+---
+
+## Framework de impugnação
+
+*Cada linha abaixo exige `[SME VERIFICAR]` antes de afirmar por escrito — jurisdição, atualidade da regra, risco de quebra.*
+
+| Impugnação | Fundamento jurídico | Aplica a | Força | SME verificado? |
 |---|---|---|---|---|
-| Relevance | [rule] | [categories] | [strong/reasonable/weak] | [ ] |
-| Burden | [rule] | [categories] | | [ ] |
-| Privilege | A/C, WP | [all producing docs] | strong (always) | [ ] |
-| Duplicative | [rule/doctrine] | [if applicable] | | [ ] |
-| [other] | | | | [ ] |
+| Impertinência | CPC art. 370 | [categorias] | [forte/razoável/fraca] | [ ] |
+| Onerosidade excessiva | CPC art. 380 §2º | [categorias] | | [ ] |
+| Sigilo | Lei 8.906/94 art. 7º XIX; CPC art. 388 | [todos docs produzindo] | forte (sempre) | [ ] |
+| Duplicativo | [regra/doutrina] | [se aplicável] | | [ ] |
+| [outro] | | | | [ ] |
 
 ---
 
-## Compliance plan (if responding)
+## Plano de cumprimento (se respondendo)
 
-- **Scope of likely production:** [after objections]
-- **Custodians / systems:** [list]
-- **Date range:** [range]
-- **Review protocol:** [who, how]
-- **Production format:** [format]
-- **Privilege log:** [format, est. entries]
-
----
-
-## Deadlines (calendar these)
-
-*All deadlines below come from the Step 0 rule research. `[SME VERIFY]` confirms the rule, variant, and computation for this forum and this subpoena type — state variants and local rules differ.*
-
-- **Response deadline:** [date] `[SME VERIFY]`
-- **Objection deadline:** [date] — cite: [rule + pinpoint] `[SME VERIFY]`
-- **Meet-and-confer by:** [date] (typically before objection deadline) `[SME VERIFY]`
-- **Production date:** [date]
+- **Escopo de produção provável:** [após impugnações]
+- **Custodiantes / sistemas:** [lista]
+- **Faixa de data:** [faixa]
+- **Protocolo de revisão:** [quem, como]
+- **Formato de produção:** [formato]
+- **Rol de sigilo:** [formato, entradas estimadas]
 
 ---
 
-## Immediate actions
+## Prazos (agende)
 
-- [ ] Legal hold issued — [yes/no] — if no, run `/legal-hold [slug] --issue` with subpoena scope
-- [ ] Outside counsel engaged — [yes/who/TBD]
-- [ ] Meet-and-confer scheduled — [date]
-- [ ] Matter created in log — [yes/no/TBD — usually yes for anything above the smallest third-party docs subpoena]
-- [ ] Insurance / cost-shifting analysis — [if burden is large]
-- [ ] Internal escalation — [who]
+*Todos os prazos abaixo vêm da pesquisa de regra do Passo 0. `[SME VERIFICAR]` confirma a regra, variante, e cálculo para este foro e tipo de ofício — variantes locais diferem. Lembrar prazo em dobro CPC art. 186 se Defensor.*
 
----
-
-## Recommendation
-
-[Two paragraphs: what to do. Objection posture. Production posture. Whether outside counsel handles objections or we do. Whether to move to quash.]
+- **Prazo de resposta:** [data] `[SME VERIFICAR]`
+- **Prazo de impugnação:** [data] — cite: [regra + pinpoint] `[SME VERIFICAR]`
+- **Petição de dilação até:** [data] (tipicamente antes do prazo de impugnação) `[SME VERIFICAR]`
+- **Data de produção:** [data]
 
 ---
 
-## Citation verification
+## Ações imediatas
 
-Every rule reference, case, statute, and regulation in this triage — including the Step 0 research citations, objection bases, and the privilege-log format pointer — is AI-generated and unverified. Before relying on any cite (especially in objections, a motion to quash, or correspondence with the issuing party), run a verification pass against a legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or your firm's platform) for accuracy, good law status, and local variants. Fabricated or misquoted citations in filed documents have resulted in sanctions. Source tags on each citation (e.g., `[Westlaw]`, `[web search — verify]`) show where it came from; `verify` tags carry higher fabrication risk and should be checked first.
+- [ ] Dever de guarda emitido — [sim/não] — se não, rode `/legal-hold [slug] --issue` com escopo do ofício
+- [ ] Escritório externo contratado — [sim/quem/TBD]
+- [ ] Petição de dilação agendada — [data]
+- [ ] Caso criado no log — [sim/não/TBD — usualmente sim para qualquer coisa acima do menor ofício a terceiro]
+- [ ] Análise de seguro / custeio — [se onerosidade é grande]
+- [ ] Escalonamento interno — [quem]
+
+---
+
+## Recomendação
+
+[Dois parágrafos: o que fazer. Postura de impugnação. Postura de produção. Se externo trata impugnações ou nós. Se pedir revogação.]
+
+---
+
+## Verificação de citações
+
+Toda referência a regra, julgado, lei e regulamento nesta triagem — incluindo as citações de pesquisa do Passo 0, fundamentos de impugnação, e ponteiro de formato de rol de sigilo — é gerada por IA e não verificada. Antes de confiar em qualquer cite (especialmente em impugnações, pedido de revogação, ou correspondência com a parte requerente), rode pesquisa de verificação contra ferramenta de pesquisa (JusRatio, BNP, CJF, TJAM, DataJud, ou plataforma da banca) para acurácia, status de "ainda bom direito" e variantes locais. Citações fabricadas ou mal-citadas em documentos protocolados podem resultar em sanções (CPC art. 80; Provimento OAB 205/2021). Tags de fonte em cada citação (ex.: `[JusRatio]`, `[busca web — verificar]`) mostram de onde veio; tags `verificar` carregam maior risco de fabricação e devem ser checadas primeiro.
 ```
 
-### Step 9: Hand off
+### Passo 9: Handoff
 
-**Before responding to the subpoena (serving objections, producing documents, appearing for deposition, or filing a motion to quash — any substantive response to the issuing party or court):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+**Antes de responder ao ofício (juntar impugnações, exibir documentos, comparecer para depor, ou pedir revogação — qualquer resposta substantiva à parte requerente ou juízo):** Leia `## Quem está usando` em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Se o Papel é Não-advogado:
 
-> Responding to a subpoena has legal consequences — missing a deadline risks contempt, over-producing waives privilege, under-producing risks sanctions. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+> Responder a ofício tem consequências jurídicas — perder prazo arrisca multa por desobediência (CP art. 330) ou astreintes (CPC art. 537); super-produzir quebra sigilo; sub-produzir arrisca sanções. Você revisou com advogado(a) ou Defensor(a) Público(a)? Se sim, prossiga. Se não, segue brief para levar:
 >
-> [Generate a 1-page summary: the subpoena type, issuing authority, deadlines, scope of what's sought, objections framework and strength, privilege and burden issues, proposed response posture, what could go wrong, what to ask the attorney.]
+> [Gere sumário de 1 página: o tipo de ofício, autoridade expedidora, prazos, escopo do requerido, framework de impugnação e força, issues de sigilo e onerosidade, postura proposta de resposta, o que pode dar errado, o que perguntar ao(à) advogado(a).]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> Se precisa achar advogado(a) habilitado(a) ou Defensor(a) Público(a) na sua localidade: o serviço de referência da OAB Seccional do estado (ou da Defensoria Pública Estadual/União) é o ponto de partida mais rápido.
 
-Do not proceed past this gate without an explicit yes. Triage, scoping, and internal calendaring do not require the gate — the response to the issuing authority does.
+Não prossiga além deste gate sem um sim explícito. Triagem, escopo, e agendamento interno não exigem o gate — a resposta à autoridade requerente exige.
 
-- If classified as **grand jury subpoena** → stop, flag for escalation per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`, do not proceed with standard triage.
-- If classified as **CID**: flag that regulator-specific norms apply; recommend outside regulatory counsel.
-- Otherwise: offer to create a matter (usually yes — subpoenas are almost always material enough to track).
-- If a legal hold isn't issued with subpoena scope, hand off to `/legal-hold --issue` immediately.
+- Se classificado como **requisição criminal** → pare, sinalize para escalonamento per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`, não prossiga com triagem padrão.
+- Se classificado como **requisição administrativa**: sinalize que normas específicas do regulador aplicam; recomende externo regulatório.
+- Caso contrário: ofereça criar caso (usualmente sim — ofícios são quase sempre materiais o suficiente para rastrear).
+- Se dever de guarda não está emitido com escopo do ofício, handoff para `/legal-hold --issue` imediatamente.
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Feche com a árvore de decisão de próximos passos per CLAUDE.md `## Outputs`. Customize as opções para o que esta skill acabou de produzir — as cinco ramificações default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não trava. A árvore É o output; o(a) advogado(a) escolhe.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Draft the final objections letter.** Produces the framework; the letter is drafted by user + outside counsel (future: a dedicated objections-draft skill).
-- **Move to quash.** Surfaces the option; the motion is legal work that requires jurisdiction-specific analysis.
-- **Validate rules across jurisdictions.** The Step 0 research produces the operative rule for this subpoena; the skill doesn't independently confirm currency or local variants. Flag for counsel verification before acting.
-- **Handle grand jury subpoenas.** Escalates. This is outside the triage scope.
+- **Redige a peça final de impugnação.** Produz o framework; a peça é redigida pelo usuário + externo (futuro: skill dedicada de redação de impugnação).
+- **Move pedido de revogação.** Aflora a opção; o pedido é trabalho jurídico que exige análise específica de jurisdição.
+- **Valida regras entre jurisdições.** A pesquisa do Passo 0 produz a regra operativa para este ofício; a skill não confirma independentemente atualidade ou variantes locais. Sinalize para verificação por advogado(a) antes de agir.
+- **Lida com requisições criminais.** Escalona. Está fora do escopo da triagem.

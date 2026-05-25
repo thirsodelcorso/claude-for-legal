@@ -1,248 +1,249 @@
 ---
 name: study-plan
 description: >
-  Build or update a long-term bar prep (or exam prep) study plan — phases,
-  subjects weighted by weakness, daily session schedule, adaptive to session
-  history in study-plan.yaml. Use when the user says "build a study plan",
-  "plan my bar prep", "schedule my studying", or "how should I study for [X]".
+  Monta ou atualiza plano de estudos de longo prazo para OAB (ou prova de
+  faculdade) — fases, disciplinas ponderadas por fragilidade, agenda diária
+  de sessões, adaptativo ao histórico em study-plan.yaml. Use quando o(a)
+  usuário(a) disser "monta um plano de estudo", "planeja minha OAB", "agenda
+  meus estudos", ou "como devo estudar para [X]".
 argument-hint: "[--build | --update | --status | --cram]"
 ---
 
 # /study-plan
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → bar jurisdiction, exam format, bar date, weak subjects, target study hours/day, prep course.
-2. Load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists.
-3. Apply the framework below.
-4. Route by flag:
-   - `--build` (default if no plan exists): walk the inputs gate (exam, subjects, hours/week, days off, methods). Build the phase structure + daily schedule for the first two weeks. Write `study-plan.yaml`.
-   - `--update` (default if plan exists): re-read `session_history`, adjust subject priorities and weekly_hours, fill in the next stretch of daily schedule.
-   - `--status`: what's scheduled today / this week, score trend, subjects slipping, next scheduled session per subject.
-   - `--cram`: force cram mode — 80/20 high-yield prioritization, daily MBE volume, taper last 2-3 days.
-5. Before writing: summarize the plan in prose and confirm with the student. Adjust based on their answer.
-6. Always sanity-check hours/week against the student's stated life constraints. Over-ambitious plans fail.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → OAB Seccional, fase da OAB, data alvo, disciplinas frágeis, horas de estudo/dia alvo, cursinho.
+2. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` se existir.
+3. Aplique o framework abaixo.
+4. Roteie pela flag:
+   - `--build` (default se não existe plano): caminhe pelo gate de inputs (prova, disciplinas, horas/semana, dias de folga, métodos). Monte estrutura de fases + agenda diária para as duas primeiras semanas. Escreva `study-plan.yaml`.
+   - `--update` (default se plano existe): releia `session_history`, ajuste prioridades de disciplina e weekly_hours, preencha o próximo trecho de agenda diária.
+   - `--status`: o que está agendado hoje / esta semana, tendência de pontuação, disciplinas escorregando, próxima sessão agendada por disciplina.
+   - `--cram`: força modo cram — priorização 80/20 alto-rendimento, volume diário de objetivas, tapering nos últimos 2-3 dias.
+5. Antes de escrever: sumarize o plano em prosa e confirme com o(a) estudante. Ajuste com base na resposta.
+6. Sempre rode sanity-check de horas/semana contra as restrições de vida declaradas pelo(a) estudante. Planos super-ambiciosos falham.
 
 ---
 
-## Purpose
+## Propósito
 
-Sitting down to study and not knowing what to study is how weeks disappear. This skill builds a plan — weeks to exam, sessions per day, subjects per week, session types — and then adapts as the student actually does the sessions. It is a living plan, not a calendar export.
+Sentar para estudar e não saber o que estudar é como semanas desaparecem. Esta skill monta plano — semanas até a prova, sessões por dia, disciplinas por semana, tipos de sessão — e então adapta conforme o(a) estudante efetivamente faz as sessões. É plano vivo, não exportação para calendário.
 
-It also gives downstream skills (bar-prep, flashcards, drill, irac) a shared schedule to honor, so the student isn't asked "what do you want to study today" every time they open a session.
+Também dá às skills downstream (bar-prep, flashcards, drill, irac) agenda compartilhada para honrar, para que o(a) estudante não seja perguntado(a) "o que você quer estudar hoje" toda vez que abre uma sessão.
 
-## Confidence discipline
+## Disciplina de confiança
 
-A plan is opinion, not doctrine. The skill states clearly what's an estimate:
+Plano é opinião, não doutrina. A skill enuncia claramente o que é estimativa:
 
-- **Time-per-topic estimates** are general guidance (based on typical Barbri/Themis/Kaplan weightings). Flag them as estimates — the student's real pace will differ.
-- **Subject weightings** are derived from the student's own reported weak subjects and session history. Confident.
-- **High-yield-topic prioritization in cram mode** is based on multi-year bar exam release patterns (MBE/MEE subject frequency). Flag any "this is definitely on the exam" claim as `[UNCERTAIN — past frequency is not a prediction]`.
+- **Estimativas de tempo-por-tópico** são orientação geral (com base em pesos típicos de cursinhos: CERS, Damásio, Estratégia OAB, Mege, Praetorium, Supremo TV, Ênfase). Marque como estimativas — o ritmo real do(a) estudante vai diferir.
+- **Pesos por disciplina** são derivados das disciplinas frágeis declaradas pelo(a) estudante e do histórico de sessões. Confiante.
+- **Priorização de tópicos de alto-rendimento em modo cram** é baseada em padrões multi-ano de OAB FGV (frequência por disciplina nas 80 questões da 1ª fase). Marque qualquer alegação "isto está garantido na prova" como `[INCERTO — frequência passada não é predição]`.
 
-## Load context
+## Carregar contexto
 
 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`:
-- Bar jurisdiction, exam format, bar date
-- Current classes (for non-bar use)
-- Weak subjects (MBE, essay)
-- Prep course
-- Target study hours/day
+- OAB Seccional, fase da OAB, data alvo
+- Disciplinas atuais (para uso não-OAB)
+- Disciplinas frágeis (1ª fase / 2ª fase se aplicável)
+- Cursinho
+- Horas de estudo alvo/dia
 
-`~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists — extend, don't overwrite.
+`~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` se existir — estenda, não sobrescreva.
 
 ## Workflow
 
-### Step 1: What are we planning for
+### Passo 1: Para o que estamos planejando
 
-> What are we building a plan for?
+> Para o que estamos montando plano?
 >
-> 1. **Bar exam** (you have a bar date in mind)
-> 2. **A specific law school exam or set of finals**
-> 3. **General semester study cadence** (outlining, reading, drilling across all classes)
+> 1. **Exame de Ordem (OAB)** (você tem data alvo em mente)
+> 2. **Prova específica da faculdade ou conjunto de finais**
+> 3. **Cadência geral de estudo do semestre** (resumos, leituras, drills em todas as disciplinas)
 
-For (1) bar: read bar date from practice profile, confirm. If no bar date captured, ask.
-For (2) law school exam: ask which class, what date, what format.
-For (3) semester: ask for the term-end date as the anchor.
+Para (1) OAB: leia data alvo do perfil, confirme. Se não capturada, pergunte. Confirme fase (1ª ou 2ª).
+Para (2) prova da faculdade: pergunte qual disciplina, que data, que formato.
+Para (3) semestre: pergunte a data de fim de período como âncora.
 
-### Step 2: Inputs — one at a time, wait for each
+### Passo 2: Inputs — um por vez, espere cada
 
-**Ask and wait.** Do not bulk all questions into one prompt and move on.
+**Pergunte e espere.** Não junte todas as perguntas em um prompt e siga.
 
-- **Exam date:** confirmed? (If bar: ask for jurisdiction if not in practice profile — study content depends on it.)
-- **Subjects to cover:** for bar, read from NCBE subject outline for the exam format (NextGen / traditional UBE / state-specific). For a class, the syllabus. Confirm with student — "any subject I should add or drop?"
-- **Strongest subjects:** least priority. Still reviewed, not drilled heavily.
-- **Weakest subjects:** most priority. Get more sessions.
-- **Hours per week available:** realistic, not aspirational. "I can do 20 hours" is different from "I will do 20 hours for 8 weeks." Ask what they can actually sustain.
-- **Life-context sanity check — force it.** After the student gives a number, ask (one question at a time — do not skip):
+- **Data da prova:** confirmada? (Se OAB: pergunte OAB Seccional se não estiver no perfil — conteúdo de estudo depende; e fase, 1ª ou 2ª.)
+- **Disciplinas a cobrir:** para OAB 1ª fase, leia do edital vigente FGV (17 disciplinas: Ética, Filosofia, Constitucional, DH, Internacional, Tributário, Administrativo, Ambiental, Civil, Empresarial, Consumidor, ECA, Penal, Proc. Penal, Trabalho, Proc. Trabalho, Proc. Civil). Para 2ª fase, a área escolhida pelo(a) estudante. Para disciplina de faculdade, o plano de aula. Confirme com estudante — "alguma disciplina para adicionar ou tirar?"
+- **Disciplinas mais fortes:** prioridade menor. Ainda revisadas, não drilam pesado.
+- **Disciplinas mais fracas:** prioridade maior. Recebem mais sessões.
+- **Horas por semana disponíveis:** realistas, não aspiracionais. "Posso fazer 20 horas" é diferente de "vou fazer 20 horas por 8 semanas". Pergunte o que efetivamente sustenta.
+- **Sanity check de contexto de vida — force.** Depois que o(a) estudante dá um número, pergunte (uma pergunta de cada vez — não pule):
 
-  > You said [N] hours per week. Before I build this, tell me what else is in your week — job (hours/week), family (kids, caregiving), commute, workout, therapy, clinic, anything meaningful. The plan should fit your life, not the other way around. A plan you can't follow is worse than a lighter plan you can.
+  > Você disse [N] horas por semana. Antes de montar, me conte o que mais tem na semana — trabalho/estágio (horas/semana), família (filhos, cuidado), deslocamento, exercício, terapia, NPJ/escritório-escola, qualquer coisa significativa. O plano deve caber na sua vida, não o contrário. Plano que você não consegue seguir é pior que plano mais leve que segue.
 
-  Wait for the answer. Then sanity-check the stated hours against their reported load:
+  Espere a resposta. Depois rode sanity-check das horas declaradas contra a carga reportada:
 
-  > That's ~[X] hours/day across [N] study days, on top of [job + family + commute + other]. In my experience that's [realistic / tight / unsustainable]. Want to adjust the hours/week target before I build, or keep them and see how week 1 goes?
+  > Isso é ~[X] horas/dia em [N] dias de estudo, em cima de [trabalho/estágio + família + deslocamento + outros]. Na minha experiência isso é [realista / apertado / insustentável]. Quer ajustar a meta horas/semana antes de eu montar, ou manter e ver como vai a semana 1?
 
-  Do not skip this step even if the practice profile's target hours number was already captured at cold-start. The profile captures what the student said; the life-context check captures whether it's sustainable. If the check produces a lower number, use the lower number for the plan and note the adjustment in the `confidence_flags` block.
+  Não pule este passo mesmo se o número de horas alvo do perfil já tenha sido capturado no cold-start. O perfil captura o que o(a) estudante disse; o sanity-check de vida captura se sustenta. Se o check produz número menor, use o menor para o plano e anote o ajuste no bloco `confidence_flags`.
 
-  If the student declines to share life context ("just build it"), respect that — but add a `confidence_flags` entry: "Life-context check declined; plan assumes [N] hours/week is sustainable. Revisit at end of week 2 if adherence is below [X]%."
-- **Preferred study methods:** multi-select. MBE practice / essays / flashcards / outlining / drilling / re-reading. Weight the schedule toward the methods they say they'll actually do.
-- **Days off per week:** rest days matter. Plans that schedule 7/7 days fail in week 3.
+  Se o(a) estudante recusa compartilhar contexto de vida ("só monta"), respeite — mas adicione entrada em `confidence_flags`: "Sanity check de contexto de vida recusado; plano assume [N] horas/semana é sustentável. Revisite no fim da semana 2 se aderência abaixo de [X]%."
+- **Métodos de estudo preferidos:** múltiplos. Questões OAB FGV / peças prático-profissionais / flashcards / resumos / drill / releitura. Pondere a agenda aos métodos que vai efetivamente fazer.
+- **Dias de folga por semana:** dias de descanso importam. Planos que agendam 7/7 dias falham na semana 3.
 
-### Step 2.5: Supplement vs. replace (prep-course users)
+### Passo 2.5: Suplementar vs. substituir (usuários(as) de cursinho)
 
-If `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → `Prep course` is **Barbri**, **Themis**, **Kaplan**, or any other structured prep course (i.e., NOT `self` or `N/A`), the student already has a prep-course calendar. This skill's plan must choose one of two roles — it cannot run a full parallel curriculum alongside the prep course without burning the student out.
+Se `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → `Cursinho OAB` é **CERS**, **Damásio**, **Estratégia OAB**, **Mege**, **Praetorium**, **Supremo TV**, **Ênfase**, ou qualquer outro cursinho estruturado (isto é, NÃO `autodidata` ou `N/A`), o(a) estudante já tem calendário do cursinho. O plano desta skill deve escolher um de dois papéis — não pode rodar currículo paralelo completo ao lado do cursinho sem queimar o(a) estudante.
 
-Ask, one question, wait:
+Pergunte, uma pergunta, espere:
 
-> Your profile says you're on [Barbri / Themis / Kaplan]. They publish a day-by-day calendar with every subject and task scheduled. Two ways this plan can work — pick one:
+> Seu perfil diz que você está no [CERS / Damásio / Estratégia OAB / Mege / Praetorium / Supremo TV / Ênfase]. Eles publicam cronograma dia-a-dia com toda disciplina e tarefa agendada. Dois jeitos deste plano funcionar — escolha um:
 >
-> 1. **Supplement.** The prep course is your primary curriculum. This plan fills gaps: extra MBE drilling on your weak subjects, targeted essay practice, flashcard loops on the topics you're missing. I won't rebuild the prep-course calendar; I'll layer on top of it.
-> 2. **Replace.** You're not following the prep-course calendar (maybe because its pacing doesn't work for your life). I'll build the whole plan — subjects, hours, phases, schedule — and you drop the prep-course calendar.
+> 1. **Suplementar.** O cursinho é seu currículo primário. Este plano preenche lacunas: drill extra de questões nas disciplinas frágeis, prática focada de peça/discursiva, loops de flashcard nos tópicos que você está errando. Não reconstruo o cronograma do cursinho; sobreponho.
+> 2. **Substituir.** Você não está seguindo o cronograma do cursinho (talvez porque o ritmo não bate com sua vida). Monto o plano todo — disciplinas, horas, fases, agenda — e você abandona o cronograma do cursinho.
 >
-> Don't pick both. Running two full curricula against each other is how students blow up in week 4.
+> Não escolha os dois. Rodar dois currículos completos um contra o outro é como estudantes explodem na semana 4.
 
-Wait for the answer. Record it in the yaml as `prep_course_mode: supplement | replace`.
+Espere a resposta. Registre no yaml como `prep_course_mode: supplement | replace`.
 
-If **supplement**: the plan's daily schedule is lighter — it only adds weak-subject drilling and targeted practice, does not duplicate prep-course coverage. Flag in `confidence_flags`: "Supplement mode — this plan assumes you're on track with [prep course] for primary coverage. If you fall behind on the prep course, tell me and we'll re-plan."
+Se **suplementar**: a agenda diária do plano é mais leve — só adiciona drill de disciplinas frágeis e prática focada, não duplica cobertura do cursinho. Marque em `confidence_flags`: "Modo suplemento — este plano assume que você está em dia com [cursinho] para cobertura primária. Se atrasar no cursinho, me diga e replanejamos."
 
-If **replace**: build the full plan as specified below.
+Se **substituir**: monte o plano completo conforme especificado abaixo.
 
-If the student's prep course is `self` or `N/A`, skip this step — there's nothing to supplement.
+Se o cursinho é `autodidata` ou `N/A`, pule este passo — nada a suplementar.
 
-### Step 3: Build the schedule
+### Passo 3: Monte a agenda
 
-Calculate weeks-to-exam from today's date. Then:
+Calcule semanas-até-prova de hoje. Então:
 
-**Normal mode (4+ weeks out):**
-- Split weeks into phases:
-  - **Learning phase** (first ~60% of time): one subject per ~3-5 days, mixing outlining/reading with flashcards and a few MBE/essay questions on fresh material.
-  - **Drilling phase** (next ~30%): more MBE volume, more essay practice, simulated conditions, all subjects in rotation.
-  - **Review phase** (last ~10%): focused on weakest subtopics from session_history, full practice exams, light review of strong areas.
-- Weight subjects by weakness: weak subjects get ~2x the hours of strong subjects.
-- Schedule day-by-day: which subject, which method, how long. Leave slack for the student's actual life.
+**Modo normal (4+ semanas):**
+- Divida semanas em fases:
+  - **Fase de aprendizagem** (primeiros ~60% do tempo): uma disciplina a cada ~3-5 dias, misturando resumo/leitura com flashcards e algumas questões objetivas/discursivas em material fresco.
+  - **Fase de drill** (próximos ~30%): mais volume de questões objetivas FGV, mais prática de peça/discursiva, condições simuladas, todas disciplinas em rotação.
+  - **Fase de revisão** (últimos ~10%): focado em subtópicos mais fracos do session_history, simulados completos, revisão leve de áreas fortes.
+- Pondere disciplinas por fragilidade: disciplinas frágeis recebem ~2x as horas das fortes.
+- Agende dia-a-dia: que disciplina, que método, quanto tempo. Deixe folga para a vida real do(a) estudante.
 
-**Cram mode (< 4 weeks out):**
-- Flag it: "You're less than four weeks out. This is cram mode — the plan prioritizes high-yield topics over full coverage. You will leave gaps. That's the tradeoff at this point."
-- 80/20 prioritization: the MBE subjects that historically appear most (Civ Pro, Evidence, Con Law, Contracts) get the lion's share. Narrower subjects get minimum viable coverage.
-- Daily schedule: MBE blocks every day (volume matters now), essay practice every other day, one simulated exam per week.
-- Sleep and taper the last 2-3 days. Do not schedule hard drilling the day before the exam. This is real — students who cram through the night before score worse.
+**Modo cram (< 4 semanas):**
+- Sinalize: "Você está a menos de quatro semanas. Isto é modo cram — o plano prioriza tópicos de alto-rendimento sobre cobertura completa. Você vai deixar lacunas. Esse é o tradeoff a essa altura."
+- Priorização 80/20: as disciplinas OAB que historicamente aparecem mais (Civil, Processo Civil, Constitucional, Ética, Trabalho) recebem a parte do leão. Disciplinas mais estreitas recebem cobertura mínima viável.
+- Agenda diária: blocos de questões FGV todo dia (volume importa agora), prática de peça/discursiva dia sim, dia não, um simulado completo por semana.
+- Durma e faça tapering nos últimos 2-3 dias. Não agende drill pesado no dia anterior à prova. Isto é real — estudantes que viram a noite antes pontuam pior.
 
-### Step 4: Write it
+### Passo 4: Escreva
 
-Write to `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml`:
+Escreva em `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml`:
 
 ```yaml
-plan_type: bar  # or law-school-exam or semester
+plan_type: oab  # ou law-school-exam ou semester
 exam_date: 2026-07-28
-jurisdiction: CA
-exam_format: state-specific  # or NextGen / UBE
+seccional: SP
+exam_phase: 1  # ou 2
 created: 2026-05-08
 last_updated: 2026-05-08
 weeks_to_exam: 12
 hours_per_week: 25
 days_per_week: 6
-mode: normal  # or cram
+mode: normal  # ou cram
 phases:
   - name: learning
     start: 2026-05-08
     end: 2026-06-20
-    focus: outlining, flashcards, introductory MBE
+    focus: resumos, flashcards, primeiras questões FGV
   - name: drilling
     start: 2026-06-21
     end: 2026-07-18
-    focus: MBE volume, essay practice, simulated conditions
+    focus: volume de questões FGV, prática de peça, simulados
   - name: review
     start: 2026-07-19
     end: 2026-07-27
-    focus: weak-subtopic review, full practice exams
+    focus: revisão de subtópicos frágeis, simulados completos
 subjects:
-  evidence:
-    priority: high  # weak
+  civil:
+    priority: high  # frágil
     weekly_hours: 5
-    methods: [mbe, flashcards, essay]
-  con-law:
+    methods: [oab1, flashcards, discursiva]
+  constitucional:
     priority: medium
     weekly_hours: 3
-    methods: [mbe, outline-review]
+    methods: [oab1, outline-review]
   # etc.
 schedule:
   - date: 2026-05-08
-    day: Thursday
+    day: Quinta
     sessions:
-      - subject: Evidence
+      - subject: Civil
         method: outline-review
         duration_min: 90
-      - subject: Evidence
-        method: mbe
+      - subject: Civil
+        method: oab1
         duration_min: 60
         n_questions: 25
   - date: 2026-05-09
-    day: Friday
+    day: Sexta
     sessions:
-      - subject: Contracts
+      - subject: Processo Civil
         method: flashcards
         duration_min: 45
-      - subject: Contracts
-        method: essay
+      - subject: Processo Civil
+        method: discursiva
         duration_min: 60
   # etc.
-session_history: []  # appended by bar-prep, flashcards, drill, irac as sessions complete
+session_history: []  # acrescido por bar-prep, flashcards, drill, irac conforme sessões completam
 ```
 
-### Step 5: Confirm with the student
+### Passo 5: Confirme com o(a) estudante
 
-**Header — required on every in-chat presentation and on any separate prose-format plan document written alongside the YAML.** The first line of the summary (and the first line of any `study-plan.md` companion file) must be the verbatim header from plugin config `## Outputs`:
+**Cabeçalho — obrigatório em toda apresentação in-chat e em qualquer documento de plano em prosa salvo ao lado do YAML.** A primeira linha do sumário (e a primeira linha de qualquer arquivo `study-plan.md` companheiro) deve ser o cabeçalho literal da config do plugin `## Outputs`:
 
 ```
-STUDY NOTES — NOT LEGAL ADVICE
+MATERIAL DE ESTUDO — NÃO É PARECER JURÍDICO
 ```
 
-The header does not go inside the YAML itself (it's a data file), but it belongs on the prose summary you show the student and on any human-readable plan document you save next to the YAML. This is not a disclaimer afterthought — it is the output's identity. Do not omit, rephrase, or relocate it.
+O cabeçalho não vai dentro do YAML (é arquivo de dados), mas vai no sumário em prosa que você mostra ao(à) estudante e em qualquer documento de plano legível por humano salvo ao lado do YAML. Não é disclaimer pós-coisa — é a identidade do output. Não omita, reformule, ou realoque.
 
-Summarize the plan in prose (not raw YAML) before saving, with the header on top:
+Sumarize o plano em prosa (não YAML cru) antes de salvar, com o cabeçalho no topo:
 
-> STUDY NOTES — NOT LEGAL ADVICE
+> MATERIAL DE ESTUDO — NÃO É PARECER JURÍDICO
 >
-> Here's what I built. [X] weeks to the [exam]. [Y] hours/week across [Z] days. Weak subjects (Evidence, Contracts) get 2x the hours. Three phases: learning through [date], drilling through [date], review the last [N] days. I've scheduled the first two weeks day-by-day. Beyond that it's allocated by week — I'll fill in the daily schedule as you complete sessions, so the plan adapts to where you actually are.
+> Aqui está o que montei. [X] semanas para a [prova]. [Y] horas/semana em [Z] dias. Disciplinas frágeis (Civil, Processo Civil) recebem 2x as horas. Três fases: aprendizagem até [data], drill até [data], revisão nos últimos [N] dias. Agendei as duas primeiras semanas dia-a-dia. Além disso é alocado por semana — vou preenchendo a agenda diária conforme você completa sessões, para o plano se adaptar ao seu ritmo real.
 >
-> Does this feel right? Too ambitious? Too light? Missing a subject?
+> Faz sentido? Ambicioso demais? Leve demais? Falta alguma disciplina?
 
-Adjust based on the answer. Then write.
+Ajuste com base na resposta. Depois escreva.
 
-## Adapting the plan
+## Adaptando o plano
 
-After each session (via bar-prep-questions, flashcards, drill, irac), the corresponding skill appends to `session_history`:
+Após cada sessão (via bar-prep-questions, flashcards, drill, irac), a skill correspondente acrescenta a `session_history`:
 
 ```yaml
 session_history:
   - date: 2026-05-08
-    subject: Evidence
-    type: bar-prep-mbe
+    subject: Civil
+    type: oab1
     n_questions: 10
     score: 6
-    weak_subtopics: [hearsay-exceptions, character-evidence]
+    weak_subtopics: [prescricao, decadencia]
 ```
 
-On the next `/law-student:study-plan --update` run (or when any skill detects the plan is stale):
-- Subjects with consistently low scores get promoted in `priority` and `weekly_hours`.
-- Weak subtopics within a subject get flagged for the next scheduled session on that subject.
-- If the student is falling behind (scheduled sessions not appearing in history), adjust: either compress coverage or note the gap and ask.
-- If the student is ahead, open up time for deeper weak-subject drilling.
+Na próxima rodada `/law-student:study-plan --update` (ou quando qualquer skill detecta que o plano está obsoleto):
+- Disciplinas com pontuação consistentemente baixa sobem em `priority` e `weekly_hours`.
+- Subtópicos frágeis dentro de disciplina são sinalizados para a próxima sessão agendada nela.
+- Se o(a) estudante está atrasando (sessões agendadas não aparecendo no histórico), ajuste: ou comprima cobertura ou anote a lacuna e pergunte.
+- Se está adiantado(a), abra tempo para drill mais profundo nas disciplinas frágeis.
 
-## Modes
+## Modos
 
-`--build` (default) — fresh plan
-`--update` — re-read session_history and adjust weightings, fill in upcoming daily schedule
-`--status` — what's on deck today / this week, what's the score trend, what's slipping
-`--cram` — force cram mode even if more than 4 weeks out (user override)
+`--build` (default) — plano fresco
+`--update` — releia session_history e ajuste pesos, preencha próxima agenda diária
+`--status` — o que está hoje / esta semana, tendência de pontuação, o que está escorregando
+`--cram` — força modo cram mesmo se mais de 4 semanas (override do(a) usuário(a))
 
-## Integration
+## Integração
 
-- `/law-student:session <subject> <n>` writes results to this plan's `session_history`.
-- `/law-student:bar-prep-questions` reads the plan to know which subject is scheduled for today.
-- `/law-student:flashcards` can `--session <n>` and results land in the plan.
-- `/law-student:socratic-drill` and `/law-student:irac-practice` session completions also append.
+- `/law-student:session <disciplina> <n>` escreve resultados no `session_history` deste plano.
+- `/law-student:bar-prep-questions` lê o plano para saber que disciplina está agendada para hoje.
+- `/law-student:flashcards` pode `--session <n>` e resultados caem no plano.
+- `/law-student:socratic-drill` e `/law-student:irac-practice` completam sessões e também acrescentam.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Guarantee you pass.** The plan is a scaffold. The work is on you.
-- **Predict the exam.** Cram mode uses historical subject frequency; high-yield ≠ guaranteed-tested.
-- **Replace your prep course schedule.** If you're on Barbri/Themis/Kaplan, this plan can supplement — don't run two full curricula against each other. Use one as primary.
-- **Schedule your life.** Hours available is what you tell me. If you overstate, the plan will break in week 2. Be honest.
+- **Garantir aprovação.** O plano é andaime. O trabalho é seu.
+- **Predizer a prova.** Modo cram usa frequência histórica de disciplina; alto-rendimento ≠ garantido-cobrado.
+- **Substituir o cronograma do seu cursinho.** Se está no CERS/Damásio/Estratégia OAB/Mege/Praetorium/Supremo TV/Ênfase, este plano pode suplementar — não rode dois currículos completos um contra o outro. Use um como primário.
+- **Agendar sua vida.** Horas disponíveis é o que você me conta. Se super-estima, o plano quebra na semana 2. Seja honesto.

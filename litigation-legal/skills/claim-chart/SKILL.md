@@ -1,476 +1,364 @@
 ---
 name: claim-chart
-description: Build or review an element chart — a patent claim chart (infringement, invalidity, or review) or a civil element chart for any cause of action or defense — with every cell pin-cited and gap detection as the priority output. Use when the user asks for a claim chart, element chart, proof chart, infringement or invalidity contention, element-by-element mapping, or asks "what are we missing to prove [claim]".
-argument-hint: '[--patent | --civil] [--infringement | --invalidity | --review] [--claim <n>] [--count <name>] [--target <slug>]'
+description: >
+  Constrói ou revisa matriz de elementos — matriz cível (qualquer causa de
+  pedir ou defesa, com base no element-templates.md de teses brasileiras:
+  BPC/LOAS, saúde pública, plano de saúde, consumidor, alimentos, divórcio,
+  união estável, posse, despejo, defesa em cobrança) ou, secundariamente,
+  matriz de patente (LPI 9.279/96) — com cada célula com pinpoint e detecção
+  de lacuna como output prioritário. Use quando pedir matriz de elementos,
+  matriz cível, mapeamento elemento-por-elemento, ou perguntar o que falta
+  para provar uma tese.
+argument-hint: "[--civil | --patente] [--assercao | --invalidade | --review] [--target <slug>]"
 ---
 
 # /claim-chart
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → role, work-product header, decision posture, document storage.
-2. If matter workspaces enabled, confirm or select the active matter; load `matter.md` (side, jurisdiction, phase, theory, pleadings).
-3. Follow the workflow and reference below.
-4. Mode selection:
-   - `--patent` → patent claim chart. Require patent number and at least one asserted claim. Sub-modes: `--infringement`, `--invalidity`, `--review`.
-   - `--civil` → civil element chart. Require the cause of action (or defense) and the side.
-   - No flag → ask the user which.
-5. For civil mode: consult `references/element-templates.md` in the skill directory for the baseline element list. Confirm the controlling pattern instruction or statute with the user before mapping.
-6. For patent mode: parse asserted claims into elements, flag disputed terms for construction, apply any Markman order.
-7. Map elements against the target (accused product / prior art / evidence corpus / chart under review). Every cell pin-cited. Apply the apostrophe-prefix neutralization before writing any cell value starting with `=`, `+`, `-`, `@`, tab, or CR.
-8. Produce the gap list (civil) or needs-evidence list (patent) — the priority output.
-9. Write markdown, CSV (values + `_sources` companion), and Excel or Sheets per user preference. Work-product header on every output.
-10. Write to the matter's `claim-charts/` folder if a matter is active; otherwise the practice-level `claim-charts/` folder. Append a one-line entry to `history.md` if a matter is active.
-11. Return a summary readout: claim(s), target(s), jurisdiction, phase, element counts by state, the gap list, file paths, and the reminder that every cell is a lead.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → papel, cabeçalho de sigilo, postura de decisão, armazenamento documental.
+2. Se workspaces de caso habilitados, confirme ou selecione o caso ativo; carregue `matter.md` (posição, jurisdição/vara, fase, tese, peças).
+3. Siga o workflow e a referência abaixo.
+4. Seleção de modo:
+   - `--civil` → matriz cível. Exija a causa de pedir (ou defesa) e a posição.
+   - `--patente` → matriz de patente (escopo reduzido — LPI 9.279/96). Exija número do registro e ao menos uma reivindicação asseverada.
+   - Sem flag → pergunte qual.
+5. Para modo cível: consulte `references/element-templates.md` no diretório da skill para a lista-baseline de elementos (matriz Defensoria BR — Família, Saúde, Previdenciário, Consumidor, Locação/Possessória, Defesa em cobrança). Confirme a base legal/súmula/Tema controlante com o(a) usuário(a) antes de mapear.
+6. Para modo patente: parse das reivindicações asseveradas em elementos, flag termos disputados, aplique qualquer parecer pericial técnico.
+7. Mapeie elementos contra o alvo (produto acusado / anterioridade / corpo probatório / matriz sob revisão). Cada célula com pinpoint. Aplique a neutralização de prefixo apóstrofo antes de escrever qualquer valor de célula começando com `=`, `+`, `-`, `@`, tab, ou CR.
+8. Produza a lista de lacunas (cível) ou lista de evidência necessária (patente) — o output prioritário.
+9. Escreva markdown, CSV (valores + `_sources` companion), e Excel ou Sheets per preferência do(a) usuário(a). Cabeçalho de sigilo em todo output.
+10. Escreva na pasta `claim-charts/` do caso se há caso ativo; senão na pasta `claim-charts/` de nível-prática. Anexe entrada de uma linha em `history.md` se há caso ativo.
+11. Retorne sumário: tese(s), alvo(s), jurisdição/vara, fase, contagens de elementos por estado, a lista de lacunas, caminhos de arquivo, e o lembrete que toda célula é um lead.
 
 ---
 
-# Claim Chart
+# Matriz de Teses (Claim Chart)
 
-## Disclosed-document use restrictions
+## Restrições de uso de documentos exibidos
 
-Before working with a set of litigation documents, ask: "Were any of these documents obtained through disclosure or discovery in legal proceedings?" If yes:
+Antes de trabalhar com um conjunto de documentos de contencioso, pergunte: "Algum desses documentos foi obtido por exibição/intimação judicial?" Se sim:
 
-- **England & Wales (CPR 31.22):** Documents obtained through disclosure are subject to the implied undertaking — you may only use them for the purpose of the proceedings in which they were disclosed, unless the court grants permission, the disclosing party consents, or the document has been read in open court. Using them for a different matter, a different claim, or a commercial purpose without permission is a contempt.
-- **US:** Protective orders and Rule 26(c) may impose similar restrictions. Check the order.
-- **Other jurisdictions:** Similar restrictions commonly apply. Check the local rule.
+- **Brasil:** Documentos juntados aos autos sob segredo de justiça (CPC art. 189) só podem ser usados na esfera processual em que foram juntados. Documentos da DP carregam sigilo do(a) assistido(a) (LC 80/94 art. 4º-A V) — não podem ser usados em matéria estranha sem consentimento.
+- **Para Defensor:** documentos da pasta do(a) assistido(a) ficam restritos a este atendimento. Reuso para outro(a) assistido(a) (mesmo com tese similar) exige consentimento e anonimização.
 
-Confirm: "This use is within the proceedings in which the documents were disclosed, or I have permission / consent, or the documents are now public." If not confirmed, flag it: "⚠️ Disclosed documents may have use restrictions. Confirm this use is permitted before proceeding."
+Confirme: "Este uso está dentro do processo em que os documentos foram juntados, OU tenho consentimento, OU os documentos são públicos." Se não confirmado, flag: "⚠️ Documentos exibidos podem ter restrições de uso. Confirme que este uso é permitido antes de prosseguir."
 
-## A CHART IS A DRAFT, NOT A FINDING OR A CONTENTION
+## UMA MATRIZ É UMA MINUTA, NÃO UM ACHADO OU UMA TESE PROTOCOLADA
 
-**Put this at the top of every output. Do not drop it. Do not soften it.**
+**Coloque isto no topo de todo output. Não deixe cair. Não suavize.**
 
-> This chart is a draft for attorney analysis and verification, not a filed contention, an MSJ brief, an opening statement, or a legal opinion. Every mapping is a lead the attorney must verify against the source. The elements listed come from pattern jury instructions, the Restatement, or the claim language as parsed — the **controlling** authority in the user's jurisdiction (CACI / NYPJI / the circuit's pattern charge / the governing statute / a Markman order) may differ and always controls. Gap detection is a starting point for discovery or a motion; it is not a conclusion about the merits.
+> Esta matriz é minuta para análise e verificação do(a) advogado(a)/Defensor(a), não tese protocolada, peça de mérito, sustentação oral, ou parecer jurídico. Cada mapeamento é um lead que o(a) profissional deve verificar contra a fonte. Os elementos listados vêm de doutrina, base legal, ou parse da reivindicação — a base legal **controlante** na jurisdição (lei vigente, súmula, Tema Repetitivo, jurisprudência local consolidada) pode diferir e sempre controla. Detecção de lacuna é ponto de partida para instrução probatória ou pedido; não é conclusão sobre o mérito.
 
-Under-flagging a gap is a one-way door — a complaint filed without plausibility on an element, an MSJ response served without evidence for a disputed element, or a case tried without proof of damages. Over-flagging is a two-way door — the attorney clears flags in review. The default is biased toward the two-way door.
-
----
-
-## Matter context
-
-Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/litigation-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` — especially the case theory, the pleading / complaint (for the elements actually alleged), the jurisdiction, any Markman order or stipulated constructions (patent mode), and the phase of the case. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<matter-slug>/claim-charts/`. Never read another matter's files unless `Cross-matter context` is `on`.
+Sub-flagar lacuna é porta de mão única — petição inicial sem demonstração de elemento, defesa sem prova para elemento disputado, ou caso julgado sem prova de dano. Super-flagar é porta dupla — o(a) profissional limpa flags em revisão. O default tende para a porta dupla.
 
 ---
 
-## Load context
+## Contexto do caso
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → role, work-product header, decision posture, document storage, case-theory scaffolding
-- Active matter's `matter.md` — claims, defenses, side, jurisdiction, phase, theory
-- For civil mode: the complaint or counterclaim (for the actually-pleaded counts), any answer (for the actually-pleaded affirmative defenses), the relevant pattern jury instruction source, and the governing statute if statutory. Also the evidence corpus — deposition transcripts, declarations, produced documents, expert reports.
-- For patent mode: the patent, the asserted claims, the specification, prosecution history if available, the accused-product material or prior art reference, any Markman order or stipulated constructions.
+Cheque `## Workspaces de caso` no CLAUDE.md de nível-prática. Se `Habilitado` é `✗` (default para DJ corporativo), pule o resto deste parágrafo — skills usam contexto de nível-prática e a maquinaria de caso é invisível. Se habilitado e não há caso ativo, pergunte: "Para qual caso? Rode `/litigation-legal:matter-workspace switch <slug>` ou diga `nível-prática`." Carregue o `matter.md` do caso ativo — especialmente a tese, a petição inicial / contestação (para os elementos efetivamente alegados), a vara/jurisdição, qualquer parecer pericial técnico ou interpretação consolidada, e a fase. Escreva outputs na pasta do caso em `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<slug>/claim-charts/`. Nunca leia arquivos de outro caso a menos que `Contexto cruzado entre casos` esteja `ligado`.
 
-If `CLAUDE.md` has `[PLACEHOLDER]` markers, surface this bounce:
+---
 
-> I notice you haven't configured your practice profile yet — that's how I tailor risk calibration, landscape, and house style to your practice.
+## Carregar contexto
+
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → papel, cabeçalho de sigilo, postura de decisão, armazenamento documental, scaffold de tese
+- `matter.md` do caso ativo — teses, defesas, posição, vara, fase, tese
+- Para modo cível: a petição inicial ou contestação (para as causas efetivamente articuladas), a contestação (para as defesas efetivamente articuladas), a base legal aplicável, a súmula ou Tema relevante, e o corpo probatório — transcrições de oitiva, declarações, documentos juntados, laudos periciais.
+- Para modo patente: a carta-patente, as reivindicações asseveradas, o relatório descritivo, histórico do depósito se disponível, o produto acusado ou anterioridade.
+
+Se `CLAUDE.md` tem marcadores `[PLACEHOLDER]`, surface esta bifurcação:
+
+> Notei que você ainda não configurou seu perfil de atuação — é assim que eu calibro risco, panorama e estilo da casa.
 >
-> **Two choices:**
-> - Run `/litigation-legal:cold-start-interview` (2 minutes) to configure your profile, then I'll run this tailored to YOUR practice.
-> - Say **"provisional"** and I'll run this against generic defaults — US jurisdiction, middle risk appetite, lawyer role, no playbook — and tag every output `[PROVISIONAL — configure your profile for tailored output]` so you can see what I do before committing.
+> **Duas escolhas:**
+> - Rode `/litigation-legal:cold-start-interview` (2 minutos) para configurar, depois rodo isto calibrado para a SUA prática.
+> - Diga **"provisional"** e eu rodo contra defaults genéricos — jurisdição BR, apetite médio, papel advogado(a), sem playbook — e marco todo output como `[PROVISIONAL — configure seu perfil para output calibrado]`.
 
-### Provisional mode
+### Modo provisional
 
-If the user says "provisional," build the claim chart normally using these generic defaults: middle risk appetite, lawyer role, US jurisdiction, no practice-level playbook (work from the matter's pleadings and the elements of the claims as pleaded). Tag the reviewer note and every row of the chart with `[PROVISIONAL]`. At the end of the output, append:
+Se a pessoa diz "provisional", monte a matriz normalmente usando estes defaults genéricos: apetite médio, papel advogado(a), jurisdição BR, sem playbook de nível-prática (trabalhe das peças do caso e dos elementos das teses como articuladas). Marque a nota do revisor e cada linha da matriz com `[PROVISIONAL]`. No final, anexe:
 
-> "That was a generic run against default assumptions. Run `/litigation-legal:cold-start-interview` to get output calibrated to YOUR practice — your risk calibration, your landscape, your house style. 2 minutes."
+> "Esta foi rodada genérica contra defaults. Rode `/litigation-legal:cold-start-interview` para output calibrado para a SUA prática — sua calibração de risco, seu panorama, seu estilo. 2 minutos."
 
-**Conflicts gate — unbypassable.** Before building a claim chart, check `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+**Gate de conflitos — não bypassável.** Antes de construir matriz, cheque `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` para o slug do caso. Se o caso não está em `_log.yaml`, recuse e roteie:
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't build a claim chart on a matter that hasn't been intaken — the conflicts check is the gate."
+> "Não vejo [slug] no log. Rode `/litigation-legal:matter-intake` primeiro para a checagem de conflitos/impedimentos rodar e o workspace ser setup. Não construo matriz em caso não-intaken — a checagem é o gate."
 
-Do not proceed on an unintaken matter. Intake is what runs conflicts and writes the `_log.yaml` row this skill reads from.
+Não prossiga em caso não-intaken.
 
 ---
 
-## Mode selection
+## Seleção de modo
 
-Ask at the top, before anything else:
+Pergunte no topo, antes de tudo:
 
-> Which kind of chart?
+> Qual tipo de matriz?
 >
-> 1. **Patent claim chart** — element-by-element mapping of claim limitations against an accused product (`--infringement`), prior art (`--invalidity`), or another party's chart (`--review`). For patent contentions, IPR petitions / responses, FTO charts.
-> 2. **Civil element chart** — elements of a cause of action (or affirmative defense) mapped against the evidence. For complaint plausibility checks, discovery planning, MSJ prep, order-of-proof outlines.
+> 1. **Matriz cível** — elementos de uma causa de pedir (ou defesa) mapeados contra a prova. Para checagem de adequação da petição inicial, planejamento de instrução, preparação para julgamento, esboço de ordem de prova. **Para Defensor: este é o modo principal** — teses repetitivas (BPC/LOAS, saúde, consumidor, alimentos, posse, despejo) com súmulas e Temas STF/STJ aplicáveis.
+> 2. **Matriz de patente** — mapeamento elemento-por-elemento de reivindicação contra produto acusado (asserção de infração), anterioridade (nulidade), ou outra matriz para revisão. Para contencioso de PI sob LPI 9.279/96. **Escopo reduzido** — Defensor cível raramente atua em PI; advocacia privada de PI usa este modo.
 
-Plus intake (common to both):
+Mais intake (comum a ambos):
 
-- **Side.** Asserting or defending? (In civil mode this flips the burden; in patent mode it flips infringement/invalidity framing.)
-- **Jurisdiction / forum.** State and court — pattern instructions vary (CACI in California, NYPJI in New York, federal circuits' pattern charges, state-specific variations). In patent mode, Patent Local Rules vary (N.D. Cal., E.D. Tex., D. Del., ITC, PTAB). Flag which controls.
-- **Phase.** Pre-filing, pleadings, discovery, MSJ, trial prep, post-trial. The chart is the same; the framing of the output changes.
-- **Existing chart?** If `--review`, load it.
-
----
-
-# MODE 1 — Patent claim chart
-
-## Sub-modes
-
-- `--infringement` — claim elements vs. accused product (PLR 3-1 infringement contentions, IPR/PGR response exhibits, complaint exhibits)
-- `--invalidity` — claim elements vs. prior art (PLR 3-3 invalidity contentions, IPR/PGR petition exhibits, §102/§103 defenses)
-- `--review` — audit a chart someone else produced
-
-## Additional patent-mode intake
-
-- **Patent number and asserted claims.** Which independent, which dependent. (Don't chart unasserted claims unless asked.)
-- **Priority date.** Establishes the §102 bar and the effective filing date for the AIA / pre-AIA regime.
-- **Existing constructions.** Markman order, stipulated constructions, constructions proposed in briefing.
-
-## Patent-mode workflow
-
-### Step 1: Parse the claims
-
-Parse asserted independent claims into numbered elements. Handle:
-
-- **Preamble.** Note whether it's limiting — a question of claim construction (*Catalina Marketing Int'l, Inc. v. Coolsavings.com, Inc.*, 289 F.3d 801 (Fed. Cir. 2002)). Flag `preamble-limiting: unresolved` unless the construction order resolves it.
-- **Transitional phrase.** "Comprising" (open) / "consisting of" (closed) / "consisting essentially of" (semi-open). Affects whether additional unrecited elements defeat infringement.
-- **Elements** separated by commas / semicolons, numbered `[1a]`, `[1b]`, `[1c]`. Keep numbering stable — it's the chart's spine.
-- **Means-plus-function (§112(f))** — every "means for [function]" or non-structural functional term. Scope is the structure disclosed in the spec plus equivalents. Cite corresponding structure by col./line. If the spec fails to disclose structure, flag `indefinite-112f`.
-- **Markush groups, Jepson claims, product-by-process, method-step order dependencies** — flag with a note on unusual construction rules.
-- **Dependent claims** — reference parent; chart only the additional limitations. **Execute, don't gesture.** If asserted claims include dependents, produce the actual additional-limitation rows for each dependent in Step 4 — do not emit a note that dependents "should be charted."
-- **Structural-term cognates — default to `construction-dependent`.** For each element that recites a structural noun with a common cognate in the prior art of the field, default the row's state to `literal-construction-dependent` (not `literal`) unless the spec expressly defines the term or an existing Markman order forecloses the ambiguity. These are the terms most commonly disputed at Markman — presuming a clean literal read under-flags the risk. Common cognate families to flag proactively:
-
-  | Field | Cognate family (flag as `structural-term-cognate`) |
-  |---|---|
-  | Fasteners / anchors | barb / thread / projection / ridge / fin / tooth |
-  | Fluidics / catheters | lumen / channel / bore / passage / conduit |
-  | Mechanical housings | hub / boss / flange / collar / shoulder |
-  | Fasteners / joints | socket / recess / pocket / cavity |
-  | Electrical / electronic | contact / terminal / pad / lead |
-  | Optical | lens / reflector / window / aperture |
-  | Structural | wall / member / support / strut / rib |
-  | Surfaces | surface / face / interface |
-
-  This list is not exhaustive — if the claim recites a structural noun that could reasonably be read narrowly (pointed barb vs. any projection) or broadly (channel vs. any passage), flag `structural-term-cognate` in `_constructions` and default the row to `construction-dependent`. The attorney can demote it to `literal` after a Markman order or a definition in the spec forecloses the ambiguity.
-
-Show the parse to the user. Confirm before mapping. A wrong parse poisons every row below it.
-
-### Step 2: Claim construction check
-
-Flag disputed terms:
-
-- Coined terms or terms defined in the spec
-- Terms with prosecution history (amendments, arguments, disavowals — *Phillips v. AWH Corp.*, 415 F.3d 1303 (Fed. Cir. 2005); *Festo* estoppel)
-- Functional language ("configured to", "adapted to", "operable to")
-- Relative terms ("substantially", "about") — definiteness risk under *Nautilus, Inc. v. Biosig Instruments, Inc.*, 572 U.S. 898 (2014)
-- Computer-implemented terms — Alice / §101 exposure for invalidity
-
-For each flagged term, state the construction(s) under which the mapping works and the construction(s) under which it fails. If a Markman order exists, apply it. If briefing is underway, chart under each side's proposed construction.
-
-### Step 3: Map
-
-For each element, for each target:
-
-1. **Find evidence.** Accused product: documentation, manuals, data sheets, source code, teardowns, deposition testimony, expert reports. Prior art: column/line for US patents, paragraph for published apps, page/figure for NPL. For prior art, flag whether the reference qualifies (§102(a)(1), (a)(2), (b); AIA vs. pre-AIA cutoffs). If prior-art status isn't obvious, mark `prior-art-status: needs-evidence`.
-2. **Quote verbatim.** Character-for-character. No paraphrase. Cut at sentence boundaries and mark elision.
-3. **Characterize the mapping.**
-
-   | Mapping | Meaning | Where |
-   |---|---|---|
-   | `literal` | Claim language reads on the accused feature / prior-art disclosure | Both |
-   | `literal-construction-dependent` | Literal under X; fails under Y | Both |
-   | `doe` | Equivalent (function-way-result or insubstantial differences) | Infringement only |
-   | `anticipation` | Every element in a single reference, arranged as claimed (*Net MoneyIN, Inc. v. VeriSign, Inc.*, 545 F.3d 1359 (Fed. Cir. 2008)) | Invalidity only |
-   | `obviousness-combination` | Secondary reference supplies the missing element; motivation to combine required under *KSR Int'l Co. v. Teleflex Inc.*, 550 U.S. 398 (2007) | Invalidity only |
-   | `partial` | Some of the element is present | Both |
-   | `not-found` | Element not present | Both |
-   | `needs-evidence` | Can't tell from available material | Both |
-   | `construction-dependent` | Turns on how a disputed term is construed | Both |
-
-4. **State per cell.** `mapped` / `mapped-doe` / `partial` / `not-found` / `needs-evidence` / `construction-dependent` / `anticipation` / `obviousness-combination`.
-5. **Flag open questions.** "This maps if [X]. Need [teardown / source code / deposition / expert] to confirm."
-
-**No silent supplement.** Thin documentation means `needs-evidence`, not extrapolation from similar products.
-
-### Step 4: Dependent claims — execute, don't gesture
-
-For each asserted dependent claim, produce an actual row (or set of rows) charting the additional limitation(s) against the target. The parent dependency is noted, and infringement / invalidity of the dependent requires the parent's. **Produce the rows, not a placeholder note that rows should be produced.**
-
-If the user provided a list of asserted claims that includes dependents, the chart's output MUST contain rows for each of them. If the user gave only the independent claim and said "chart the independents for now," fine — then the output doesn't chart dependents, but it surfaces the dropped ones explicitly ("Asserted dependents [X, Y, Z] not charted in this run — request: rerun with `--include-dependents` or paste the dependent claim text"). Do not silently skip dependents.
-
-A dependent-claim row format:
-
-```markdown
-| [#] | Element (verbatim) | Accused feature (or prior-art disclosure) | Evidence (pin-cited) | Mapping | State | Verified |
-|---|---|---|---|---|---|---|
-| 2 [add'l] | "wherein the barb extends at an angle of 15° to 30° from the body axis" | AnchorFast Mini barb angle 18° per [CM-AM-2026-03 Fig. 4 + §2.3] | [CM-AM-2026-03 §2.3] "barb angle 18° ±2°" | literal-construction-dependent | mapped | ☐ |
-```
-
-### Step 4.5: DOE supplements — execute, don't gesture
-
-For every element charted as `literal` where the accused feature is structurally similar but not literally identical — or every element where the `literal` mapping turns on a contested construction — produce a **paired DOE candidacy row** (infringement mode). Do not footnote "DOE analysis is separate" without producing the actual DOE mapping.
-
-A DOE candidacy row adds a one-paragraph function-way-result sketch, flags prosecution history estoppel and dedication-to-the-public risks per element, and cites the evidence that would support the equivalent. If DOE is inapplicable (the element reads literally on the accused product beyond dispute), skip. If `literal` is construction-dependent and DOE would be the attorney's fallback under the narrower construction, produce the DOE row.
-
-Format:
-
-```markdown
-| [#-DOE] | Element | Accused feature | Function-way-result | PH estoppel? | Dedication risk? | State |
-|---|---|---|---|---|---|---|
-| 1b-DOE | "at least one barb" | three-barb opposing-face array | function: resist withdrawal; way: mechanical engagement with cancellous bone; result: anchor remains seated under tensile load. | [needs-evidence: prosecution history] | [needs-evidence: disclosed-but-unclaimed alternatives in spec] | construction-dependent |
-```
-
-As with dependents: if the skill can't produce the DOE rows for a reason (no accused-product evidence to ground function-way-result, no prosecution history available), say so explicitly and route to `needs-evidence`. Do not skip DOE silently.
-
-### Step 5: Indirect, divided, willfulness (infringement only)
-
-Flag, don't opine:
-
-- **Induced (§271(b))** — *Commil USA, LLC v. Cisco Systems, Inc.*, 575 U.S. 632 (2015); *Global-Tech Appliances, Inc. v. SEB S.A.*, 563 U.S. 754 (2011)
-- **Contributory (§271(c))** — component especially made for infringing use
-- **Divided / joint (§271(a))** — *Akamai Techs., Inc. v. Limelight Networks, Inc.*, 797 F.3d 1020 (Fed. Cir. 2015) (en banc) directs/controls test
-- **Willfulness** — *Halo Elecs., Inc. v. Pulse Elecs., Inc.*, 579 U.S. 93 (2016); treble damages under §284
-
-### Step 6: Invalidity thresholds (invalidity only)
-
-For §102: every element in a single reference. Partial across references is §103.
-
-For §103: primary reference + secondary reference(s) + documented motivation under *KSR*. Flag explicit teaching/suggestion/motivation, market or design-need motivation, reasonable expectation of success, and **secondary considerations** (*Graham v. John Deere Co.*, 383 U.S. 1 (1966)) — commercial success, long-felt need, failure of others, industry praise, copying.
-
-Also flag:
-- **§101** — *Alice Corp. Pty. Ltd. v. CLS Bank Int'l*, 573 U.S. 208 (2014); *Mayo Collaborative Servs. v. Prometheus Labs., Inc.*, 566 U.S. 66 (2012)
-- **§112 ¶ 1** — written description, enablement (*Amgen Inc. v. Sanofi*, 598 U.S. 594 (2023))
-- **§112 ¶ 2** — definiteness (*Nautilus*, supra)
-- **§112 ¶ 6** — means-plus-function structure
-- **Unenforceability** — inequitable conduct, prosecution laches, assignor/licensee estoppel (attorney-only flags)
-
-Invalidity must be shown by clear and convincing evidence — *Microsoft Corp. v. i4i Ltd. P'ship*, 564 U.S. 91 (2011). Prima facie in a chart is not proof at trial.
-
-### Step 7 (review sub-mode): Audit
-
-For each row: is the mapping supported? Is the pin cite accurate? Is the element fully accounted for? What's the strongest counter? What's the rebuttal opportunity? Output verdicts per row (`supported` / `weak` / `unsupported`) and the chart's vulnerabilities.
-
-## Patent-mode guardrails (in addition to shared guardrails)
-
-- **Rule 11 / Patent Local Rule.** Infringement and invalidity contentions require a reasonable inquiry and a non-frivolous basis. A chart out of this skill is a draft, not a contention.
-- **Claim construction candor.** Every construction-dependent row states the construction assumed and the construction under which the mapping fails.
-- **DOE candor.** A DOE mapping is not equivalent to a literal one. Flag prosecution history estoppel and dedication-to-the-public risks per element.
-- **Indirect is separate.** Don't fold induced / contributory into direct-infringement rows.
-- **Invalidity burden on the chart.** State the clear-and-convincing standard.
+- **Posição.** Asseverando ou defendendo? (Em cível inverte o ônus probatório; em patente inverte enquadramento de infração/nulidade.)
+- **Jurisdição / vara.** UF e juízo — base legal e jurisprudência variam por jurisdição. Em patente, varas especializadas (Justiça Federal RJ/SP em geral) seguem regras técnicas próprias. Flag qual controla.
+- **Fase.** Pré-protocolização, fase postulatória, instrução, fase decisória, recurso. A matriz é a mesma; o enquadramento do output muda.
+- **Matriz existente?** Se `--review`, carregue.
 
 ---
 
-# MODE 2 — Civil element chart
+# MODO 1 — Matriz Cível (foco do piloto Defensor)
 
-Map the elements of a cause of action (or affirmative defense) against the evidence. The killer outputs are (a) a chart that says what evidence goes with what element and (b) a gap list that tells the attorney what's missing.
+Mapeie os elementos de uma causa de pedir (ou defesa) contra a prova. Os outputs matadores são (a) matriz que diz qual prova vai com qual elemento e (b) lista de lacunas que diz ao(à) profissional o que falta.
 
 ## Workflow
 
-### Step 1: Identify the claim(s)
+### Passo 1: Identifique a tese
 
-- What cause of action? (Or defense?) If multiple counts, chart each separately.
-- Which side? Plaintiff's prima facie case, defendant's affirmative defense, defendant's challenge to plaintiff's prima facie case (MSJ mode). Read `## Side` in the practice profile for the default — `plaintiff` defaults to mapping the prima facie case (proving the elements); `defense` defaults to mapping gaps and affirmative defenses (disproving or avoiding the elements). Confirm the posture matches this matter before starting.
-- Which jurisdiction? State and court. **Elements and pattern-instruction language vary by jurisdiction.** The template library is a baseline; the controlling pattern instruction or statute controls.
-- Which pleading? Load the complaint / counterclaim / answer so the chart tracks the counts actually pleaded, not a generic version.
+- Qual causa de pedir? (Ou defesa?) Se múltiplas, matriz cada separadamente.
+- Qual posição? Assistido(a)/autor(a) demonstrando os elementos da pretensão; Defensor(a)/réu(ré) mapeando lacunas e defesas (desafiando os elementos). Leia `## Posição processual` no perfil para o default — `autor` defaulta para mapear a pretensão (provar os elementos); `réu` defaulta para mapear lacunas e defesas (afastar ou esvaziar os elementos). Confirme antes de começar.
+- Qual jurisdição/vara? UF, comarca, juízo. **Elementos e jurisprudência variam por jurisdição.** A biblioteca de templates é baseline; a súmula ou Tema controlante controla.
+- Qual peça? Carregue a petição inicial / contestação / réplica para a matriz rastrear as causas efetivamente articuladas, não versão genérica.
 
-### Step 2: Load the elements
+### Passo 2: Carregue os elementos
 
-Three paths:
+Três caminhos:
 
-**(a) Template library.** Reference `references/element-templates.md` (in this skill's directory). Baseline elements for common causes of action and common affirmative defenses, with citations to the Restatement / pattern instructions and a jurisdiction caveat. Select the template that matches the pleaded count.
+**(a) Biblioteca de templates.** Referencie `references/element-templates.md` (no diretório desta skill). Elementos baseline para causas de pedir e defesas recorrentes em DP cível brasileira (Família, Saúde, Previdenciário, Consumidor, Locação/Possessória, Defesas em cobrança), com referência à base legal + súmula/Tema aplicável + nota sobre hipossuficiência presumida (Súmula 481 STJ). Selecione o template que casa com a causa articulada.
 
-**(b) Custom.** User defines elements, or pastes a jury instruction / statute / a count from the complaint to parse. Parse into numbered elements.
+**(b) Custom.** Usuário(a) define elementos, ou cola texto de dispositivo / súmula / Tema / um trecho da inicial para parse. Parse em elementos numerados.
 
-**(c) Affirmative defenses.** Also support mapping defenses — statute of limitations, laches, estoppel, waiver, unclean hands, release, accord and satisfaction, failure to mitigate, comparative fault, contributory negligence, assumption of risk, etc. Defenses have their own elements the defendant must prove (or, for some, the plaintiff must negate once raised).
+**(c) Defesas.** Também suportamos mapear defesas — prescrição (CC 205-206), decadência (CC 178), ilegitimidade (CPC 17), litispendência, coisa julgada, perempção, prescrição intercorrente (Tema 566 STJ), purgação da mora em despejo (Lei 8.245 art. 62 II), exceção de impenhorabilidade (CPC 833), etc. Defesas têm seus próprios elementos que o(a) réu(ré) deve provar (ou, para algumas, o(a) autor(a) deve negar uma vez arguida).
 
-**Jurisdiction-specific formulations — surface proactively.** If the practice profile's `## Company profile → Core jurisdictions` or the active matter's `matter.md` names **Delaware, New York, or California** (the three most-common commercial fora), surface the state-specific formulation proactively alongside the baseline — do not ask "does your jurisdiction add/drop/reword" first. The user shouldn't have to teach the skill the local rule; the skill should offer it and let the user choose.
+**Formulações específicas por jurisdição/tema — surface proativamente.** Se o perfil ou o `matter.md` do caso indica varas do TJAM, surface a posição local de TJAM e Turmas Recursais sobre a tese, comparando com STJ. Não force o(a) usuário(a) a ensinar a skill sobre a posição local — a skill oferece e o(a) usuário(a) escolhe.
 
-Divergences to surface without being asked (non-exhaustive — add to this list as patterns recur):
+Súmulas/Temas a surface sem ser pedido (não-exaustivo — adicione ao perfil conforme padrões recorrem):
 
-| Cause of action / defense | Baseline (Restatement / pattern) | Jurisdiction-specific formulation |
+| Tese | Súmula/Tema canônico | Notas |
 |---|---|---|
-| Breach of contract | 4 elements (contract, performance, breach, damages; CACI 303) | **DE:** 3 elements — contractual obligation, breach, damages (causation folded into breach) per *VLIW Tech., LLC v. Hewlett-Packard Co.*, 840 A.2d 606 (Del. 2003). **DE adds a 5th element** — no adequate remedy at law — when the claim seeks specific performance. |
-| Breach of contract — goods | Common-law breach elements | **If goods + U.C.C. Article 2 jurisdiction (all 50 states except LA):** load U.C.C. breach elements (conforming tender, acceptance / rejection / revocation, cure, cover, seller's remedies). Present both; let user pick. |
-| Breach of contract — multi-lot goods / installment contract | Common-law breach or U.C.C. § 2-711 (single-delivery breach framework) | **Installment contracts under U.C.C. § 2-612** — "substantial impairment of the value of the installment" replaces the perfect-tender rule; aggregate breach requires "substantial impairment of the value of the whole contract." If the contract calls for goods to be delivered in separate lots (multiple shipments, deliveries), default to § 2-612 framing — it is the governing regime and the analysis is materially different from single-delivery breach. Flag for signer: "This is drafted as an installment contract under § 2-612 — confirm that characterization matches the contract's delivery structure." |
-| Negligence | 4 elements (duty, breach, causation, damages; Restatement (Second) Torts § 281) | **CA:** follow CACI No. 400 formulation (negligence per se per CACI 418 when applicable). **NY:** PJI 2:10 formulation — slightly different language on proximate cause. |
-| Negligent misrepresentation | Restatement (Second) Torts § 552 — justifiable reliance, pecuniary loss | **NY:** requires **contemporaneous privity** or a relationship "so close as to approach that of privity" per *Credit Alliance Corp. v. Arthur Andersen & Co.*, 65 N.Y.2d 536 (1985). |
-| Fraud | 9 elements (often condensed to 5 — representation, materiality, knowledge of falsity, intent to induce, justifiable reliance, damages) | **DE:** 5 elements per *Stephenson v. Capano Dev.*, 462 A.2d 1069 (Del. 1983). **CA:** CACI 1900 formulation — 5 elements with reliance being "justifiable." **NY:** requires pleading with particularity under CPLR 3016(b), and scienter is a distinct element. |
-| Breach of fiduciary duty | Restatement / common law — fiduciary duty, breach, damages | **DE:** the most-developed body of fiduciary-duty law (*Aronson v. Lewis*, *Cede & Co. v. Technicolor*, *In re Trados*) — default to the Delaware formulation for any DE-entity matter regardless of forum. |
+| Fornecimento de medicamento SUS | Tema 793 STF (RE 855.178 RG) — responsabilidade solidária dos entes; Tema 106 STJ (REsp 1.657.156) — requisitos para medicamento não-RENAME; Tema 6 STF (RE 566.471) — alto custo | Aplicar de plano em ação contra qualquer ente; pedir tutela urgência |
+| BPC/LOAS | Tema 27 STF (RE 567.985 RG) — miserabilidade por outros meios; Súmula 80 TNU — laudo médico; Tema 350 STF — prévio requerimento administrativo | Justiça Federal; DP estadual encaminha à DPU se houver |
+| Plano de saúde | Súmula 469 STJ — CDC aplica; Súmula 302 STJ — limite temporal abusivo; Súmula 597 STJ — abusividade de limites em contratos individuais | CDC + Lei 9.656/98 |
+| Cobrança indevida + dano moral | CDC art. 42 par. único; Súmula 385 STJ — inscrição indevida; Tema 929 STJ — repetição em dobro (Repetitivo 622) | JEC ou Cível comum |
+| Alimentos | CC 1.694-1.710; Súmula 358 STJ — exoneração na maioridade; Lei 5.478/68 | Família |
+| Divórcio | CC 1.571-1.582; EC 66/2010 dispensa prazo; Lei 11.441/07 + CPC 731-734 (extrajudicial) | Família |
+| União estável | CC 1.723-1.727; ADI 4.277/ADPF 132 STF — homoafetiva; RE 646.721 + RE 878.694 — sucessórios | Família |
+| Despejo | Lei 8.245/91 arts. 9º + 59-66; purgação CPC + Lei 8.245 art. 62 II | Cível comum |
+| Possessória | CPC 554-568 + CC 1.196-1.224 | Cível |
+| Vício de produto | CDC arts. 18-25; Súmula 297 STJ — CDC para bancos | JEC se ≤ 40 SM |
 
-When a jurisdiction-specific formulation differs materially from the baseline, the chart opens with a one-line callout:
+Quando uma formulação varia, a matriz abre com callout de uma linha:
 
-> **Jurisdiction note:** You told me this is a [DE/NY/CA] matter. Here's how [jurisdiction]'s formulation differs from the baseline: [divergence]. The chart below uses the [jurisdiction] formulation. If that's wrong, say so and I'll reload.
+> **Nota jurisdicional:** Você me disse que isto é um caso em [vara/jurisdição]. Aqui está como a posição local difere do baseline: [divergência]. A matriz abaixo usa a formulação [local/STJ]. Se está errado, diga e eu recarrego.
 
-Confirm the element list with the user before mapping. If the user's jurisdiction isn't DE/NY/CA, ask: "Does your jurisdiction's pattern instruction add / drop / reword any of these?" If yes, use their version.
+Confirme a lista de elementos com o(a) usuário(a) antes de mapear. Para Defensor: sempre confirme se há súmula ou Tema posterior ao último update da biblioteca.
 
-### Step 3: Map
+### Passo 3: Mapear
 
-For each element:
+Para cada elemento:
 
-- **Evidence supporting** — what proves this element? Cite the source with a pin cite.
-  - Deposition testimony — `[Doe Dep. 42:15–43:7]`
-  - Declaration — `[Smith Decl. ¶ 12]`
-  - Produced document — `[DEF00012345 at 3]`
-  - Admission — `[Def.'s Resp. to RFA No. 5]`
-  - Exhibit — `[Trial Ex. 14 at 2]`
-  - Expert report — `[Jones Expert Rep. at 18]`
-  - Discovery response — `[Pl.'s Resp. to Interrog. No. 8]`
-  - Statute / case — for purely legal elements
-- **Verbatim quote** where the evidence is testimonial or documentary. No paraphrase.
-- **Evidence contradicting** — what cuts the other way? Cite it. This is the row's vulnerability.
-- **Strength** — `strong` / `moderate` / `weak` / `none`. Keep it simple. Over-calibrated strength scores are noise; `weak` and `none` are the rows that matter.
-- **State per cell** — `supported` / `partial` / `disputed` / `gap` / `needs-discovery`.
+- **Prova sustentadora** — o que prova este elemento? Cite a fonte com pinpoint.
+  - Depoimento — `[Depoimento de Maria S., fl. 42 / movimento ID 145]`
+  - Declaração — `[Declaração de hipossuficiência da assistida, fl. 12]`
+  - Documento juntado — `[Doc 5 da inicial — laudo médico Dr. X, fl. 18]`
+  - Confissão — `[Resposta a impugnação fl. 56]`
+  - Exibição — `[Doc juntado em audiência, ID 220]`
+  - Laudo pericial — `[Laudo perito médico judicial, fl. 89]`
+  - Resposta à intimação — `[Ofício SUS-AM em resposta à intimação, fl. 34]`
+  - Lei / julgado — para elementos puramente jurídicos
+- **Citação literal** onde a prova é testemunhal ou documental. Sem paráfrase.
+- **Prova contrária** — o que corta para o outro lado? Cite. É a vulnerabilidade da linha.
+- **Força** — `forte` / `moderada` / `fraca` / `ausente`. Mantenha simples. Notas de força sobre-calibradas são ruído; `fraca` e `ausente` são as linhas que importam.
+- **Estado por célula** — `sustentado` / `parcial` / `controvertido` / `lacuna` / `requer-instrução`.
 
-### Step 4: Gap detection — the killer output
+### Passo 4: Detecção de lacuna — o output matador
 
-After mapping, produce a gap list. This is the point of the chart.
+Depois de mapear, produza lista de lacunas. Este é o ponto da matriz.
 
-> **Elements with thin or no evidence:** [list]
+> **Elementos com prova fina ou nenhuma:** [lista]
 >
-> - If asserting (plaintiff): these defeat your complaint's plausibility (Iqbal/Twombly), your MSJ opposition, or your case at trial. Close them before the next motion.
-> - If defending: these are your MSJ targets and your directed-verdict motion. The plaintiff has to prove each element; a gap is a defense.
-> - If pre-discovery: these are your discovery priorities — the depositions, document requests, and interrogatories that turn a gap into `supported` or confirm `none`.
+> - Se asseverando (autor): estas comprometem a plausibilidade da inicial (CPC 330 I — inépcia), defesa em impugnação a contestação, ou caso em julgamento. Feche-as antes da próxima petição.
+> - Se defendendo: estes são seus alvos de defesa / impugnação. O(a) autor(a) tem que provar cada elemento; uma lacuna é defesa.
+> - Se pré-instrução: estas são suas prioridades de prova — depoimentos, intimações, perícias que viram lacuna em `sustentado` ou confirmam `ausente`.
 
-Gap detection is not a conclusion about the merits. It's a map of where the case is light.
+Detecção de lacuna não é conclusão sobre o mérito. É mapa de onde o caso é fino.
 
-### Step 5: Phase-aware framing
+### Passo 5: Enquadramento por fase
 
-Ask the phase. Same chart; different framing on the output:
+Pergunte a fase. Mesma matriz; enquadramento diferente do output:
 
-- **Pre-filing / pleadings.** Does the complaint allege each element with plausibility (*Ashcroft v. Iqbal*, 556 U.S. 662 (2009); *Bell Atl. Corp. v. Twombly*, 550 U.S. 544 (2007))? Any element pleaded on information and belief without factual support is a 12(b)(6) target.
-- **Discovery.** For each `gap` or `needs-discovery` element, what discovery is needed? Which witnesses, which document custodians, which interrogatories, which RFAs.
-- **MSJ.** For each element, is there a genuine dispute of material fact? A `supported` cell for the movant with no contradicting evidence is summary-judgment ammunition; a `disputed` cell is MSJ-defeating.
-- **Trial.** Order of proof. Which witness proves element 1, which exhibit proves element 2, who authenticates, what's the foundation. The chart becomes the trial outline.
+- **Pré-protocolização / postulatória.** A petição inicial alega cada elemento com plausibilidade (CPC 330 I)? Qualquer elemento alegado sem fundamento factual é alvo de inépcia.
+- **Instrução.** Para cada `lacuna` ou `requer-instrução`, qual prova é necessária? Quais testemunhas, quais documentos, quais perícias.
+- **Fase decisória.** Para cada elemento, há controvérsia real de fato material? Célula `sustentada` para o(a) movente sem prova contraditória é munição; célula `controvertida` impede julgamento antecipado.
+- **Audiência de instrução e julgamento.** Ordem de prova. Quais testemunhas provam cada elemento, quais documentos provam, quem autentica. A matriz vira o roteiro da audiência.
 
-### Step 6 (review sub-mode): Audit
+### Passo 6 (sub-modo review): Auditoria
 
-For an opposing party's MSJ brief, a motion to dismiss, or outside counsel's draft: for each element, does their cited evidence actually prove it? Where is their chart thin? What's your strongest counter?
+Para defesa adversária, contestação do(a) réu(ré), ou minuta de escritório externo: para cada elemento, a prova citada efetivamente comprova? Onde a matriz deles está fina? Qual seu contra mais forte?
 
-## Civil-mode guardrails (in addition to shared guardrails)
+## Guardrails do modo cível (além dos compartilhados)
 
-- **Jurisdiction.** The element list is a baseline. Always confirm the controlling pattern instruction (CACI, NYPJI, federal circuit pattern charge, etc.) or statute. State the source on the chart's `_elements` sheet.
-- **Pleaded counts only.** Chart what's actually pleaded. Don't add a count the complaint doesn't allege just because the facts might support it — that's a different analysis.
-- **Affirmative defenses.** If mapping defenses, note whether the burden is on the defendant (most) or whether raising the defense shifts a burden to the plaintiff.
-- **"Gap" ≠ "case over."** A gap is a lead. Discovery, a declaration, or an expert report can close it. The chart shows where to dig.
+- **Jurisdição.** A lista é baseline. Sempre confirme a súmula/Tema controlante. Indique a fonte na planilha `_elements`.
+- **Causas articuladas só.** Mapeie o que é efetivamente articulado. Não adicione causa que a inicial não alega só porque os fatos podem sustentar — é análise diferente.
+- **Defesas.** Se mapeando defesas, note se o ônus é do(a) réu(ré) (a maioria) ou se levantar a defesa transfere ônus ao(à) autor(a) (algumas, como prescrição alegada).
+- **"Lacuna" ≠ "caso perdido".** Lacuna é lead. Instrução, declaração, ou laudo podem fechar. A matriz mostra onde cavar.
 
 ---
 
-# Shared chassis (both modes)
+# MODO 2 — Matriz de Patente (escopo reduzido)
+
+*Defensor cível raramente atua em PI. Esta seção é referência para casos isolados ou para advocacia privada/in-house de PI que use o plugin. Mantida em forma resumida.*
+
+## Sub-modos
+
+- `--asserção` — elementos da reivindicação vs. produto acusado (inicial de obrigação de não-fazer por infração ao direito de patente; expert reports em ação de infração)
+- `--invalidade` — elementos da reivindicação vs. anterioridade (ADC/declaratória de nulidade administrativa ou judicial)
+- `--review` — auditar matriz produzida por outro
+
+## Workflow patente (resumido)
+
+1. **Parse das reivindicações.** Preâmbulo, transição (compreendendo/consistindo de), elementos numerados [1a], [1b], [1c]. Marque termos de função (LPI art. 24) e termos estruturais que podem ser controvertidos.
+2. **Checagem de interpretação.** Termos disputados — definidos no relatório? Modificações via histórico do depósito? Termos relativos? Funcionais (cuidado com indefinição)? Aplicar pareceres periciais técnicos existentes.
+3. **Mapear** cada elemento contra o alvo. Estados possíveis: `literal` / `literal-interpretação-dependente` / `equivalente` (apenas asserção) / `antecipação` (apenas invalidade — todo elemento em uma única anterioridade) / `obviedade-combinação` (apenas invalidade — anterioridade primária + secundária com motivação) / `parcial` / `não-encontrado` / `requer-evidência`.
+4. **Reivindicações dependentes.** Produzir linhas para cada uma — não gesticular. A matriz deve conter linhas para cada reivindicação asseverada.
+5. **Equivalentes — função/modo/resultado.** Quando o mapeamento literal é interpretação-dependente, produzir linha pareada de equivalente com sketch de função/modo/resultado.
+6. **Para invalidade:** ônus é elevado (presunção de validade da patente concedida; doutrina BR pede prova robusta). Antecipação requer um único documento contendo todos os elementos; obviedade requer combinação com motivação justificada.
+
+## Guardrails do modo patente
+
+- Base legal: LPI Lei 9.279/96; matérias em Justiça Federal (varas especializadas RJ/SP); INPI como parte/litisconsorte em nulidade.
+- Doutrina relevante: Denis Borges Barbosa, Newton Silveira; comparados em obviedade e equivalência.
+- Toda matriz é minuta — laudo pericial técnico do(a) perito(a) judicial é o que efetivamente decide.
+
+---
+
+# Chassi compartilhado (ambos os modos)
 
 ## Output
 
-Prepend the work-product header from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` `## Outputs`.
+Prefixe o cabeçalho de sigilo do `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` `## Outputs`.
 
-### Markdown table (always)
+### Tabela markdown (sempre)
 
-One table per claim / defense / patent-claim per target.
+Uma tabela por tese/defesa/reivindicação por alvo.
 
-**Patent mode example:**
-
-```markdown
-| [#] | Element (verbatim) | Accused feature | Evidence (pin-cited) | Mapping | State | Verified |
-|---|---|---|---|---|---|---|
-| 1a | "a processor configured to..." | SoC per datasheet | [Datasheet p. 7] "..." | literal-construction-dependent | mapped | ☐ |
-| 1b | "means for [function]" (§112(f)) | [alleged equiv.] | [source, file.c:124] "..." | needs-evidence | needs-evidence | ☐ |
-```
-
-**Civil mode example:**
+**Exemplo modo cível (BPC/LOAS contra INSS):**
 
 ```markdown
-| [#] | Element | Evidence supporting (pin-cited) | Evidence contradicting | Strength | State | Verified |
+| [#] | Elemento | Prova sustentadora (pinpoint) | Prova contrária | Força | Estado | Verificado |
 |---|---|---|---|---|---|---|
-| 1 | Existence of a contract | [Ex. 3, MSA § 1; Smith Dep. 22:4–14] | none | strong | supported | ☐ |
-| 2 | Plaintiff's performance | [Jones Decl. ¶¶ 4–9] | [Doe Dep. 101:3–11: "they never delivered Phase 2"] | moderate | disputed | ☐ |
-| 3 | Defendant's breach | — | [Doe Dep. 101:3–11] | none | gap | ☐ |
-| 4 | Causation | — | — | none | needs-discovery | ☐ |
-| 5 | Damages | [Expert Rep. at 18 — $2.4M lost profits] | [Def.'s Expert Rep. at 6 — critiques methodology] | moderate | disputed | ☐ |
+| 1 | Idade ≥ 65 anos OU deficiência | [Doc 2 — RG do assistido — 68 anos] | nenhuma | forte | sustentado | ☐ |
+| 2 | Miserabilidade (renda per capita < 1/4 SM ou Tema 27 STF) | [Doc 3 — CadÚnico — renda familiar R$ 220/mês com 4 pessoas; per capita = R$ 55] | nenhuma | forte | sustentado | ☐ |
+| 3 | Não enquadramento em benefício securitário | [Doc 4 — CNIS sem vínculo formal por 20 anos] | nenhuma | forte | sustentado | ☐ |
+| 4 | Prévio requerimento administrativo (Tema 350 STF) | [Doc 1 — indeferimento INSS NB X em 12/03/2026] | nenhuma | forte | sustentado | ☐ |
+| 5 | Cadastro CadÚnico atualizado | [Doc 3 — cabeçalho CadÚnico data 02/2026] | nenhuma | forte | sustentado | ☐ |
 ```
 
-Follow with:
-- **Defenses / thresholds** (patent mode: invalidity / indirect / willfulness flags; civil mode: affirmative-defense flags, Iqbal/Twombly flags pre-pleading)
-- **Gap list** (civil mode) / **needs-evidence list** (patent mode) — **the priority output**
-- **What cuts which way — summary** — strongest elements, weakest elements
-- **Conclusion line** — *"This skill does not conclude."* Elements mapped/supported: [list]. Elements needing evidence / in a gap state: [list]. Elements construction-dependent (patent) / disputed (civil): [list]. Attorney judgment required.
-- **Citation verification** — every pin cite, case, column/line, deposition page:line must be verified against the source.
+**Exemplo modo cível (Fornecimento de medicamento — defesa do Estado):**
 
-### CSV (always)
+```markdown
+| [#] | Elemento (autor deve provar) | Prova autor | Lacuna defensiva | Estado |
+|---|---|---|---|---|
+| 1 | Prescrição médica fundamentada | [Doc 5 — receita Dr. X — privada, não SUS] | Receita não-SUS pode ser questionada quanto à compatibilidade com protocolos | parcial |
+| 2 | Hipossuficiência financeira | [Declaração de hipossuficiência presumida — Súmula 481 STJ] | Hipossuficiência presumida do(a) assistido(a) DP — difícil afastar | sustentado |
+| 3 | Imprescindibilidade do medicamento | [Doc 6 — laudo] | Tema 106 STJ exige: laudo + comprovação inadequação dos disponíveis + registro ANVISA | parcial — falta comprovação inadequação dos da RENAME |
+| 4 | Inexistência de substituto na RENAME/CEAF | — | LACUNA — autor não juntou comparativo com RENAME | lacuna |
+```
 
-Two files per chart:
-- `[chart-slug].csv` — values
-- `[chart-slug]_sources.csv` — verbatim quotes, pin cites, notes
+Siga com:
+- **Defesas / thresholds** (cível: prescrição, decadência, ilegitimidade, perempção; flags de inépcia CPC 330 I pré-protocolização)
+- **Lista de lacunas** (cível) / **lista de evidência necessária** (patente) — **o output prioritário**
+- **O que corta para qual lado — sumário** — elementos mais fortes, mais fracos
+- **Linha de conclusão** — *"Esta skill não conclui."* Elementos sustentados: [lista]. Elementos requerendo prova ou em lacuna: [lista]. Elementos interpretação-dependente (patente) / controvertidos (cível): [lista]. Juízo do(a) profissional necessário.
+- **Verificação de citação** — toda citação aos autos, lei, súmula, tema, página de depoimento deve ser verificada contra a fonte.
 
-**CSV / spreadsheet cell safety.** Before writing any cell value, check the first character. If it is `=`, `+`, `-`, `@`, tab (`\t`), or carriage return (`\r`), prepend a single apostrophe (`'`) to neutralize Excel/Sheets formula interpretation. Verbatim evidence from adversarial sources (opposing counsel's contentions, competitor product manuals, third-party prior art, scraped web pages, deposition transcripts, discovery productions) can contain strings that a spreadsheet will execute as formulas (`=HYPERLINK(...)`, `=cmd|...!A1`, `+WEBSERVICE(...)`), turning the chart into a data-exfiltration or RCE vector when an attorney opens it. RFC 4180 quoting alone does not defeat this — the leading `=` is still interpreted. Apply the apostrophe prefix in CSV, XLSX, and Sheets outputs. Log cells where this was applied so the reviewer can see which quotes were neutralized.
+### CSV (sempre)
 
-### Spreadsheet (Excel or Sheets)
+Dois arquivos por matriz:
+- `[slug-matriz].csv` — valores
+- `[slug-matriz]_sources.csv` — citações literais, pinpoints, notas
 
-Ask which the team works in. Use the pattern from `corporate-legal`'s `tabular-review` skill — same cell-level citation model, same state-based color coding, same `Verified` column, same schema sheet:
+**Segurança de célula CSV / planilha.** Antes de escrever qualquer valor de célula, cheque o primeiro caractere. Se é `=`, `+`, `-`, `@`, tab (`\t`), ou retorno de carro (`\r`), prefixe com apóstrofo (`'`) para neutralizar interpretação de fórmula no Excel/Sheets. Prova literal de fontes adversariais (contestação da contraparte, manuais de produto, anterioridades, transcrições de oitiva, documentos juntados em produção) pode conter strings que a planilha executa como fórmulas (`=HYPERLINK(...)`, `=cmd|...!A1`, `+WEBSERVICE(...)`), transformando a matriz em vetor de exfiltração ou RCE quando o(a) profissional abre. RFC 4180 quoting sozinho não defeat — o `=` líder ainda é interpretado. Aplique o prefixo em CSV, XLSX, e Sheets. Logue células onde isto foi aplicado para o(a) revisor(a) ver quais citações foram neutralizadas.
 
-- One row per element (or element × target if comparing multiple targets)
-- Each evidence column paired with a hidden source column containing the verbatim quote and pin cite; cell comments (Excel) or notes (Sheets) surface the quote on hover
-- Color coding by state:
-  - *Patent:* white = `mapped`, yellow = `construction-dependent` / `partial` / DOE, orange = `needs-evidence`, red = `not-found`
-  - *Civil:* white = `supported`, yellow = `partial` / `disputed`, orange = `needs-discovery`, red = `gap`
-- `Verified` column per evidence column, blank by default — reviewer marks it
-- `_elements` sheet documenting the element source: pattern jury instruction (CACI No. X, NYPJI §Y, federal circuit pattern charge), statute (cite), Restatement section, or patent-claim parse. This is what makes the chart auditable — a reader can see where the elements came from.
-- `_gaps` sheet listing every `gap`, `needs-evidence`, or `needs-discovery` row with what's still needed
-- For patent mode only: `_claim-parse` sheet (element decomposition), `_constructions` sheet (disputed terms and assumed constructions)
+### Planilha (Excel ou Sheets)
 
-Apply the apostrophe-prefix neutralization to every cell written into the spreadsheet.
+Pergunte qual a equipe usa. Use o mesmo padrão da skill `tabular-review` (mesmo modelo de citação por célula, mesmo color-coding por estado, mesma coluna `Verificado`, mesma planilha de schema):
 
-Prepend the work-product header as the top row. Alongside it, include:
+- Uma linha por elemento (ou elemento × alvo se comparando múltiplos)
+- Cada coluna de prova pareada com coluna de fonte oculta contendo citação literal e pinpoint; comentários de célula (Excel) ou notas (Sheets) surface a citação no hover
+- Color-coding por estado:
+  - *Cível:* branco = `sustentado`, amarelo = `parcial` / `controvertido`, laranja = `requer-instrução`, vermelho = `lacuna`
+  - *Patente:* branco = `mapeado`, amarelo = `interpretação-dependente` / `parcial` / equivalência, laranja = `requer-evidência`, vermelho = `não-encontrado`
+- Coluna `Verificado` por coluna de prova, vazia por default — revisor(a) marca
+- Planilha `_elements` documentando a fonte do elemento: lei (cite), súmula (número STF/STJ/TJ local), Tema Repetitivo (número), parse da reivindicação (patente). Isto é o que torna a matriz auditável — leitor(a) vê de onde os elementos vêm.
+- Planilha `_lacunas` listando toda linha `lacuna`, `requer-instrução`, ou `requer-evidência` com o que ainda é necessário
 
-> This chart is derived from source documents that may be privileged, confidential, or both. It inherits the sources' privilege and confidentiality status — distribution beyond the privilege circle can waive privilege. Store with the matter's privileged files and make distribution decisions deliberately. Nothing in this chart has been filed or served; it is a draft for attorney review.
+Aplique a neutralização-com-apóstrofo em toda célula escrita.
 
-### Filename and location
+Prefixe o cabeçalho de sigilo como linha do topo. Ao lado, inclua:
 
-- Patent infringement: `claim-chart-infringement-[patent#]-claim[#]-[target]-YYYY-MM-DD.{md,csv,xlsx}`
-- Patent invalidity: `claim-chart-invalidity-[patent#]-claim[#]-[ref]-YYYY-MM-DD.{md,csv,xlsx}`
-- Civil: `element-chart-[count-slug]-[side]-YYYY-MM-DD.{md,csv,xlsx}`
-- Review: `chart-review-[subject]-YYYY-MM-DD.{md,csv,xlsx}`
+> Esta matriz é derivada de documentos-fonte que podem ser sigilosos (sigilo do(a) assistido(a) LC 80/94 art. 4º-A V + Lei 8.906/94 art. 7º XIX), confidenciais, ou ambos. Herda o status de sigilo das fontes — distribuição fora do círculo de sigilo pode constituir violação ético-disciplinar. Armazene com arquivos do caso e tome decisões de distribuição deliberadamente. Nada nesta matriz foi protocolado; é minuta para revisão.
 
-If matter workspaces enabled and a matter is active: `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<matter-slug>/claim-charts/`. Otherwise: `~/.claude/plugins/config/claude-for-legal/litigation-legal/claim-charts/`. Surface the path. Append a one-line entry to the matter's `history.md`.
+### Nome de arquivo e localização
 
-## Summary readout
+- Cível: `matriz-civel-[tese-slug]-[lado]-AAAA-MM-DD.{md,csv,xlsx}`
+- Patente asserção: `matriz-patente-asserção-[numero]-[claim]-[alvo]-AAAA-MM-DD.{md,csv,xlsx}`
+- Patente invalidade: `matriz-patente-invalidade-[numero]-[claim]-[ref]-AAAA-MM-DD.{md,csv,xlsx}`
+- Review: `revisao-matriz-[assunto]-AAAA-MM-DD.{md,csv,xlsx}`
 
-After the chart is written, give a one-screen readout:
+Se workspaces ativados e caso ativo: `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<slug>/claim-charts/`. Senão: `~/.claude/plugins/config/claude-for-legal/litigation-legal/claim-charts/`. Surface o caminho. Anexe entrada de uma linha em `history.md`.
 
-- Claim(s) / count(s) / patent claim(s), target(s), jurisdiction, phase
-- Elements charted · supported/mapped · partial · disputed · gap / needs-evidence · not-found
-- The gap list (civil) or needs-evidence list (patent) — **this is the priority list**
-- Where the output files are
-- Reminder: every cell is a lead. The chart is a draft, not a contention / brief / order of proof.
+## Sumário
 
-## Non-lawyer gate
+Depois da matriz escrita, dê um readout de uma tela:
 
-If `## Who's using this` Role is Non-lawyer:
+- Tese(s) / causa(s) / reivindicação(ões), alvo(s), vara/jurisdição, fase
+- Elementos: sustentados/mapeados · parciais · controvertidos · lacuna / requer-evidência · não-encontrado
+- Lista de lacunas (cível) ou lista de evidência necessária (patente) — **lista prioritária**
+- Onde os outputs estão
+- Lembrete: toda célula é lead. A matriz é minuta, não tese protocolada / petição / ordem de prova.
 
-> This chart is a research draft, not a legal filing. Serving contentions, filing a brief, or relying on this for a merits opinion has Rule 11 and substantive legal consequences. An attorney in the relevant jurisdiction must review before this is used for any legal purpose.
+## Gate não-advogado
+
+Se `## Quem está usando` Papel é Não-advogado:
+
+> Esta matriz é minuta de pesquisa, não protocolização. Protocolizar tese, contestar, ou confiar nisto para opinião de mérito tem consequências do CPC 77/80 + ética OAB. Profissional habilitado(a) na jurisdição relevante deve revisar antes deste material ser usado para qualquer fim jurídico.
 >
-> Here's a one-page brief to bring to an attorney:
+> Eis briefing de uma página para levar a profissional habilitado(a):
 >
-> [Generate: claim / patent, side, jurisdiction, phase, elements, supported / gap / needs-discovery counts, the three most load-bearing open questions.]
+> [Gere: tese / patente, posição, jurisdição, fase, elementos, contagens sustentado / lacuna / requer-instrução, as três perguntas em aberto mais load-bearing.]
 
-Deliver the chart alongside the brief.
+Entregue a matriz junto com o briefing.
 
-## Shared guardrails — checklist
+## Guardrails compartilhados — checklist
 
-- **Citation verification.** Every pin cite (column/line, page, deposition page:line, Bates, ¶) is a claim about the source. The attorney verifies. The skill does not fabricate cites — if a cite cannot be produced, the cell is `needs-evidence` or `gap`.
-- **Source attribution.** Every verbatim quote has its source in the companion CSV and the spreadsheet's hidden source column. A quote without a source is not evidence.
-- **No silent supplement.** Thin evidence means `needs-evidence` / `gap`, not "extrapolate." Do not fill from web search, training data, or "how these cases usually go" to close a gap.
-- **Matter workspace check.** Confirm the active matter before writing. Never write matter A's chart into matter B's folder.
-- **Decision posture.** When uncertain whether an element is met, flag; do not decide. `partial` tells the attorney what part is missing.
-- **Formula injection.** Every cell written to CSV / XLSX / Sheets is checked for leading `=`, `+`, `-`, `@`, `\t`, `\r` and prefixed with `'`. Default: neutralize-then-write.
-- **Elements are jurisdiction-specific.** The template library is a baseline. The controlling pattern instruction or statute controls.
-- **A chart is not a brief, a filing, or a contention.** Every output is a draft.
+- **Verificação de citação.** Toda citação aos autos (folha / movimentação CNJ / página de depoimento / parágrafo) é uma afirmação sobre a fonte. O(a) profissional verifica. A skill não fabrica citações — se uma citação não pode ser produzida, a célula é `requer-evidência` ou `lacuna`.
+- **Atribuição de fonte.** Toda citação literal tem sua fonte no CSV companion e na coluna de fonte oculta da planilha. Citação sem fonte não é prova.
+- **Sem suplementação silenciosa.** Prova fina significa `requer-evidência` / `lacuna`, não "extrapolar". Não preencha de busca web, conhecimento do modelo, ou "como esses casos costumam ir" para fechar lacuna.
+- **Checagem de workspace.** Confirme o caso ativo antes de escrever. Nunca escreva matriz do caso A na pasta do caso B.
+- **Postura de decisão.** Quando incerto se um elemento é atendido, flag; não decida. `parcial` diz ao(à) profissional qual parte está faltando.
+- **Injection de fórmula.** Toda célula escrita em CSV / XLSX / Sheets é checada para `=`, `+`, `-`, `@`, `\t`, `\r` lider e prefixada com `'`. Default: neutralizar-então-escrever.
+- **Elementos são jurisdição-específicos.** A biblioteca é baseline. Súmula / Tema / lei vigente controla.
+- **Uma matriz não é peça, protocolização, ou tese.** Todo output é minuta.
 
 ---
 
-## Relationship to other skills
+## Relação com outras skills
 
-- `ip-legal:infringement-triage` (patent mode) — the first-pass flag list. This skill is the full chart that comes next.
-- `ip-legal:fto-triage` — FTO uses the same mechanics from the potentially-accused posture. If evaluating own product vs. a third-party patent, route to FTO and use this skill's format.
-- `corporate-legal:tabular-review` — the underlying cell-level citation and verification-state pattern. A claim / element chart is a specialized tabular review.
-- `litigation-legal:chronology` — the chronology is the timeline; the element chart is the proof matrix. A chronology entry often becomes a cell's evidence cite.
-- `litigation-legal:deposition-prep` — a `needs-discovery` cell often becomes a depo topic. After a depo, new testimony fills cells.
-- `litigation-legal:brief-section-drafter` — an MSJ brief's fact section is often built directly off the supported rows of an element chart.
+- `litigation-legal:chronology` — a cronologia é a linha do tempo; a matriz de elementos é a matriz de prova. Uma entrada de cronologia frequentemente vira citação de uma célula.
+- `litigation-legal:deposition-prep` — uma célula `requer-instrução` frequentemente vira tópico de oitiva. Depois da AIJ, novo depoimento preenche células.
+- `litigation-legal:brief-section-drafter` — a seção de fatos de uma peça é frequentemente construída diretamente sobre as linhas sustentadas da matriz.
+- `corporate-legal:tabular-review` — o padrão subjacente de citação por célula e estado de verificação. Uma matriz de tese / elementos é tabular-review especializada.
 
 ---
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Termine com a árvore per CLAUDE.md `## Outputs`. Customize as opções ao que esta skill acabou de produzir — as cinco branches default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não lock-in.
 
-## What this skill does not do
+## O que esta skill NÃO faz
 
-- **It does not conclude.** Not infringement, not non-infringement, not liability, not non-liability. Ever.
-- **It does not decide claim construction** (patent) or **the controlling elements** (civil). It flags disputed terms / baseline elements and charts under stated assumptions.
-- **It does not meet the clear-and-convincing burden for invalidity** or **the preponderance at trial**. It produces a prima facie draft for attorney review.
-- **It does not substitute for expert analysis.** Source code review, teardowns, technical experts, damages experts are separate work products this chart routes to, not replaces.
-- **It does not serve, file, or sign anything.** Every output is a draft. An attorney serves and files.
-- **It does not extrapolate.** If the evidence isn't there, the cell is `needs-evidence` / `gap` — never a guess.
+- **Não conclui.** Não infração, não não-infração, não responsabilidade, não não-responsabilidade. Nunca.
+- **Não decide interpretação** (patente) ou **os elementos controlantes** (cível). Flag termos disputados / elementos baseline e mapeia sob assunções declaradas.
+- **Não atende ao ônus elevado de prova em invalidade de patente** ou **a preponderância em julgamento**. Produz minuta de prima facie para revisão.
+- **Não substitui análise pericial.** Laudo pericial técnico, oitiva especializada, parecer perito são produtos separados que esta matriz roteia para, não substitui.
+- **Não protocola, intima, ou assina coisa alguma.** Todo output é minuta. Profissional habilitado(a) protocola e assina.
+- **Não extrapola.** Se a prova não está aí, a célula é `requer-instrução` / `lacuna` — nunca palpite.

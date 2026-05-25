@@ -1,109 +1,109 @@
 ---
 name: matter-briefing
-description: Deep briefing on one matter — current posture, what's changed, next deadline, open questions, and a risk re-assessment check, ready before a GC update or outside counsel call. Use when the user says "brief me on [matter]", "where are we on [matter]", or needs a read on a specific matter.
+description: Briefing aprofundado de um caso — postura atual, o que mudou, próximo prazo, perguntas em aberto, e checagem de reavaliação de risco, pronto antes de update ao(à) Diretor(a) Jurídico(a) ou ligação com escritório externo / núcleo da DP. Use quando o usuário diz "me dê briefing de [caso]", "onde estamos em [caso]", ou precisa de leitura sobre caso específico.
 argument-hint: "[slug]"
 ---
 
 # /matter-briefing
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → risk calibration + relevant stakeholders.
-2. Follow the workflow and reference below.
-3. Read `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` + `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` + log row from `_log.yaml`.
-4. Produce briefing: current posture, what's changed since last update, next deadline, open questions, risk re-assessment check ("does the `risk:` field still reflect reality?").
-5. Flag staleness: if `last_updated` > 30 days, say so.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → calibração de risco + stakeholders relevantes.
+2. Siga o workflow e a referência abaixo.
+3. Leia `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` + `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` + linha do log de `_log.yaml`.
+4. Produza briefing: postura atual, o que mudou desde o último update, próximo prazo, perguntas em aberto, checagem de reavaliação de risco ("o campo `risk:` ainda reflete a realidade?").
+5. Sinalize defasagem: se `last_updated` > 30 dias, diga.
 
 ---
 
 # Matter Briefing
 
-## Purpose
+## Propósito
 
-Give the counsel a clean read on one matter in the time it takes to walk to a conference room. Current posture, what's changed, what's next, what's worth reconsidering.
+Dar ao(à) advogado(a) ou Defensor(a) uma leitura limpa sobre um caso no tempo que se leva para caminhar até uma sala de reunião. Postura atual, o que mudou, o que vem, o que vale reconsiderar.
 
-## Load context
+## Carregar contexto
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — structured row
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — narrative intake
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — event log
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — risk calibration (so "risk: high" means something specific, not generic)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — linha estruturada
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — intake narrativo
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — log de eventos
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — calibração de risco (para que "risk: high" signifique algo específico, não genérico)
 
-**Conflicts gate — unbypassable.** Before briefing, check `_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+**Gate de impedimentos — incontornável.** Antes de produzir briefing, cheque `_log.yaml` para o slug. Se o caso não está em `_log.yaml`, recuse e route:
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't build a briefing on a matter that hasn't been intaken — the conflicts check is the gate."
+> "Não vejo [slug do caso] no log de casos. Rode `/litigation-legal:matter-intake` primeiro para a checagem de impedimentos rodar e o workspace ser montado. Não produzo briefing em caso não-intaken — a checagem de impedimentos é o gate."
 
 ## Input
 
-Slug (required). If ambiguous or missing, ask the user to pick from a list of active matters.
+Slug (obrigatório). Se ambíguo ou ausente, peça ao usuário para escolher de uma lista de casos ativos.
 
-## The briefing
+## O briefing
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — por config do plugin ## Outputs — varia por papel; vide `## Quem está usando`]
 
-# [Matter Name] — Briefing as of [today]
+# [Nome do caso] — Briefing em [hoje]
 
-**Status:** [status / stage]
-**Risk:** [rating] ([severity] × [likelihood])
-**Materiality:** [category]
-**Outside counsel:** [firm — lead]
-**Last updated:** [date] [flag ⚠️ STALE if >30d]
-**Conflicts:** [status — flag ⚠️ if `pending` or `not-run`]
+**Status:** [status / fase]
+**Risco:** [rating] ([severidade] × [probabilidade])
+**Materialidade:** [categoria]
+**Escritório externo / DP colaboradora:** [escritório / núcleo — responsável]
+**Última atualização:** [data] [sinalizar ⚠️ DEFASADO se >30d]
+**Impedimentos:** [status — sinalizar ⚠️ se `pendente` ou `não-rodado`]
 
 ---
 
-## One-paragraph summary
+## Sumário em um parágrafo
 
-[Current posture. What are we doing and why. Name the pivot fact if one is captured.]
+[Postura atual. O que estamos fazendo e por quê. Nomeie o fato pivô se um foi capturado.]
 
-## What's changed recently
+## O que mudou recentemente
 
-[Last 3-5 entries from history.md, most recent first. If history is thin, say so.]
+[Últimas 3-5 entradas de history.md, mais recente primeiro. Se o histórico está fino, diga.]
 
-## What's next
+## O que vem
 
-- **Immediate deadline:** [next_deadline + what it is]
-- **Upcoming milestones:** [anything dated in matter.md or recent history]
-- **Decisions pending:** [open questions flagged in matter.md]
+- **Prazo imediato:** [next_deadline + o que é — lembrar prazo em dobro CPC art. 186 se Defensor]
+- **Marcos próximos:** [qualquer coisa datada em matter.md ou histórico recente]
+- **Decisões pendentes:** [perguntas em aberto sinalizadas em matter.md]
 
-## Exposure
+## Exposição
 
-[Range + any change since intake. If reserved, current reserve + whether recalibration is overdue.]
+[Faixa + qualquer mudança desde intake. Se provisionado, provisão atual + se recalibração está atrasada. Se Defensor: não há provisão CPC 25 pessoal; lembre que sucumbência reverte ao Fundo da DP.]
 
-## Internal owners
+## Stakeholders internos
 
-[Who's looped in; whether anyone should be looped in and isn't]
+[Quem está no loop; se alguém deveria estar no loop e não está — para Defensor, isso inclui o(a) Coordenador(a) da área e, em caso atípico, o(a) Defensor(a) Público(a)-Geral conforme regulamento interno]
 
-## Risk re-assessment check
+## Checagem de reavaliação de risco
 
-*A prompt, not an answer.*
+*Um prompt, não uma resposta.*
 
-- Does `risk: [rating]` still feel right, or has the case moved?
-- Does `materiality: [category]` still match? (New facts might push toward reserve or disclosure.)
-- Any new stakeholder the matter needs (e.g., CISO becomes relevant after a discovery development)?
+- O `risk: [rating]` ainda parece certo, ou o caso se moveu?
+- O `materiality: [categoria]` ainda combina? (Fatos novos podem empurrar para provisão ou divulgação no DJ, ou escalonamento ao(à) DPG na Defensoria.)
+- Algum stakeholder novo de que o caso precisa (ex.: CISO se torna relevante após desenvolvimento na instrução; Núcleo Especializado da DP se a tese transbordou a unidade)?
 
-## Open questions
+## Perguntas em aberto
 
-[From matter.md and anything unresolved in history]
+[De matter.md e qualquer coisa não resolvida no histórico]
 
-## For the conversation
+## Para a conversa
 
-[If user specified a purpose — "brief me before the call with outside counsel" — tailor the final section: questions to ask, decisions to get, updates to extract. If no purpose given, omit this section.]
+[Se o usuário especificou propósito — "me prepare para a ligação com escritório externo" — customize a seção final: perguntas a fazer, decisões a extrair, atualizações a extrair. Se nenhum propósito dado, omita esta seção.]
 ```
 
-## Staleness
+## Defasagem
 
-If `last_updated > 30 days ago`: flag at the top AND suggest running `/litigation-legal:matter-update [slug]` after the meeting to capture whatever's discussed.
+Se `last_updated > 30 dias atrás`: sinalize no topo E sugira rodar `/litigation-legal:matter-update [slug]` após a reunião para capturar o que for discutido.
 
-## Tone
+## Tom
 
-This is not marketing. Say what's known; flag what's not. If a matter has thin history and was just opened, the briefing is short — and that's correct. Don't pad.
+Isto não é marketing. Diga o que se sabe; sinalize o que não. Se um caso tem histórico fino e acabou de ser aberto, o briefing é curto — e está correto. Não infle.
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Feche com a árvore de decisão de próximos passos per CLAUDE.md `## Outputs`. Customize as opções para o que esta skill acabou de produzir — as cinco ramificações default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não trava. A árvore É o output; o(a) advogado(a) escolhe.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- Predict outcomes. Risk rating is a captured judgment, not a forecast.
-- Recommend strategy. Surfaces questions; the counsel answers them.
-- Re-triage. If the user wants to re-triage, that's an `/matter-update` with field changes — this skill reads, doesn't write.
+- Prediz desfechos. O rating de risco é um juízo capturado, não previsão.
+- Recomenda estratégia. Aflora perguntas; o(a) advogado(a) ou Defensor(a) responde.
+- Re-triagem. Se o usuário quer re-triagem, é um `/matter-update` com mudanças de campo — esta skill lê, não escreve.

@@ -1,230 +1,228 @@
 ---
 name: privilege-log-review
-description: First-pass privilege log review — make the obvious privilege calls and flag the hard ones for attorney review without making close calls. Use when the user says "review the privilege log", "priv log", "check privilege on these docs", or has a log to QA before production.
+description: Revisão de primeira passagem de rol de documentos sigilosos — faz as chamadas óbvias de sigilo e flagueia as difíceis para revisão do(a) advogado(a) sem fazer chamadas borderline. Use quando o usuário diz "revise o rol de sigilosos", "rol de sigilo", "cheque sigilo nestes docs", ou tem um rol para QA antes da produção.
 argument-hint: "[log file, or document set]"
 ---
 
 # /privilege-log-review
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → review protocol, priv log format.
-2. Follow the workflow and reference below.
-3. For each entry: obvious priv / obvious not priv / needs attorney review. Flag reasons.
-4. Output: reviewed log with flags. Attorney reviews all flags before production.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → protocolo de revisão, formato do rol.
+2. Siga o workflow e a referência abaixo.
+3. Para cada entrada: óbvio sigiloso / óbvio não-sigiloso / precisa revisão. Sinalize razões.
+4. Output: rol revisado com flags. Advogado(a) revisa todas as flags antes da produção.
 
 ---
 
-# Privilege Log Review
+# Revisão de Rol de Documentos Sigilosos
 
-## Disclosed-document use restrictions
+## Restrições de uso de documento divulgado
 
-Before working with a set of litigation documents, ask: "Were any of these documents obtained through disclosure or discovery in legal proceedings?" If yes:
+Antes de trabalhar com conjunto de documentos do processo, pergunte: "Algum destes documentos veio de instrução em processo judicial, ou de exibição compelida (CPC arts. 396-404)?" Se sim:
 
-- **England & Wales (CPR 31.22):** Documents obtained through disclosure are subject to the implied undertaking — you may only use them for the purpose of the proceedings in which they were disclosed, unless the court grants permission, the disclosing party consents, or the document has been read in open court. Using them for a different matter, a different claim, or a commercial purpose without permission is a contempt.
-- **US:** Protective orders and Rule 26(c) may impose similar restrictions. Check the order.
-- **Other jurisdictions:** Similar restrictions commonly apply. Check the local rule.
+- **Brasil — segredo de justiça (CPC art. 189):** documentos que tramitam em segredo de justiça têm acesso restrito às partes e seus(suas) procuradores(as). Usá-los fora da finalidade processual pode configurar quebra de segredo (CP art. 154; CPC art. 80).
+- **Brasil — tutela exibitória (CPC arts. 396-404):** documento exibido por força judicial está afeto à finalidade da prova produzida; uso para outro caso, outra pretensão, ou fim comercial sem autorização é abuso.
+- **Outras jurisdições:** restrições análogas costumam aplicar. Confira a regra local.
 
-Confirm: "This use is within the proceedings in which the documents were disclosed, or I have permission / consent, or the documents are now public." If not confirmed, flag it: "⚠️ Disclosed documents may have use restrictions. Confirm this use is permitted before proceeding."
+Confirme: "Este uso está dentro do processo em que os documentos foram divulgados, ou tenho autorização / consentimento da parte, ou os documentos já são públicos." Se não confirmado, sinalize: "⚠️ Documentos divulgados podem ter restrições de uso. Confirme antes de prosseguir."
 
-## Matter context
+## Contexto de caso
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. For litigation-legal the default is `Enabled: ✓` — every case gets its own matter workspace. If `Enabled` is `✗` (you turned it off because you work one case at a time), skip the rest of this paragraph and use practice-level context. If enabled and there is no active matter, ask: "Which matter is this for? Run `/litigation-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+**Contexto de caso.** Cheque `## Workspaces de caso` no CLAUDE.md de nível-prática. Para litigation-legal o default é `Habilitado: ✓` — cada caso tem seu workspace. Se `Habilitado` é `✗` (você desligou porque trabalha um caso por vez), pule o resto deste parágrafo e use contexto nível-prática. Se habilitado e não há caso ativo, pergunte: "Qual caso é este? Rode `/litigation-legal:matter-workspace switch <slug>` ou diga `nível-prática`." Carregue o `matter.md` do caso ativo para contexto e overrides específicos. Grave outputs na pasta de caso em `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<matter-slug>/`. Nunca leia arquivos de outro caso a menos que `Contexto cruzado entre casos` esteja `on`.
 
 ---
 
-## Purpose
+## Propósito
 
-A privilege log has three kinds of entries: obviously privileged, obviously not, and the ones that need thought. This skill sorts the first two kinds so the attorney's time goes entirely to the third.
+Um rol de sigilosos tem três tipos de entrada: obviamente sigilosa, obviamente não, e as que exigem pensamento. Esta skill classifica os dois primeiros tipos para que o tempo do(a) advogado(a) vá inteiro para o terceiro.
 
-**This is first pass. Attorney reviews every flag. No exceptions.**
+**Isto é primeira passagem. Advogado(a) revisa toda flag. Sem exceção.**
 
-## Record fidelity — pinpoints and citation coverage
+## Fidelidade do registro — pinpoints e cobertura de citação
 
-When this skill cites a rule, local variant, or authority for a privilege call (FRCP 26(b)(5)(A), state rule, local rule, case on waiver scope, case on dominant purpose), two rules apply.
+Quando esta skill cita uma regra, variante local, ou autoridade para chamada de sigilo (CPC art. 388 IV, Lei 8.906/94 art. 7º XIX, julgado sobre escopo de quebra, julgado sobre propósito dominante), duas regras aplicam.
 
-**Pinpoint cites must support the whole proposition.** If the review cites one rule or case to support a multi-part proposition — "the log must describe each document and withhold only materials prepared in anticipation of litigation" — verify the pinpoint covers every element. If it only covers one, split the cite or narrow the proposition. A cite that backs part of a privilege position gets the position rejected when opposing counsel reads the cite and points out it doesn't reach the contested element. This is the "misgrounded citation" failure mode: the cite exists, the passage exists, but it doesn't support the proposition as stated.
+**Pinpoints devem sustentar a proposição inteira.** Se a revisão cita uma regra ou julgado para sustentar proposição multipartite — "o rol deve descrever cada documento e reter apenas materiais preparados em contemplação de litígio" — verifique que o pinpoint cobre cada elemento. Se cobre só um, divida o cite ou estreite a proposição. Cite que sustenta parte de uma posição de sigilo faz a posição ser rejeitada quando o(a) advogado(a) contrário(a) lê o cite e aponta que não alcança o elemento contestado. Este é o failure mode de "misgrounded citation": o cite existe, a passagem existe, mas não sustenta a proposição como posta.
 
-**Extract all citations before checking any.** When this review cites authority — or when a separate citation-check is requested on the log, a related brief, or the supporting motion:
+**Extraia todas as citações antes de checar qualquer.** Quando esta revisão cita autoridade — ou quando cite-check separado é pedido sobre o rol, peça relacionada, ou petição de sustentação:
 
-1. **First pass: extract.** Read the document and build a list of every citation (rules, cases, statutes, local orders, record cites). Report the count: "Found [N] citations."
-2. **Second pass: check.** Check each against the source. Don't sample. Don't stop at the first five.
-3. **Report coverage.** "Checked [N] of [M] citations. [K] could not be retrieved — verify manually. [J] confirmed. [I] flagged as potential miscitations. [H] flagged as misgrounded (cite exists but doesn't support the proposition)."
-4. **When source text is unavailable, say "could not check," never "confirmed."** A false positive is worse than a "couldn't check" — it lets a bad cite through.
-5. **The hardest errors are partial support.** Read the proposition, read the source, compare element by element.
+1. **Primeira passagem: extraia.** Leia o documento e construa lista de toda citação (regras, julgados, leis, ordens locais, cites de registro). Reporte a contagem: "Encontradas [N] citações."
+2. **Segunda passagem: cheque.** Cheque cada uma contra a fonte. Não amostre. Não pare nos primeiros cinco.
+3. **Reporte cobertura.** "Checadas [N] de [M] citações. [K] não puderam ser recuperadas — verifique manualmente. [J] confirmadas. [I] sinalizadas como potencial má-citação. [H] sinalizadas como mal-fundamentadas (cite existe mas não sustenta a proposição)."
+4. **Quando texto-fonte indisponível, diga "não pude checar", nunca "confirmado".** Falso positivo é pior que "não pude checar" — deixa um cite ruim passar.
+5. **Os erros mais difíceis são sustentação parcial.** Leia a proposição, leia a fonte, compare elemento por elemento.
 
-## Load context
+## Carregar contexto
 
-`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → privilege log format, review protocol.
+`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → formato de rol de sigilo, protocolo de revisão.
 
-**Conflicts gate — unbypassable.** Before reviewing a privilege log, check `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+**Gate de impedimentos — incontornável.** Antes de revisar rol, cheque `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` para o slug. Se o caso não está em `_log.yaml`, recuse e route:
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't review a privilege log on a matter that hasn't been intaken — the conflicts check is the gate, and a privilege log review is work product that needs to live in the matter file."
+> "Não vejo [slug do caso] no log de casos. Rode `/litigation-legal:matter-intake` primeiro para a checagem de impedimentos rodar e o workspace ser montado. Não reviso rol de sigilosos em caso não-intaken — a checagem de impedimentos é o gate, e revisão de rol é trabalho-produto que precisa viver no arquivo do caso."
 
-**Jurisdiction matters.** Privilege scope (A/C and work product), waiver doctrine, and log-form requirements vary materially across federal circuits and state courts. This review applies the rules for the forum specified in config. If the matter involves a different forum, a transferred case, multi-jurisdictional production, or a choice-of-law question on privilege, the calls here may not transfer — re-run against the controlling forum.
+**Jurisdição importa.** Escopo de sigilo (comunicação A/C e trabalho preparatório), doutrina de quebra, e exigências de forma do rol variam materialmente entre tribunais e instâncias. Esta revisão aplica as regras para o foro especificado na config. Se o caso envolve foro diferente, caso transferido, produção multi-jurisdicional, ou questão de lei aplicável sobre sigilo, as chamadas aqui podem não transferir — rerode contra o foro controlante.
 
-## Step 0: Research the forum's privilege-log rules
+## Passo 0: Pesquise as regras de rol de sigilo do foro
 
-**Before reviewing entries, research the forum's privilege-log requirements (FRCP 26(b)(5)(A) or state equivalent), any local rule variant, and the judge's standing orders. Identify the required fields, the level of description, and any category-log or metadata-log accommodations. Cite primary sources.**
+**Antes de revisar entradas, pesquise as exigências de rol de sigilo do foro (CPC art. 188 — princípio de publicidade; CPC art. 189 — segredo de justiça; Lei 8.906/94 art. 7º XIX — sigilo profissional; CPC art. 388, IV — recusa de depoimento por sigilo), qualquer variante local, e ordens permanentes do(a) juiz(a). Identifique os campos exigidos, o nível de descrição, e quaisquer acomodações de rol por categoria ou rol por metadados. Cite fontes primárias.**
 
-**No silent supplement.** If a research query to the configured legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or firm platform) returns few or no results for the forum's rule, waiver doctrine, or local variant, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [rule / doctrine]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) leave the `[UNCERTAIN]` marker and stop here. Which would you like?" A lawyer decides whether to accept lower-confidence sources; the skill does not decide for them.
+**Sem suplementação silenciosa.** Se consulta ao MCP de pesquisa configurado (JusRatio, BNP, CJF, TJAM, DataJud) retorna poucos ou nenhum resultado para a regra do foro, doutrina de quebra, ou variante local, reporte o que foi encontrado e pare. NÃO preencha a lacuna com busca web ou conhecimento do modelo sem perguntar. Diga: "A busca retornou [N] resultados de [ferramenta]. Cobertura parece fina para [regra / doutrina]. Opções: (1) ampliar a query, (2) tentar outra ferramenta, (3) buscar na web — resultados tagueados `[busca web — verificar]` e devem ser checados contra fonte primária antes de confiar, ou (4) deixar o marcador `[INCERTO]` e parar aqui. Qual prefere?" Um(a) advogado(a) decide se aceita fontes de menor confiança; a skill não decide por ele.
 
-**Source attribution.** Tag every rule reference and authority in the review output with where it came from: `[Westlaw]`, `[CourtListener]`, `[Trellis]`, `[Descrybe]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations the reviewing attorney supplied. Citations tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags — they are the reviewing attorney's signal about which authorities to re-confirm before service.
+**Atribuição de fonte.** Tagueie cada referência a regra e autoridade no output da revisão com de onde veio: `[JusRatio]`, `[BNP]`, `[CJF]`, `[TJAM]`, `[DataJud]`, ou o nome do MCP para citações recuperadas; `[busca web — verificar]` para citações de busca web; `[conhecimento do modelo — verificar]` para citações de dados de treino; `[usuário forneceu]` para citações que o(a) advogado(a) revisor(a) forneceu. Citações tagueadas `verificar` carregam maior risco de fabricação e devem ser checadas primeiro. Nunca strip ou colapse as tags — são o sinal do(a) advogado(a) revisor(a) sobre quais autoridades re-confirmar antes da produção.
 
-**Waiver doctrine differs by privilege type:**
+**Doutrina de quebra difere por tipo de sigilo:**
 
-- **Attorney-client privilege waiver** is often broad: subject-matter waiver can sweep in related communications on the same topic.
-- **Work-product waiver** is narrower: courts typically distinguish opinion work product (stronger protection) from fact work product. Waiver of fact work product doesn't automatically waive opinion work product.
+- **Quebra do sigilo profissional do(a) advogado(a)** é categoria distinta no Brasil — a Lei 8.906/94 art. 7º XIX é inviolabilidade institucional do escritório, comunicações e arquivos do(a) advogado(a) (ampliada pelo art. 7º XX — atendimento livre); CPC art. 388 IV permite que o(a) advogado(a) recuse a depor sobre fatos sobre os quais deva guardar sigilo profissional.
+- **Trabalho preparatório (analogia ao "work product")** — não há categoria formal de "trabalho preparatório" em jurisprudência consolidada como nos EUA. Documentos internos do DJ corporativo, DPIAs LGPD, assessments de compliance e launch reviews **não são automaticamente blindados** contra autoridade fiscalizatória (ANPD, CARF/RFB, CVM, Bacen). O segredo de justiça processual (CPC art. 189) é distinto e mais restrito.
 
-Confirm the forum's waiver doctrine for each privilege claimed before recommending production of anything. `[UNCERTAIN]` flags stay on waiver calls until counsel confirms.
+Confirme a doutrina de quebra do foro para cada sigilo invocado antes de recomendar produção de qualquer coisa. Flags `[INCERTO]` ficam em chamadas de quebra até o(a) advogado(a) confirmar.
 
-## The calls
+## As chamadas
 
-**Three-state rule. The skill never silently decides a subjective threshold isn't met.** On any uncertain call — dominant purpose unclear, litigation contemplation borderline, mixed legal/business content, ambiguous third-party presence — the skill keeps the privilege designation on and adds a ⚠️ flag for the attorney. Under-marking waives privilege (one-way door); over-marking is corrected by the attorney in review (two-way door). Prefer the recoverable error.
+**Regra tri-estado. A skill nunca decide silentemente que um limiar subjetivo não foi atingido.** Em qualquer chamada incerta — propósito dominante pouco claro, contemplação de litígio borderline, conteúdo misto jurídico/de negócio, presença ambígua de terceiro — a skill mantém a designação de sigilo ON e adiciona flag ⚠️ para o(a) advogado(a). Sub-marcar quebra sigilo (porta de mão única); super-marcar é corrigido pelo(a) advogado(a) em revisão (porta dupla). Prefira o erro recuperável.
 
-**In-house counsel privilege is jurisdiction-specific and contested.** Before classifying any communication with in-house counsel as privileged, check the jurisdiction:
+**Sigilo de advogado(a) interno(a) (DJ corporativo) é específico de jurisdição e contestado.** Antes de classificar qualquer comunicação com advogado(a) interno(a) como sigilosa, cheque a jurisdição:
 
-- **US:** In-house counsel communications are generally privileged when made for the purpose of obtaining or providing legal advice, and the attorney is acting in a legal (not business) capacity. The legal-vs-business distinction is fact-specific and contested.
-- **EU (competition / DG COMP proceedings):** Under *Akzo Nobel Chemicals v. Commission* (C-550/07 P), communications with in-house counsel are NOT privileged in EU competition proceedings. The CJEU held privilege applies only to communications with independent external lawyers. If the matter involves EU competition or state aid, in-house counsel documents are compellable.
-- **Germany (Syndikusanwalt):** The German Syndikusanwalt has a hybrid status. Privilege depends on the capacity in which the lawyer was acting and whether the communication is in the "advocate" or "employee" role. Post-2016 registration rules changed the analysis.
-- **UK:** In-house counsel privilege generally recognized, but the "dominant purpose" test applies, and the legal-vs-commercial advice distinction is scrutinized.
-- **France, Belgium, some other EU:** In-house lawyers may not be members of the bar, and their communications may have no privilege at all.
+- **Brasil:** comunicações com advogado(a) interno(a) inscrito(a) na OAB são protegidas pela Lei 8.906/94 art. 7º XIX (inviolabilidade do escritório/arquivo/comunicação do(a) advogado(a)) — não há jurisprudência consolidada distinguindo "papel de advogado(a)" vs. "papel de empregado(a)". A proteção institucional do(a) advogado(a) habilitado(a) é o gancho. Mas autoridades fiscalizatórias específicas (ANPD, RFB, CVM) podem ter prerrogativas requisitórias próprias que se sobrepõem.
+- **UE (concorrência / Comissão Europeia):** Sob *Akzo Nobel Chemicals v. Commission* (C-550/07 P), comunicações com advogado(a) interno(a) NÃO são protegidas em procedimentos europeus de concorrência. Se o caso envolve concorrência UE ou Comissão Europeia, documentos de advogado(a) interno(a) são exigíveis.
+- **Alemanha (Syndikusanwalt):** status híbrido. Sigilo depende da capacidade em que atuava.
+- **UK:** sigilo de advogado(a) interno(a) geralmente reconhecido, com teste de "propósito dominante".
 
-**Never classify an in-house counsel communication as "confidently privileged" without stating which privilege regime applies.** If the matter involves non-US jurisdictions, especially EU competition or any EU regulator: "Documents from in-house counsel may have NO privilege in [jurisdiction]. Under *Akzo Nobel*, in-house communications are compellable in EU competition proceedings. Flag for review by a [jurisdiction] litigation specialist before asserting privilege."
+**Nunca classifique comunicação de advogado(a) interno(a) como "confiantemente sigilosa" sem dizer qual regime de sigilo aplica.** Se o caso envolve jurisdições não-BR, especialmente concorrência UE ou qualquer regulador UE: "Documentos de advogado(a) interno(a) podem NÃO ter sigilo em [jurisdição]. Sob *Akzo Nobel*, comunicações de internos são exigíveis em procedimentos europeus de concorrência. Sinalize para revisão por especialista em contencioso [jurisdição] antes de invocar sigilo."
 
-The ✅ "confidently privileged, no flag" tier below is the one designed to bypass attorney review. That's exactly where the *Akzo Nobel* risk lives. When the jurisdiction is non-US or the matter touches EU regulators, there is no ✅ tier for in-house communications — everything goes to 🟡 "flag for attorney review with jurisdiction note."
+A tier ✅ "confiantemente sigiloso, sem flag" abaixo é desenhada para bypassar revisão. É exatamente onde o risco *Akzo Nobel* vive. Quando a jurisdição é não-BR ou o caso toca reguladores UE, não há tier ✅ para comunicações de internos — tudo vai para 🟡 "flag para revisão com nota de jurisdição."
 
-### Confidently privileged (✅) — keep designation, no flag
+### Confiantemente sigiloso (✅) — mantém designação, sem flag
 
-- Communication between client and outside counsel seeking/providing legal advice, no third parties copied
-- Communication between client and in-house counsel, clearly legal (not business) advice, no third parties
-- Work product created in anticipation of litigation, by or for counsel
-- Communications within the control group about legal strategy
+- Comunicação entre cliente e escritório externo / Defensor(a) buscando/dando parecer jurídico, sem terceiros copiados
+- Comunicação entre cliente e advogado(a) interno(a) inscrito(a) OAB, claramente parecer jurídico (não conselho de negócio), sem terceiros
+- Trabalho preparatório criado em contemplação de litígio, por ou para advogado(a) / Defensor(a)
+- Comunicações dentro do grupo controlador sobre estratégia jurídica
 
-### Uncertain — keep designation AND flag (✅ + ⚠️)
+### Incerto — mantém designação E sinaliza (✅ + ⚠️)
 
-The default for anything that isn't confidently in ✅ or ❌. The skill does not withhold a privilege designation on its own assessment of a subjective test. Examples:
+O default para qualquer coisa que não está confiantemente em ✅ ou ❌. A skill não retira designação de sigilo com base em sua própria avaliação de teste subjetivo. Exemplos:
 
-- **In-house counsel doing both legal and business** — was this communication legal advice or business advice? The dominant-purpose call is the attorney's, not the skill's.
-- **Third party present** — is the third party within the privilege (common interest, agent) or does their presence waive? Keep the designation; flag for attorney.
-- **Mixed purpose documents** — part legal, part business. Partial redaction? Full withhold? Produce? Keep the designation; flag for attorney to decide the treatment.
-- **Attachments** — analyze separately and keep each attachment's designation unless confidently ❌; flag the ones where privilege turns on a subjective call.
-- **Pre-litigation work product** — "reasonable contemplation of litigation" is fact-specific; keep the designation; flag.
-- **Waiver risk** — later-share history is ambiguous; keep the designation; flag the waiver question.
+- **Advogado(a) interno(a) fazendo jurídico e negócio** — esta comunicação era parecer jurídico ou conselho de negócio? A chamada de propósito dominante é do(a) advogado(a), não da skill.
+- **Terceiro presente** — o terceiro está dentro do sigilo (interesse comum, agente, secretário(a) sob sigilo, estagiário(a) OAB) ou sua presença quebra? Mantenha a designação; sinalize.
+- **Documentos de propósito misto** — parte jurídico, parte negócio. Tarjamento parcial? Retenção total? Produzir? Mantenha; sinalize para o(a) advogado(a) decidir o tratamento.
+- **Anexos** — analise separadamente e mantenha cada designação a menos que confiantemente ❌; sinalize aqueles em que sigilo gira em chamada subjetiva.
+- **Trabalho preparatório pré-litígio** — "contemplação razoável de litígio" é específico de fato; mantenha a designação; sinalize.
+- **Risco de quebra** — histórico de compartilhamento posterior é ambíguo; mantenha; sinalize a questão de quebra.
 
-Each flag records the specific open question and the evidence cutting each way, so the attorney can decide without re-reading the document cold.
+Cada flag registra a questão aberta específica e a evidência cortando para cada lado, para que o(a) advogado(a) possa decidir sem reler o documento a frio.
 
-### Confidently not privileged (❌) — recommend remove, but note the assessment
+### Confiantemente não-sigiloso (❌) — recomenda remover, mas anota a avaliação
 
-Only for the unambiguous cases. The output still records the assessment rationale so the attorney can spot-check; it does not remove the designation from the log on its own.
+Só para os casos inequívocos. O output ainda registra o racional para o(a) advogado(a) checar; não remove a designação do rol por conta própria.
 
-- No attorney involved anywhere
-- Business advice with a lawyer CC'd (CC'ing legal doesn't make it privileged)
-- Underlying facts (facts aren't privileged — communications *about* facts can be)
-- Third party copied who's clearly outside privilege (breaks confidentiality)
-- Attachments that are independently non-privileged (the email might be privileged; the attached spreadsheet of sales numbers is not)
+- Nenhum(a) advogado(a) / Defensor(a) envolvido(a) em lugar nenhum
+- Conselho de negócio com advogado(a) em cópia (CC ao Jurídico não torna sigiloso)
+- Fatos subjacentes (fatos não são sigilosos — comunicações *sobre* fatos podem ser)
+- Terceiro copiado claramente fora do sigilo (quebra a confidencialidade)
+- Anexos que são independentemente não-sigilosos (o e-mail pode ser sigiloso; a planilha anexa de números de vendas não)
 
-If any of these is *close* — the third party might be an agent, the lawyer's CC might actually be on a legal request — it's uncertain, not ❌. Route it to the uncertain bucket and flag.
+Se qualquer destes está *no limite* — o terceiro pode ser agente, o CC ao(à) advogado(a) pode estar em pedido jurídico — é incerto, não ❌. Route para o bucket incerto e sinalize.
 
-## Workflow
+## Fluxo de trabalho
 
-### Step 1: Format check
+### Passo 1: Checagem de formato
 
-Does the log have what it needs?
+O rol tem o que precisa?
 
-| Field | Present? |
+| Campo | Presente? |
 |---|---|
-| Date | |
-| Author | |
-| Recipients (all — TO, CC, BCC) | |
-| Document type | |
-| Privilege claimed (A/C, WP, both) | |
-| Description (enough to assess without revealing privileged content) | |
+| Data | |
+| Autor | |
+| Destinatários (todos — PARA, CC, CCO) | |
+| Tipo de documento | |
+| Sigilo invocado (A/C, trabalho preparatório, ambos) | |
+| Descrição (suficiente para avaliar sem revelar conteúdo sigiloso) | |
 
-Missing fields → flag for completion before substantive review.
+Campos faltantes → sinalize para completar antes da revisão substantiva.
 
-### Step 2: Entry-by-entry
+### Passo 2: Entrada-por-entrada
 
-For each entry:
+Para cada entrada:
 
 ```
-Entry [N] ([Bates]): [✅ Priv | ✅ Priv + ⚠️ Flag | ❌ Not priv (assessed)]
-[If ✅ (no flag): one-line reason]
-[If ✅ + ⚠️: keep designation; the specific question the attorney needs to answer; evidence cutting each way]
-[If ❌: one-line reason — but the designation stays on the log until the attorney removes it]
+Entrada [N] ([movimentação / ID]): [✅ Sigiloso | ✅ Sigiloso + ⚠️ Flag | ❌ Não sigiloso (avaliado)]
+[Se ✅ (sem flag): razão de uma linha]
+[Se ✅ + ⚠️: mantém designação; a questão específica que o(a) advogado(a) precisa responder; evidência cortando para cada lado]
+[Se ❌: razão de uma linha — mas a designação fica no rol até o(a) advogado(a) remover]
 ```
 
-**Never produce an entry that silently strips a privilege designation based on the skill's own subjective call.** A ❌ is a recommendation logged alongside the flag; the attorney acts on it.
+**Nunca produza entrada que silentemente strip designação de sigilo baseado em chamada subjetiva da skill.** Um ❌ é recomendação logada junto à flag; o(a) advogado(a) age.
 
-### Step 3: Pattern flags
+### Passo 3: Flags de padrão
 
-Across the log:
+Pelo rol:
 
-- Same issue repeating? (E.g., same third party on 50 entries — one decision resolves 50 flags)
-- Over-designation pattern? (If everything's designated without differentiation, surface it for the attorney — but the call to narrow the log is the attorney's, not the skill's. Under-designation waives; over-designation is correctable.)
-- Under-description? (Descriptions so vague a court would order in camera review)
+- Mesmo issue repetindo? (Ex.: mesmo terceiro em 50 entradas — uma decisão resolve 50 flags)
+- Padrão de super-designação? (Se tudo está designado sem diferenciação, aflore para o(a) advogado(a) — mas a chamada de estreitar o rol é do(a) advogado(a), não da skill. Sub-designação quebra; super-designação é corrigível.)
+- Sub-descrição? (Descrições tão vagas que tribunal ordenaria revisão *in camera*)
 
 ## Output
 
-**Before the privilege log is served on the opposing party (the consequential act — this includes serving the log AND designating documents withheld or produced under a protective-order designation such as Confidential / Highly Confidential / AEO):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+**Antes do rol de sigilosos ser juntado nos autos contra a parte adversa (o ato consequencial — isto inclui o juntada do rol E designações de documentos como confidenciais, restritos ou em segredo de justiça per CPC art. 189):** Leia `## Quem está usando` em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Se o Papel é Não-advogado:
 
-> Submitting a privilege log and designating documents in discovery both have legal consequences — over-designation risks sanctions and loss of credibility; under-designation risks waiver; a misdesignated production may be unrecallable. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+> Juntar rol de sigilosos e designar documentos em instrução têm consequências jurídicas — super-designação arrisca sanções e perda de credibilidade; sub-designação arrisca quebra; produção mal-designada pode ser irrecuperável. Você revisou com advogado(a) ou Defensor(a)? Se sim, prossiga. Se não, segue brief para levar:
 >
-> [Generate a 1-page summary: the matter, log entry counts, the ⚠️ flags and close calls, pattern observations (over-designation, vague descriptions), waiver-doctrine posture by privilege type, what could go wrong on service or designation, what to ask the attorney.]
+> [Gere sumário de 1 página: o caso, contagem de entradas do rol, as flags ⚠️ e chamadas no limite, observações de padrão (super-designação, descrições vagas), postura de doutrina de quebra por tipo de sigilo, o que pode dar errado em juntada ou designação, o que perguntar ao(à) advogado(a).]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> Se precisa achar advogado(a) habilitado(a) ou Defensor(a) Público(a) na sua localidade: o serviço de referência da OAB Seccional do estado (ou da Defensoria Pública Estadual/União) é o ponto de partida mais rápido.
 
-Do not treat the log as service-ready without an explicit yes. First-pass review, sorting, and flagging do not require the gate — service and designation do.
+Não trate o rol como pronto-para-juntar sem um sim explícito. Revisão de primeira passagem, ordenação e flagging não exigem o gate — juntada e designação exigem.
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — por config do plugin ## Outputs — varia por papel; vide `## Quem está usando`]
 
-## Privilege Log Review: [Matter] — [date]
+## Revisão de Rol de Sigilosos: [Caso] — [data]
 
-**Applicable rule:** [FRCP 26(b)(5)(A) / state rule / local rule / standing order — pinpoint cites] `[UNCERTAIN — verify currency]`
-**Entries reviewed:** [N]
-**Results:** [N] ✅ confident priv / [N] ✅+⚠️ priv kept & flagged / [N] ❌ recommend remove (attorney confirms)
+**Regra aplicável:** [CPC art. 388 IV / Lei 8.906/94 art. 7º XIX / CPC art. 189 / regimento interno — pinpoints] `[INCERTO — verificar atualidade]`
+**Entradas revisadas:** [N]
+**Resultados:** [N] ✅ sigilo confiante / [N] ✅+⚠️ sigilo mantido & sinalizado / [N] ❌ recomenda remover (advogado(a) confirma)
 
-### ✅ + ⚠️ Flagged — designation kept, attorney decides
+### ✅ + ⚠️ Sinalizadas — designação mantida, advogado(a) decide
 
-| Entry | Bates | Issue | Evidence for priv | Evidence against | Question |
+| Entrada | Movimentação / ID | Issue | Evidência pró-sigilo | Evidência contra | Pergunta |
 |---|---|---|---|---|---|
-| [N] | [range] | [what's subjective] | [one line] | [one line] | [the specific call to make] |
+| [N] | [range] | [o que é subjetivo] | [uma linha] | [uma linha] | [a chamada específica a fazer] |
 
-### ❌ Recommend remove designation (attorney confirms before stripping)
+### ❌ Recomenda remover designação (advogado(a) confirma antes de strip)
 
-| Entry | Bates | Reason |
+| Entrada | Movimentação / ID | Razão |
 |---|---|---|
 
-*Recorded, not executed. The skill does not remove privilege designations from the log — the attorney does, after reviewing the rationale.*
+*Registrado, não executado. A skill não remove designações de sigilo do rol — o(a) advogado(a) o faz, depois de revisar o racional.*
 
-### ✅ Privileged (no action)
+### ✅ Sigiloso (sem ação)
 
-[Count. List available on request.]
+[Contagem. Lista disponível sob pedido.]
 
-### Pattern observations
+### Observações de padrão
 
-[Repeating issues, over-designation, description problems]
+[Issues repetindo, super-designação, problemas de descrição]
 
-### Marker discipline
+### Disciplina de marcador
 
-- `[VERIFY: factual assertion about document/custodian/date]`
-- `[UNCERTAIN: close privilege call / waiver scope / doctrine question]`
-- `[CITE NEEDED: rule, local variant, or authority supporting a call]`
+- `[VERIFICAR: alegação factual sobre documento/custodiante/data]`
+- `[INCERTO: chamada de sigilo no limite / escopo de quebra / questão de doutrina]`
+- `[CITE FALTANDO: regra, variante local, ou autoridade sustentando uma chamada]`
 
 ---
 
-**Attorney must review all ⚠️ and ❌ before any action.**
+**Advogado(a) deve revisar todas ⚠️ e ❌ antes de qualquer ação.**
 
-**Privileged source material.** This review reads entries and underlying documents that are, by definition, privilege-candidate material. The review output inherits that status — keep it with privileged materials, mark it appropriately, and don't circulate outside the privilege circle. Distributing it can itself waive protection.
+**Material-fonte sigiloso.** Esta revisão lê entradas e documentos subjacentes que são, por definição, candidatos a sigilo. O output da revisão herda esse status — mantenha com materiais sigilosos, marque apropriadamente, e não circule fora do círculo de sigilo. Distribuir pode em si quebrar a proteção.
 ```
 
-## What this skill emphatically does not do
+## O que esta skill enfaticamente não faz
 
-- Make close calls. ⚠️ means "a human decides." On any subjective test (dominant purpose, reasonable contemplation, common-interest scope, waiver by later sharing) the skill keeps the privilege designation on and flags.
-- Strip a privilege designation from the log based on its own assessment. ❌ is a *recommendation* recorded for the attorney, not an action taken against the log.
-- Produce or withhold documents. It advises; attorney decides; attorney acts.
-- Guarantee correctness on ✅ calls. The attorney is responsible for the log. This is a first pass.
+- Faz chamadas no limite. ⚠️ significa "um humano decide". Em qualquer teste subjetivo (propósito dominante, contemplação razoável, escopo de interesse comum, quebra por compartilhamento posterior) a skill mantém a designação de sigilo on e sinaliza.
+- Strip designação de sigilo do rol baseado em sua própria avaliação. ❌ é *recomendação* registrada para o(a) advogado(a), não ação tomada contra o rol.
+- Produz ou retém documentos. Aconselha; advogado(a) decide; advogado(a) age.
+- Garante correção em chamadas ✅. O(a) advogado(a) é responsável pelo rol. Isto é primeira passagem.
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
+Feche com a árvore de decisão de próximos passos per CLAUDE.md `## Outputs`. Customize as opções para o que esta skill acabou de produzir — as cinco ramificações default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não trava. A árvore É o output; o(a) advogado(a) escolhe.

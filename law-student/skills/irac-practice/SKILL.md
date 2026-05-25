@@ -1,178 +1,182 @@
 ---
 name: irac-practice
 description: >
-  Grade an IRAC essay for structure, issue-spotting, rule accuracy, analysis
-  depth, and organization. Does NOT rewrite the essay or show a model answer;
-  tracks patterns across sessions. Use when the user says "grade my IRAC",
-  "check my essay", or "I wrote this, give me feedback".
-argument-hint: "[paste essay OR path to draft OR --generate-hypo]"
+  Prática FIRAC — corrige redação no formato FIRAC (Fatos / Issue / Regra /
+  Análise / Conclusão, variação BR do IRAC) quanto a estrutura, identificação
+  de questões, precisão da regra, profundidade da análise e organização. NÃO
+  reescreve a redação nem mostra resposta-modelo; rastreia padrões entre
+  sessões. Use quando disser "corrija meu FIRAC", "cheque minha redação",
+  ou "escrevi isto, me dê feedback".
+argument-hint: "[cole a redação OU caminho para minuta OR --gerar-caso]"
 ---
 
 # /irac-practice
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → classes, exam formats, outline locations, learning style.
-2. Apply the framework below.
-3. Establish mode: student-provided hypo + answer, OR skill-generated hypo with student's answer.
-4. Read the answer closely. Map against expected IRAC components.
-5. Output structured feedback: issues spotted/missed, rule accuracy, analysis depth, organization, grade band, top 3 fixes, at most 1-2 labeled example phrasings (never a full IRAC model).
-6. Append to `~/.claude/plugins/config/claude-for-legal/law-student/irac-sessions/[student]/tracker.md` for pattern detection. Surface patterns after 3+ sessions.
+*(O slug permanece `irac-practice` por compatibilidade; o título visível é "Prática FIRAC" — a variação brasileira do IRAC usada no ensino e na prática jurídica nacional.)*
+
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplinas, formatos de prova, localizações de resumo, estilo de aprendizado.
+2. Aplique o framework abaixo.
+3. Estabeleça modo: caso fornecido pelo(a) estudante + resposta, OU caso gerado pela skill + resposta do(a) estudante.
+4. Leia a resposta com atenção. Mapeie contra componentes FIRAC esperados.
+5. Output: feedback estruturado: questões identificadas/perdidas, precisão da regra, profundidade da análise, organização, faixa de avaliação, top 3 correções, no máximo 1-2 exemplos de formulação rotulados (nunca FIRAC modelo completo).
+6. Anexe em `~/.claude/plugins/config/claude-for-legal/law-student/firac-sessions/[estudante]/tracker.md` para detecção de padrão. Surface padrões após 3+ sessões.
 
 ---
 
-## Real-matter check
+## Checagem de caso real
 
-If the question the student is asking sounds like it's about a REAL situation — their lease, their parking ticket, their family's business, their friend's arrest, a real dollar amount, a real deadline, a real party name — stop.
+Se a pergunta do(a) estudante parece ser sobre situação REAL — contrato seu, multa que recebeu, negócio da família, prisão de amigo, valor real em R$, prazo real, nome de parte real — pare.
 
-> "This sounds like a real situation, not a hypothetical. I can't give you legal advice, and you can't give it either — you're not a lawyer yet. If this is real, [the person] needs an actual lawyer: legal aid, your school's clinic, a lawyer referral service (your jurisdiction's bar association, law society, or legal aid body), or (if there's money) a private attorney. I'm happy to help you understand the general legal concepts involved, but that's study, not advice."
+> "Isto soa como situação real, não hipotética. Não posso te dar orientação jurídica, e você não pode dar tampouco — você ainda não é OAB inscrito(a). Se for real, [a pessoa] precisa de profissional habilitado(a): Defensoria Pública estadual, OAB Seccional (Comissão de Assistência Judiciária Gratuita), NPJ de faculdade local, ou (se há recurso) advogado(a) particular. Tenho prazer em ajudar você a entender os conceitos jurídicos gerais envolvidos, mas isso é estudo, não orientação."
 
-Watch for: real names, real addresses, real dates, specific dollar amounts, "my landlord/boss/parent/friend," "I got a ticket/letter/notice," deadlines measured in days. Any one of these is a trigger.
+Atente para: nomes reais, endereços reais, datas reais, valores em R$ específicos, "meu locador/chefe/parente/amigo", "recebi multa/notificação/intimação", prazos em dias. Qualquer um destes é gatilho.
 
-## Purpose
+## Propósito
 
-1L writing is mostly IRAC. 2L-3L writing that touches legal analysis is IRAC under the hood. The exam rewards structure as much as content. This skill grades *structure* — did you spot the issues, did you state the rules correctly, did you apply rules to facts or just restate both?
+Redação de 1º-2º ano é majoritariamente FIRAC. Redação de 3º-5º ano que toca análise jurídica é FIRAC under the hood (mesmo em peça processual — fatos, issue, regra, análise, conclusão estão lá, só em outra ordem). A prova premia estrutura tanto quanto conteúdo. Esta skill avalia *estrutura* — você identificou as questões, enunciou as regras corretamente, aplicou regras aos fatos ou só restatou ambos?
 
-**Does not rewrite the essay.** Ever. The whole point is that you learn by writing, getting specific structural feedback, and rewriting yourself.
+**Não reescreve a redação.** Nunca. O ponto inteiro é que você aprende escrevendo, recebendo feedback estrutural específico, e reescrevendo você.
 
-## Confidence discipline
+## Disciplina de confiança
 
-- Structure grading (did you IRAC? did you organize? did you use topic sentences?) — confident. Structure is structure.
-- Issue-spotting feedback (did you spot the issue presented?) — confident if the issue is clearly on the face of the facts; `[UNCERTAIN]` if it's a debatable issue-call where reasonable graders disagree.
-- Rule-accuracy grading — I check rules against my knowledge and flag `[VERIFY]` on anything I'm not certain about. I do not silently fail your correct rule statement because I wasn't sure.
-- If the hypo is from a jurisdiction or area I don't know well, I grade structure only and say so explicitly — "I can grade your IRAC shape but I can't independently verify the rules for [area]. Cross-check with your outline."
+- Avaliação de estrutura (você FIRAQUEOU? organizou? usou frases de tópico?) — confiante. Estrutura é estrutura.
+- Feedback de identificação de questões (você identificou a questão apresentada?) — confiante se a questão está claramente nos fatos; `[INCERTO]` se é chamada discutível onde avaliadores razoáveis discordariam.
+- Avaliação de precisão da regra — confiro regras contra meu conhecimento e flag `[VERIFICAR]` em qualquer coisa que não tenho certeza. Não reprovo silenciosamente seu enunciado correto porque não tinha certeza.
+- Se o caso é de jurisdição ou área que não conheço bem, avalio só estrutura e digo explicitamente — "Posso avaliar a forma do seu FIRAC mas não posso verificar independentemente as regras para [área]. Cheque contra seu resumo."
 
-## Load context
+## Carregar contexto
 
-- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, exam formats, outline locations, learning style
-- `~/.claude/plugins/config/claude-for-legal/law-student/irac-sessions/[student]/tracker.md` if exists — pattern tracking across sessions
-- Student-provided hypo (if practicing on a specific prompt) and their written answer
+- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplinas atuais, formatos de prova, localizações de resumo, estilo de aprendizado
+- `~/.claude/plugins/config/claude-for-legal/law-student/firac-sessions/[estudante]/tracker.md` se existe — rastreamento de padrão entre sessões
+- Caso fornecido pelo(a) estudante (se praticando em prompt específico) e a resposta escrita
 
 ## Workflow
 
-### Step 1: Establish what we're grading
+### Passo 1: Estabelecer o que está sendo avaliado
 
-Two modes:
+Dois modos:
 
-- **Student-provided hypo:** user pastes (or points at) a hypo they're practicing on, then pastes their answer. Skill grades against the hypo.
-- **Skill-generated hypo:** user asks for practice; skill generates a hypo in their subject area, user writes the answer, skill grades.
+- **Caso fornecido:** você cola (ou aponta) um caso que está praticando, depois cola sua resposta. Skill avalia contra o caso.
+- **Caso gerado:** você pede prática; skill gera caso na sua disciplina, você escreve a resposta, skill avalia.
 
-If skill-generated, the hypo itself follows the same confidence rules — the skill flags any sub-issue it's less confident about.
+Se gerado pela skill, o próprio caso segue as mesmas regras de confiança — a skill flag qualquer sub-questão sobre a qual está menos confiante.
 
-### Step 2: Read the answer closely
+### Passo 2: Leia a resposta atentamente
 
-Don't skim. Read the student's answer as if grading it. Map it against expected IRAC components:
+Não escaneie. Leia como se estivesse avaliando. Mapeie contra componentes FIRAC esperados:
 
-- **Issues:** what issues did they spot? (List them.) What issues are in the hypo that they didn't spot?
-- **Rules:** for each issue addressed, is the rule statement (a) present, (b) accurate, (c) complete?
-- **Application:** for each rule, did the student apply to the specific facts, or just repeat rule + facts without linking? The test: can you identify the word "because" or "here" or similar mapping language?
-- **Conclusion:** did they reach one? Is it responsive to the call?
-- **Organization:** IRAC / CRAC order? Topic sentences? Paragraph breaks that make sense?
+- **Issues (questões):** quais identificou? (Liste.) Quais estão no caso que não identificou?
+- **Regras:** para cada questão tratada, o enunciado da regra está (a) presente, (b) preciso, (c) completo? Cite dispositivo (CC art. X, CDC art. Y, CPC art. Z) e súmula/Tema quando aplicável.
+- **Análise:** para cada regra, você aplicou aos fatos específicos, ou só repetiu regra + fatos sem ligar? O teste: consegue identificar "porque", "ora", "no caso" ou linguagem de mapeamento similar?
+- **Conclusão:** chegou a uma? Respondeu à pergunta proposta?
+- **Organização:** ordem FIRAC? Frases de tópico? Quebras de parágrafo que fazem sentido?
 
-### Step 3: Structured feedback
+### Passo 3: Feedback estruturado
 
-Output per component. No rewriting. Specific, not generic.
+Output por componente. Sem reescrever. Específico, não genérico.
 
 ```markdown
-# IRAC Grade — [date]
+# Avaliação FIRAC — [data]
 
-**Hypo:** [summary or pointer]
-**Student answer length:** [N words]
-**Expected issues:** [list — from the hypo]
+**Caso:** [sumário ou ponteiro]
+**Tamanho da resposta:** [N palavras]
+**Questões esperadas:** [lista — do caso]
 
 ---
 
-## Issue spotting
+## Identificação de questões
 
-**Spotted:** [list]
-**Missed:** [list — these are points left on the table]
-**Mis-identified:** [if the student called something an issue that isn't]
+**Identificadas:** [lista]
+**Perdidas:** [lista — estes são pontos deixados na mesa]
+**Mal-identificadas:** [se você chamou de questão algo que não é]
 
-[If an issue is [UNCERTAIN: debatable issue-call], note: "your grader might agree or disagree here; defensible read."]
+[Se uma questão é [INCERTO: chamada discutível], note: "seu(sua) avaliador(a) pode concordar ou discordar aqui; leitura defensível."]
 
-## Rule statements
+## Enunciados de regra
 
-For each issue addressed:
+Para cada questão tratada:
 
-- **[Issue 1]:** [Accurate / partially correct / wrong / missing element] — [what's off, one sentence] — [VERIFY if skill less than confident on rule]
-- **[Issue 2]:** ...
+- **[Questão 1]:** [Preciso / parcialmente correto / errado / faltando elemento] — [o que está fora, uma frase] — [VERIFICAR se a skill está menos que confiante na regra]
+- **[Questão 2]:** ...
 
-## Analysis
+## Análise
 
-For each rule the student stated:
+Para cada regra que você enunciou:
 
-- **[Issue 1] — did you apply?** [Yes, applied to [specific facts] | Partially — you mentioned [facts] but didn't link to rule element | No — you restated rule then facts without mapping]
-- [If not applied well: "what you needed to do: connect [specific fact] to [specific rule element]. Not 'defendant acted negligently because of the facts' — 'defendant breached the duty of care because [specific fact] means [specific conclusion about the element].'"]
+- **[Questão 1] — você aplicou?** [Sim, aplicou a [fatos específicos] | Parcialmente — mencionou [fatos] mas não ligou ao elemento da regra | Não — restatou regra depois fatos sem mapear]
+- [Se não aplicou bem: "o que você precisava fazer: conectar [fato específico] a [elemento da regra específico]. Não 'o réu agiu com culpa por causa dos fatos' — 'o réu inadimpliu o dever de cuidado porque [fato específico] significa [conclusão específica sobre o elemento].'"]
 
-## Organization
+## Organização
 
-- **Order:** IRAC? CRAC? Something else?
-- **Paragraph structure:** topic sentence leading? Or buried?
-- **Transitions:** do issues flow, or is it a wall of text?
-- **Call responsiveness:** did you answer what was asked?
+- **Ordem:** FIRAC? Algo mais?
+- **Estrutura de parágrafo:** frase de tópico liderando? Ou enterrada?
+- **Transições:** as questões fluem, ou é uma parede de texto?
+- **Responsividade ao comando:** você respondeu o que foi perguntado?
 
-## If graded
+## Se avaliada
 
-A rough calibration — not a precise score, but a band:
+Calibração rude — não uma nota precisa, mas uma faixa:
 
-- **If this were graded today: [Pass / borderline / not yet]** — reasoning in one sentence
+- **Se isto fosse avaliado hoje: [Passa / borderline / ainda não]** — fundamentação em uma frase
 
-## Top three fixes
+## Top três correções
 
-Rank-ordered, one sentence each. What to rewrite if you only had time for three changes.
+Em ordem de importância, uma frase cada. O que reescrever se você só tem tempo para três mudanças.
 
 1.
 2.
 3.
 
-## Citation check
+## Checagem de citação
 
-Any cases, statutes, or rules referenced in this feedback were generated by an AI model and have not been verified. Before you rely on them in a rewrite or a graded essay, look them up on Westlaw, Fastcase, CourtListener, or your school's research tool. AI-generated citations are sometimes fabricated or misquoted.
+Qualquer julgado, lei, súmula ou Tema referenciado neste feedback foi gerado por modelo de IA e não foi verificado. Antes de confiar em reescrita ou prova avaliada, consulte em JusRatio (níveis A-E), BNP (precedentes vinculantes), CJF (federal), TJAM (e-SAJ local), ou planalto.gov.br. Citações geradas por IA às vezes são fabricadas ou mal-citadas.
 
-## Writing sample — labeled example only (do not copy)
+## Amostra de redação — exemplo rotulado apenas (não copie)
 
-If there's a specific structural move the student missed (e.g., rule-application mapping), show ONE example sentence or paragraph that illustrates the move. Explicitly label it:
+Se há um movimento estrutural específico que você perdeu (ex.: mapeamento regra-aplicação), mostro UM exemplo de frase ou parágrafo que ilustra o movimento. Explicitamente rotulado:
 
-> "Here's one way to frame an analysis sentence — write your own version, don't copy this:
-> [example]"
+> "Eis uma maneira de enquadrar uma frase de análise — escreva sua própria versão, não copie:
+> [exemplo]"
 
-Use sparingly. One per grade, max two. Never a full IRAC example.
+Use com parcimônia. Um por avaliação, máximo dois. Nunca FIRAC completo de exemplo.
 
-**Never on the student's actual substantive issue.** Example phrasings illustrate the structural move in generic placeholder form (e.g., "[fact] means [conclusion about element] because [reasoning]"). They cannot show what an analysis sentence or paragraph would look like on the exact hypo or issue the student is writing about — that crosses from "seeing the move" into "being handed the answer." If the student is writing about negligence in a car accident hypo, the example must use a different subject area or abstract placeholders, not a negligence analysis sentence.
+**Nunca sobre a questão substantiva real do(a) estudante.** Formulações de exemplo ilustram o movimento estrutural em forma genérica de placeholder (ex.: "[fato] significa [conclusão sobre elemento] porque [fundamentação]"). Não podem mostrar como uma frase ou parágrafo de análise pareceria sobre o caso ou questão exata sobre a qual está escrevendo — isso cruza de "ver o movimento" para "receber a resposta". Se está escrevendo sobre responsabilidade civil em caso de acidente de trânsito, o exemplo deve usar área diferente ou placeholders abstratos, não frase de análise sobre responsabilidade.
 ```
 
-### Step 4: Track patterns
+### Passo 4: Rastreie padrões
 
-Append to `~/.claude/plugins/config/claude-for-legal/law-student/irac-sessions/[student]/tracker.md`:
+Anexe a `~/.claude/plugins/config/claude-for-legal/law-student/firac-sessions/[estudante]/tracker.md`:
 
 ```markdown
-## [date] — [subject / hypo topic]
-- Issues missed: [list]
-- Rule accuracy: [% or qualitative]
-- Analysis gap: [specific pattern — e.g., "restates rule without applying"]
-- Organization: [ok / weak / strong]
+## [data] — [disciplina / tópico do caso]
+- Questões perdidas: [lista]
+- Precisão de regra: [% ou qualitativa]
+- Lacuna de análise: [padrão específico — ex.: "restata regra sem aplicar"]
+- Organização: [ok / fraca / forte]
 ```
 
-After 3+ sessions, surface patterns:
-- "You keep missing counterarguments — three sessions in a row."
-- "You're strong on Issue + Rule but consistently weak on Application."
-- "Your organization is strong; the gap is at rule-accuracy. Drill black-letter rules with /law-student:flashcards."
+Depois de 3+ sessões, surface padrões:
+- "Você continua perdendo contra-argumentos — três sessões seguidas."
+- "Você é forte em Issue + Regra mas consistentemente fraco em Análise."
+- "Sua organização é forte; a lacuna é em precisão de regra. Drill regras preto-no-branco com /law-student:flashcards."
 
-Pattern detection is the long-term value of this skill. One-off feedback helps one essay; pattern feedback changes how you study.
+Detecção de padrão é o valor de longo prazo desta skill. Feedback pontual ajuda uma redação; feedback de padrão muda como você estuda.
 
-## Integration with other skills
+## Integração com outras skills
 
-- **legal-writing:** for non-IRAC writing (memos, briefs, papers), use `/law-student:legal-writing` instead
-- **socratic-drill:** if issue-spotting is the recurring gap, `/law-student:socratic-drill` on issue-spotting for the subject before more essay practice
-- **flashcards:** if rule accuracy is the gap, flashcards are the right tool
-- **outline-builder:** if the student's rule is genuinely wrong in their outline, fixing the outline fixes many future IRACs
+- **legal-writing:** para redação não-FIRAC (memoriais, sustentações orais, monografia, TCC), use `/law-student:legal-writing` em vez
+- **socratic-drill:** se identificação de questão é a lacuna recorrente, `/law-student:socratic-drill` sobre identificação de questão para a disciplina antes de mais prática FIRAC
+- **flashcards:** se precisão de regra é a lacuna, flashcards é a ferramenta certa
+- **outline-builder:** se sua regra está genuinamente errada no seu resumo, consertar o resumo conserta muitos FIRACs futuros
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Termine com a árvore per CLAUDE.md `## Outputs`. Customize as opções ao que esta skill acabou de produzir — as cinco branches default são ponto de partida, não lock-in. A árvore É o output; você escolhe.
 
-## What this skill does not do
+## O que esta skill NÃO faz
 
-- **Rewrite the student's answer.** Ever. No exceptions. Labeled example phrasings (one or two, clearly marked) are permitted to illustrate a structural move; they cannot be copied into the student's answer.
-- **Show a model answer.** The student has to build the model in their head. Showing one short-circuits the learning.
-- **Grade content correctness on jurisdictions or areas the skill doesn't know well.** In those cases, skill grades structure only and says so — "I can grade your IRAC shape but can't verify rules here."
-- **Give a precise numeric score.** Pass/borderline/not-yet bands only. Grading is qualitative; precision is false precision.
-- **Substitute for a professor's grading.** Professors have rubrics and preferences this skill doesn't know. Use feedback to improve; don't treat it as the final word.
+- **Reescreve sua resposta.** Nunca. Sem exceções. Formulações rotuladas (uma ou duas, claramente marcadas) são permitidas para ilustrar movimento estrutural; não podem ser copiadas.
+- **Mostra resposta-modelo.** Você tem que construir o modelo na sua cabeça. Mostrar uma curto-circuita o aprendizado.
+- **Avalia correção de conteúdo em jurisdições ou áreas que a skill não conhece bem.** Nesses casos, avalia só estrutura e diz — "Posso avaliar a forma do seu FIRAC mas não posso verificar regras aqui."
+- **Dá nota numérica precisa.** Apenas faixas passa/borderline/ainda-não. Avaliação é qualitativa; precisão é precisão falsa.
+- **Substitui avaliação do(a) professor(a).** Professores(as) têm rubricas e preferências que esta skill não conhece. Use feedback para melhorar; não trate como palavra final.

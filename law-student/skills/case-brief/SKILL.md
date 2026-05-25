@@ -1,108 +1,146 @@
 ---
 name: case-brief
 description: >
-  Brief a case in your preferred format. In drill-me mode, makes the student
-  state the holding first. Use when the user says "brief [case]", "what's the
-  holding in", "case brief", or pastes a case.
-argument-hint: "[case name or citation, or paste the case]"
+  Faça fichamento de julgado no seu formato preferido — FIRAC (Fatos /
+  Issue / Regra / Análise / Conclusão — variação BR do IRAC) ou estrutura
+  nativa de ementa / relatório / voto / dispositivo. Em modo drill-me, faz
+  o(a) estudante enunciar a tese fixada (ratio decidendi) primeiro. Use
+  quando disser "fichar [julgado]", "qual a tese de", "fichamento", ou
+  colar um julgado.
+argument-hint: "[nome do julgado ou citação, ou cole o julgado]"
 ---
 
 # /case-brief
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → outline/brief preferences.
-2. Apply the workflow below.
-3. Brief in the student's format. If drill-me mode: ask the student to state the holding first.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → preferências de resumo/fichamento.
+2. Aplique o workflow abaixo.
+3. Fiche no formato do(a) estudante. Se modo drill-me: peça para enunciar a tese primeiro.
 
 ---
 
-## Purpose
+## Propósito
 
-A case brief is a tool for remembering what a case does. This skill makes one in your format — the format you'll actually use in your outline.
+Um fichamento é ferramenta para lembrar o que um julgado faz. Esta skill faz um no seu formato — o formato que você efetivamente vai usar no resumo.
 
-## Confidence discipline
+Os dois formatos brasileiros mais usados:
 
-Case briefs state holdings, rules, and reasoning. Getting them wrong turns your outline into a false map. The rule for this skill:
+**FIRAC (variação BR do IRAC):**
+- **F**atos — os fatos relevantes para a decisão
+- **I**ssue / questão — a questão jurídica que o tribunal respondeu
+- **R**egra — o dispositivo + súmula + Tema controlante
+- **A**nálise — a aplicação da regra aos fatos pelo tribunal
+- **C**onclusão — o resultado (julgado procedente/improcedente/parcialmente)
 
-- **If you paste the case text:** I extract holding/rule/reasoning from what's in front of me. Confident.
-- **If you only give a case name:** I brief from knowledge. Worth a lot less. I flag every line I'm not sure about with `[UNCERTAIN: specific reason]`, and I strongly recommend you confirm against the actual case before putting the brief in your outline. If I don't know the case well enough, I say so.
-- **If the case has famous-but-contested interpretations:** I give the majority read and `[VERIFY: check your casebook and professor's framing]`.
+**Estrutura nativa (ementa / relatório / voto / dispositivo):**
+- **Ementa** — resumo da tese fixada pelo tribunal (o que vai para a base de jurisprudência)
+- **Relatório** — narrativa dos fatos + pretensão + contestação + decisões anteriores
+- **Voto** (relator + acompanhantes + divergentes) — a fundamentação
+- **Dispositivo** — o "como ficou" (negado provimento, dado provimento, anulado, etc.)
 
-A brief built on my guess and your good faith is worse than no brief. Better to err toward "I'm not sure — read it yourself" than to invent.
+Use FIRAC para acórdãos curtos ou aulas. Use estrutura nativa para acórdãos densos do STF/STJ que serão cobrados em prova com pinpoint.
 
-## Load context
+## Disciplina de confiança
 
-`~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → outline/brief preferences (format, depth), learning style.
+Fichamento enuncia teses, regras e fundamentação. Errá-los transforma seu resumo em mapa falso. A regra para esta skill:
 
-## The "don't brief it for me" rule (hard rule)
+- **Se você cola o texto do julgado:** Extraio tese/regra/fundamentação do que está diante de mim. Confiante.
+- **Se você dá só o nome do julgado:** Eu fichado de conhecimento. Vale muito menos. Flag toda linha sobre a qual não tenho certeza com `[INCERTO: razão específica]`, e recomendo fortemente que você confirme contra o acórdão antes de colocar o fichamento no resumo. Se eu não conheço o julgado bem o suficiente, eu digo.
+- **Se o julgado tem interpretações famosas-mas-contestadas:** Dou a leitura majoritária e `[VERIFICAR: confira contra seu manual e o enquadramento do(a) professor(a)]`.
 
-A brief you didn't write is a brief you won't remember. Every mode of this skill defaults to scaffolding the student's brief-writing, not to writing the brief.
+Fichamento construído no meu palpite e na sua boa-fé é pior que sem fichamento. Melhor errar para "não tenho certeza — leia você" do que inventar.
 
-**What this skill will do in every mode:**
-- Ask the student what they already got from reading: the facts, the issue, the holding as they understand it.
-- Provide the blank template in their preferred format (headings for Facts, Issue, Holding, Reasoning, Rule, Notes).
-- Ask pointed follow-ups on whichever section is thin: "What were the key facts the court actually relied on?", "What's the narrow issue vs. the broader question?", "Why did the court reject the dissent's framing?"
-- If the student pastes the case text, extract verbatim the court's own language for holding and reasoning — that is not writing-for-them; that is pointing at what the case says.
-- Flag confused or wrong understandings: "You said the holding is X. The court's actual language is closer to Y. Which one is the rule you'll carry into your outline?"
+## Carregar contexto
 
-**What this skill will not do, even if asked:**
-- Write a full case brief from a case name alone. That is the exact thing the student is learning not to need.
-- "Summarize this case for me" — refused. The brief is for remembering, which requires writing.
+`~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → preferências de resumo/fichamento (formato, profundidade), estilo de aprendizado.
 
-**Exception** (the only one): the student explicitly overrides — "I've read it three times, I'm stuck on phrasing the holding, just give me a starter sentence so I can rewrite it." Then write a minimal starter with `[VERIFY]` flags and prompt them to rewrite in their own words before it goes into an outline.
+## A regra "não fiche por mim" (regra dura)
 
-## Mode fork
+Fichamento que você não escreveu é fichamento que você não vai lembrar. Todo modo desta skill defaults para escafoldar o fichamento do(a) estudante, não para escrever o fichamento.
 
-**Drill-me mode:** Ask the student to state the holding before anything else:
-> "You've read this case. What's the holding? One sentence."
+**O que esta skill VAI fazer em todo modo:**
+- Perguntar o que você já pegou da leitura: os fatos, a questão, a tese como você entendeu.
+- Fornecer o template em branco no formato preferido (cabeçalhos para FIRAC ou ementa/relatório/voto/dispositivo).
+- Fazer follow-ups apontados em qualquer seção fina: "Quais foram os fatos-chave que o tribunal efetivamente usou?", "Qual a questão restrita vs. a mais ampla?", "Por que o tribunal rejeitou o enquadramento do voto vencido?"
+- Se você cola o texto do julgado, extrair literalmente a linguagem do tribunal para a tese e fundamentação — isso não é escrever-por-você; é apontar o que o julgado diz.
+- Flagar entendimentos confusos ou errados: "Você disse que a tese é X. A linguagem efetiva do acórdão é mais próxima de Y. Qual é a regra que você vai levar para seu resumo?"
 
-If they can't state it, make them read it again. The brief is a memory aid, not a substitute for reading. Then proceed to the scaffold — ask them to state facts, issue, reasoning, and rule in turn. Push back on thin or wrong statements.
+**O que esta skill NÃO VAI fazer, mesmo se você pedir:**
+- Escrever fichamento completo só do nome do julgado. Esta é exatamente a coisa que você está aprendendo a não precisar.
+- "Me resuma este julgado" — recusado. Fichamento é para lembrar, o que exige escrever.
 
-**Explain-to-me mode:** Same scaffolded workflow, softer tone. The skill walks the student through each section, offers structural prompts ("a good holding is one sentence, yes/no + the rule"), but still waits for the student to write the content. **Explain-to-me does not mean "write the brief for me."** It means "explain what a good brief looks like, and guide me through writing mine."
+**Exceção** (a única): você explicitamente overrides — "li três vezes, travei na formulação da tese, me dê uma frase de partida para reescrever." Aí escrevo iniciador mínimo com flags `[VERIFICAR]` e te peço para reescrever em suas próprias palavras antes de ir para resumo.
 
-If the student pastes the case text in either mode, the skill can extract the court's own language into the Facts/Holding/Reasoning slots — that's not writing-for-them, that's pointing at the source.
+## Bifurcação de modo
 
-## The brief — scaffold, then the student fills
+**Modo drill-me:** Peça para enunciar a tese antes de qualquer coisa:
+> "Você leu este julgado. Qual a tese fixada? Uma frase."
 
-The skill produces the **template with questions**, not the filled-in brief. Student fills each section; skill reviews, pushes back, suggests what's missing.
+Se você não consegue enunciar, mande ler de novo. O fichamento é apoio de memória, não substituto da leitura. Depois prossiga para o scaffold — peça para enunciar fatos, questão, fundamentação e regra em turnos. Pressione enunciados finos ou errados.
 
-Per the student's format in `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`. If none captured, default:
+**Modo explain-to-me:** Mesmo workflow scafoldado, tom mais suave. A skill caminha por cada seção, oferece prompts estruturais ("uma boa tese é uma frase, sim/não + a regra"), mas ainda espera você escrever o conteúdo. **Explain-to-me não significa "escrever o fichamento por mim."** Significa "explicar como é um bom fichamento, e me guiar pela escrita do meu."
+
+Se você cola o texto do julgado em qualquer modo, a skill pode extrair a linguagem do tribunal nos slots de Fatos/Tese/Fundamentação — isso não é escrever-por-você, é apontar para a fonte.
+
+## O fichamento — scaffold, depois você preenche
+
+A skill produz o **template com perguntas**, não o fichamento preenchido. Você preenche cada seção; a skill revisa, pressiona, sugere o que falta.
+
+Per seu formato em `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`. Se nenhum capturado, default depende do tipo de julgado:
+
+**Para julgado de STF/STJ (denso, com pinpoint exigível em prova) — estrutura nativa:**
 
 ```markdown
-## [Case Name], [cite]
+## [Caso], [Tribunal — número — relator — j. data — DJe data]
 
-**Court:** [court, year]
+**Ementa:** [Cite literalmente a ementa, OU resuma em até 2 frases capturando a tese fixada (ratio decidendi). Marque distinção entre tese e obiter dictum.]
 
-**Facts:** [The facts that matter to the holding. Not every fact — the ones
-the court relied on. Two to four sentences.]
+**Relatório:** [Fatos + pretensão + contestação + decisões anteriores. 3-4 frases.]
 
-**Procedural posture:** [How did this get here? Trial court ruled X, this
-is an appeal from that. One sentence.]
+**Voto do relator:** [Fundamentação principal. Os fundamentos que sustentam o dispositivo. 3-5 frases.]
 
-**Issue:** [The question the court answered. Phrased as a yes/no question.]
+**Votos acompanhantes / divergentes:** [Houve voto vencido? Fundamentação distinta? Anote.]
 
-**Holding:** [The answer. One sentence. Yes/no + the rule.]
+**Dispositivo:** [Provido / improvido / parcialmente provido / anulado / etc. — o resultado.]
 
-**Reasoning:** [Why. The court's logic. This is where the law is. Three to
-five sentences.]
+**Tese fixada (para prova):** [A regra portável que você levará para o resumo. Uma frase.]
 
-**Rule:** [The rule you'd put in your outline. The portable takeaway.]
-
-**Notes:** [Dissent worth knowing? Distinguishable on these facts? How
-professor emphasized it?]
+**Notas:** [Tema Repetitivo / Súmula vinculada? Como o(a) professor(a) enquadrou? Tem ADI / cancelamento pendente?]
 
 ---
 
-**Citation check.** The case cite, quoted language, and any supporting authority above were generated by an AI model and have not been verified. Before you rely on them — in a brief, memo, outline entry, or exam answer — look them up on Westlaw, Fastcase, CourtListener, or your school's research tool. AI-generated citations are sometimes fabricated or misquoted.
+**Checagem de citação.** A citação do julgado, linguagem citada e qualquer autoridade acima foram geradas por modelo de IA e não foram verificadas. Antes de confiar — em fichamento, memorial, resumo, ou resposta de prova — consulte em JusRatio (níveis A-E de autoridade), BNP (precedentes vinculantes), CJF (jurisprudência federal STF/STJ/TRF), TJAM (e-SAJ tribunal local), ou planalto.gov.br para o texto legal. Citações geradas por IA às vezes são fabricadas ou mal-citadas.
 ```
 
-## Depth calibration
+**Para julgado de tribunal de 2º grau ou JEC (mais simples) — FIRAC:**
 
-Per `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` — some students want one-line briefs (rule + cite), some want full treatment. Match their format.
+```markdown
+## [Caso], [Tribunal — número — j. data]
 
-If they're a 1L still learning to read cases: fuller briefs. If they're a 3L doing bar prep: rules only.
+**Fatos:** [Os fatos que importam para a tese. Não cada fato — os que o tribunal usou. 2-4 frases.]
 
-## What this skill does not do
+**Issue (questão):** [A questão que o tribunal respondeu. Formulada como pergunta.]
 
-- Brief a case the student hasn't read. In drill-me mode, the holding check enforces this.
-- Tell you what's on the exam. Brief everything; the exam will surprise you.
-- **Brief from memory without flagging.** If you only give me a case name and I brief from what I think I know, every line I'm unsure about gets `[UNCERTAIN]` or `[VERIFY]`. Don't put a brief in your outline unless you've confirmed it against the actual case.
+**Regra:** [O dispositivo + súmula + Tema controlante. Pinpoint.]
+
+**Análise:** [Por quê. A lógica do tribunal. Onde está o direito. 3-5 frases.]
+
+**Conclusão:** [Procedente / improcedente / parcialmente / anulado. Uma frase. Sim/não + a regra.]
+
+**Notas:** [Distinguível em quais fatos? Como o(a) professor(a) enquadrou?]
+
+---
+
+**Checagem de citação.** Idem nota acima — confira contra MCPs BR.
+```
+
+## Calibração de profundidade
+
+Per `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` — alguns estudantes querem fichamentos de uma linha (regra + cite), outros querem tratamento completo. Case seu formato.
+
+Se você é 1º-2º ano ainda aprendendo a ler acórdãos: fichamentos mais completos. Se é 4º-5º ano fazendo OAB: regras só.
+
+## O que esta skill NÃO faz
+
+- Fichar julgado que você não leu. Em modo drill-me, a checagem de tese impõe isso.
+- Te dizer o que vai cair na prova. Fiche tudo; a prova vai surpreender.
+- **Fichar de memória sem flagar.** Se você só dá nome do julgado e eu fichado do que acho que sei, toda linha sobre a qual estou inseguro recebe `[INCERTO]` ou `[VERIFICAR]`. Não coloque fichamento em resumo a menos que tenha confirmado contra o acórdão.

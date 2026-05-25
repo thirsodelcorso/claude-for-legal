@@ -1,88 +1,95 @@
 ---
 name: customize
 description: >
-  Guided customization of your law-student study profile — change one thing
-  without re-running the whole cold-start interview. Adjust current classes,
-  learning style, outline preferences, bar prep subjects, seed materials,
-  or study session cadence. Use when the user says "change my [thing]",
-  "add a class", "update my profile", "new semester", or "customize".
-argument-hint: "[section name, or describe what you want to change]"
+  Customização guiada do seu perfil de estudo do law-student — mude uma
+  coisa sem rerodar todo o cold-start interview. Ajuste disciplinas atuais,
+  estilo de aprendizado, preferências de resumo, disciplinas OAB,
+  materiais semente, ou cadência de sessões de estudo. Use quando o(a)
+  usuário(a) disser "muda meu [coisa]", "adiciona uma disciplina",
+  "atualiza meu perfil", "novo semestre", ou "customize".
+argument-hint: "[nome da seção, ou descreva o que quer mudar]"
 ---
 
 # /customize
 
-## When this runs
+## Quando isto roda
 
-The user typed `/law-student:customize`. They want to change something in
-their study profile — a class, a learning style preference, a bar prep
-subject — without re-running the whole cold-start interview and without
-hand-editing YAML.
+O(A) usuário(a) digitou `/law-student:customize`. Quer mudar algo no perfil
+de estudo — uma disciplina, uma preferência de estilo de aprendizado, uma
+disciplina OAB — sem rerodar o cold-start interview inteiro e sem editar
+YAML à mão.
 
-## What to do
+## O que fazer
 
-1. **Read the config.** Read
+1. **Leia a config.** Leia
    `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`.
-   If the plugin config does not exist or still contains `[PLACEHOLDER]`
-   values, say:
+   Se a config do plugin não existir ou ainda contiver valores `[PLACEHOLDER]`,
+   diga:
 
-   > You haven't run setup yet. Run `/law-student:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+   > Você ainda não rodou o setup. Rode `/law-student:cold-start-interview`
+   > primeiro — customize é para ajustar perfil que você já tem.
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+2. **Mostre o mapa customizável.** Liste o que está no perfil, agrupado, com
+   sumário de uma linha do valor atual:
 
-   - **Student profile** — name, school, year (1L/2L/3L/LLM), jurisdiction
-     for bar, enrolled clinics or journals
-   - **Current classes** — class name, professor, syllabus path, exam format
-     (closed/open book, essay/MBE/mixed), cold-call style
-   - **Learning style** — Socratic vs. summary, how much pushback you want,
-     whether the plugin rewrites your work or only critiques structurally
-   - **Outline preferences** — outline format (IRAC/CREAC/case-briefing
-     style), level of rule detail, whether to include policy discussion,
-     saved outline templates
-   - **Bar prep** — which exam (UBE/state), subjects in rotation, weak-
-     subject flagging, MBE vs. essay cadence
-   - **Seed materials** — casebook paths, prior outlines, graded essays, old
-     exams, MBE sets, syllabi, papers
-   - **Study workflow** — session length, flashcard Leitner bucket schedule,
-     exam forecast cadence, cold-call prep timing
-   - **Integrations** — document storage / flashcard app (if any) status,
-     fallbacks
+   - **Perfil do(a) estudante** — nome, IES, ano (1º/2º/3º/4º/5º ano / bacharel(a) /
+     estagiário(a)), OAB Seccional alvo, NPJ ou periódicos em que está
+     matriculado(a)
+   - **Disciplinas atuais** — nome da disciplina, professor(a), caminho do plano de
+     aula, formato da avaliação (com/sem consulta, dissertativa/objetiva/
+     mista), estilo de chamada de classe
+   - **Estilo de aprendizado** — socrático vs. resumo, quanta pressão você quer,
+     se o plugin reescreve seu trabalho ou só critica estruturalmente
+   - **Preferências de resumo** — formato do resumo (FIRAC/CREAC/estilo
+     fichamento), nível de detalhe de regra, se inclui discussão de
+     princípio, templates salvos
+   - **Preparação OAB** — fase (1ª/2ª), área da 2ª fase se escolhida,
+     disciplinas em rotação, sinalização de disciplina frágil, cadência de
+     objetivas FGV vs. peça/discursiva
+   - **Materiais semente** — caminhos do manual, resumos anteriores,
+     dissertativas corrigidas, provas antigas, conjuntos de questões OAB FGV,
+     planos de aula, trabalhos
+   - **Workflow de estudo** — duração da sessão, agenda de buckets Leitner de
+     flashcard, cadência de previsão de prova, tempo de preparação para
+     chamada de classe
+   - **Integrações** — status de armazenamento documental / app de flashcard (se
+     houver), fallbacks
 
-3. **Ask what they want to change.**
+3. **Pergunte o que quer mudar.**
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+   > O que você gostaria de ajustar? Escolha uma seção, ou descreva a
+   > mudança nas suas próprias palavras.
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+4. **Faça a mudança.** Mostre o valor atual, peça o novo, explique o que muda
+   downstream, confirme, escreva na config.
 
-   Examples:
-   - *Adding a new class:* "`/outline-builder` will scaffold a new outline for this
-     class. `/flashcards` will add a new subject bucket. `/cold-call-prep`
-     will ask for a seat and a topic when you invoke it for this class."
-   - *Learning style Socratic → summary-first:* "`/socratic-drill` won't ask you to
-     answer first — it'll present the rule and example, then quiz you on
-     application."
-   - *Adding a bar subject:* "`/bar-prep-questions` will include this subject in
-     rotation and weight it higher if you mark it weak."
+   Exemplos:
+   - *Adicionando nova disciplina:* "`/outline-builder` vai andaimar um novo
+     resumo para esta disciplina. `/flashcards` adiciona novo bucket de
+     disciplina. `/cold-call-prep` vai perguntar sobre tópico quando você
+     invocar para esta disciplina."
+   - *Estilo de aprendizado socrático → resumo-primeiro:* "`/socratic-drill`
+     não vai te pedir para responder primeiro — vai apresentar a regra e
+     exemplo, depois te testar na aplicação."
+   - *Adicionando disciplina OAB:* "`/bar-prep-questions` vai incluir esta
+     disciplina na rotação e pondera mais alto se marcar como frágil."
 
-5. **Close.**
+5. **Encerre.**
 
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/law-student:customize` anytime.
+   > Pronto. Seu próximo output reflete a mudança. Mais alguma coisa? Você
+   > pode rodar `/law-student:customize` a qualquer momento.
 
 ## Guardrails
 
-- **Never delete a section.** If the user wants to "drop" a class, offer to
-  mark it `[Archived — retain seed materials]` and explain what flashcard
-  and outline behavior changes.
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., "summary-first" learning style + "maximum pushback"
-  Socratic setting), flag the tension.
-- **Flag guardrail degradation.** The "no rewriting your writing" rule on
-  `/legal-writing` and `/irac-practice` is load-bearing — the value of the skill is
-  structural feedback, not ghost-writing. If the user asks to turn that off,
-  confirm they understand that the plugin will not write their work for
-  them.
-- **One change at a time.** Don't re-ask the whole interview.
+- **Nunca apague seção.** Se o(a) usuário(a) quer "tirar" uma disciplina,
+  ofereça marcar `[Arquivada — reter materiais semente]` e explique o que
+  muda em comportamento de flashcard e resumo.
+- **Sinalize inconsistência interna.** Se a mudança torna o perfil
+  inconsistente (ex.: estilo "resumo-primeiro" + setting socrático "máxima
+  pressão"), sinalize a tensão.
+- **Sinalize degradação de guardrail.** A regra "sem reescrita do seu
+  trabalho" em `/legal-writing` e `/irac-practice` é load-bearing — o valor
+  da skill é feedback estrutural, não ghost-writing. Se o(a) usuário(a) pede
+  para desligar, confirme que entende que o plugin não vai escrever o
+  trabalho por ele(a).
+- **Uma mudança por vez.** Não rereperguntar o entrevista inteira.

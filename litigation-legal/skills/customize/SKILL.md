@@ -1,102 +1,111 @@
 ---
 name: customize
 description: >
-  Guided customization of your litigation practice profile — change one thing
-  without re-running the whole cold-start interview. Adjust practice role,
-  side (plaintiff / defense / mixed), risk calibration, landscape, house
-  style, escalation contacts, severity vocabulary, or matter workspace
-  paths. Use when the user says "change my [thing]", "update my profile",
-  "edit my config", or "customize".
+  Customização guiada do seu perfil de atuação em contencioso — mude uma
+  coisa sem rerodar o cold-start inteiro. Ajuste papel na advocacia,
+  posição processual (autor / réu / ambos), calibração de risco, panorama,
+  estilo da casa, contatos de escalonamento, vocabulário de severidade ou
+  paths de workspace de caso. Use quando o usuário disser "mudar meu [x]",
+  "atualizar meu perfil", "editar meu config", ou "customizar".
 argument-hint: "[section name, or describe what you want to change]"
 ---
 
 # /customize
 
-## When this runs
+## Quando isto roda
 
-The user typed `/litigation-legal:customize`. They want to change something
-in their litigation profile — a risk calibration, a house style rule, an
-escalation contact, a landscape note — without re-running the whole
-cold-start interview and without hand-editing YAML.
+O usuário digitou `/litigation-legal:customize`. Quer mudar algo no perfil
+de contencioso — uma calibração de risco, uma regra de estilo da casa, um
+contato de escalonamento, uma nota de panorama — sem rerodar a entrevista
+inteira de cold-start e sem editar YAML na mão.
 
-## What to do
+## O que fazer
 
-1. **Read the config.** Read
+1. **Ler o config.** Leia
    `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`
-   (and `~/.claude/plugins/config/claude-for-legal/company-profile.md` one
-   level up). If the plugin config does not exist or still contains
-   `[PLACEHOLDER]` values, say:
+   (e `~/.claude/plugins/config/claude-for-legal/company-profile.md` um
+   nível acima). Se o config do plugin não existe ou ainda contém
+   `[PLACEHOLDER]`, diga:
 
-   > You haven't run setup yet. Run `/litigation-legal:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+   > Você ainda não rodou o setup. Rode primeiro
+   > `/litigation-legal:cold-start-interview` — customize é para ajustar
+   > um perfil que você já tem.
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+2. **Mostre o mapa customizável.** Liste o que está no perfil, agrupado,
+   com sumário de uma linha do valor atual:
 
-   - **Company / who you are** — name, industry, jurisdictions, stage, practice
-     setting *(shared across all 12 plugins — changes flow through
-     `company-profile.md`)*
-   - **Practice role** — in-house counsel / outside counsel / solo / clinic
-   - **Side** — plaintiff / defense / mixed, and any posture nuances (class
-     action defense, regulatory enforcement defense, commercial
-     plaintiff, etc.)
-   - **Risk calibration** — what counts as high / medium / low risk on an
-     inbound demand, subpoena, or new matter; escalation triggers
-   - **Landscape** — regular adversaries, friendly and unfriendly venues,
-     judges to know, standing OC relationships
-   - **House style** — brief style, declaration format, demand letter
-     template, deposition outline structure, legal hold template
-   - **Severity vocabulary map** — how you translate severity labels across
-     client / internal / court-facing outputs
-   - **People** — matter leads, in-house team, outside counsel by matter
-     type, escalation chain
-   - **Workflow** — matter workspaces, portfolio log, OC status cadence,
-     legal hold refresh cadence
-   - **Integrations** — document storage / e-filing / calendar / Slack
-     status, fallbacks
+   - **Pessoa jurídica / quem você é** — razão social, setor, jurisdições,
+     porte, contexto de atuação *(compartilhado entre os 12 plugins —
+     mudanças propagam via `company-profile.md`)*
+   - **Papel na advocacia** — Defensor(a) Público(a) / departamento
+     jurídico / advogado(a) em sociedade / advogado(a) autônomo(a)
+   - **Posição processual** — autor / réu / ambos, e nuances de postura
+     (defesa em ação coletiva, defesa em ação regulatória, autor
+     comercial, etc.)
+   - **Calibração de risco** — o que conta como alto / médio / baixo risco
+     em notificação extrajudicial recebida, ofício requisitório, ou caso
+     novo; gatilhos de escalonamento
+   - **Panorama** — contrapartes frequentes, foros amigáveis e desfavoráveis,
+     magistrados conhecidos, relações estáveis com escritórios externos /
+     núcleos especializados
+   - **Estilo da casa** — estilo de peças, formato de declaração, template
+     de notificação extrajudicial, estrutura de outline de oitiva, template
+     de comunicação de dever de guarda documental
+   - **Mapa de vocabulário de severidade** — como você traduz rótulos de
+     severidade entre outputs ao cliente / internos / endereçados ao juízo
+   - **Pessoas** — responsáveis por caso, equipe interna, escritórios
+     externos por tipo de matéria, cadeia de escalonamento
+   - **Workflow** — workspaces de caso, log de portfólio, cadência de
+     status com escritórios externos, cadência de renovação de dever de
+     guarda
+   - **Integrações** — armazenamento documental / protocolo eletrônico
+     (PJe / eproc / e-SAJ / Projudi) / agenda / status, fallbacks
 
-3. **Ask what they want to change.**
+3. **Pergunte o que quer mudar.**
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+   > O que você gostaria de ajustar? Escolha uma seção, ou descreva a
+   > mudança com suas próprias palavras.
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+4. **Faça a mudança.** Mostre o valor atual, peça o novo valor, explique
+   o que muda downstream, confirme, escreva no config.
 
-   Examples:
-   - *Side mixed → defense-only:* "`/matter-intake` will stop asking the
-     plaintiff-side questions. `/demand-draft` will still work for
-     defense-side pre-suit demands but the starting frame will be different."
-   - *Risk calibration tightening high-risk threshold:* "More inbound
-     demands and subpoenas will route through `/matter-briefing` and
+   Exemplos:
+   - *Posição ambos → réu apenas:* "`/matter-intake` vai parar de
+     perguntar as questões de polo ativo. `/demand-draft` continua
+     funcionando para notificações pré-litigiosas defensivas mas o frame
+     inicial será diferente."
+   - *Calibração de risco apertando o limiar de alto risco:* "Mais
+     notificações recebidas e ofícios passarão por `/matter-briefing` e
      `/oc-status`."
-   - *New standing OC for IP matters:* "`/oc-status` will include this firm
-     in weekly sweeps for IP-tagged matters."
+   - *Novo escritório externo padrão para matéria de PI:* "`/oc-status`
+     incluirá este escritório nas varreduras semanais para casos com tag
+     de PI."
 
-5. **For shared-profile changes** (company name, industry, jurisdictions,
-   practice setting, stage): write to
-   `~/.claude/plugins/config/claude-for-legal/company-profile.md` and note:
+5. **Para mudanças de perfil compartilhado** (razão social, setor,
+   jurisdições, contexto de atuação, porte): escreva em
+   `~/.claude/plugins/config/claude-for-legal/company-profile.md` e note:
 
-   > This change affects all 12 plugins — any plugin that reads your
-   > jurisdiction footprint now sees [new value].
+   > Esta mudança afeta todos os 12 plugins — qualquer plugin que lê seu
+   > footprint jurisdicional agora vê [novo valor].
 
-6. **Close.**
+6. **Fechamento.**
 
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/litigation-legal:customize` anytime.
+   > Pronto. Seu próximo output vai refletir a mudança. Mais alguma coisa?
+   > Pode rodar `/litigation-legal:customize` a qualquer momento.
 
 ## Guardrails
 
-- **Never delete a section.** If the user wants to "remove" a matter type
-  from scope, offer to mark it `[Not currently handled]` and explain what
-  intake routing changes.
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., plaintiff-only side + defense-only OC roster; or
-  "high volume" portfolio + no matter workspaces configured), flag the
-  tension.
-- **Flag guardrail degradation.** The FRE 408 / privilege gate on
-  `/demand-draft`, the privilege header on matter outputs, source
-  attribution tags, and `[verify]` tags on cited authorities are load-
-  bearing — do not remove. The `[review]` flag and the "do not file
-  without attorney review" framing are load-bearing.
-- **One change at a time.** Don't re-ask the whole interview.
+- **Nunca apague uma seção.** Se o usuário quer "remover" um tipo de
+  matéria do escopo, ofereça marcar como `[Não tratado atualmente]` e
+  explique o que muda no roteamento do intake.
+- **Sinalize inconsistência interna.** Se a mudança tornar o perfil
+  inconsistente (ex.: posição autor-apenas + roster de escritórios
+  externos só defensivo; ou "alto volume" de portfólio + sem workspaces
+  de caso configurados), sinalize a tensão.
+- **Sinalize degradação de guardrail.** O gate de confidencialidade
+  negocial (Lei 13.140/2015 art. 30) / sigilo profissional em
+  `/demand-draft`, o cabeçalho de sigilo em outputs de caso, tags de
+  atribuição de fonte, e tags `[verificar]` em autoridades citadas são
+  load-bearing — não remova. A flag `[review]` e o framing "não
+  protocolar sem revisão do(a) advogado(a)" são load-bearing.
+- **Uma mudança por vez.** Não rerode a entrevista inteira.

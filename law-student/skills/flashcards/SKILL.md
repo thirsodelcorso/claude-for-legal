@@ -1,158 +1,158 @@
 ---
 name: flashcards
 description: >
-  Generate or drill flashcards for black-letter memorization — Leitner-style
-  buckets, per-subject markdown storage, drill mode with self-assessment. Use
-  when the user says "drill flashcards", "make flashcards from", "quiz me on
-  cards", or wants to memorize rules.
-argument-hint: "[subject] [--generate | --drill | --review | --stats | --session <n>]"
+  Gera ou drila flashcards para memorização de letra-fria — buckets estilo
+  Leitner, armazenamento markdown por disciplina, modo drill com auto-
+  avaliação. Use quando o(a) usuário(a) disser "drila flashcards", "faz
+  flashcards a partir de", "me testa nos cards", ou quer memorizar regras.
+argument-hint: "[disciplina] [--generate | --drill | --review | --stats | --session <n>]"
 ---
 
 # /flashcards
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, weak subjects, outline locations.
-2. Apply the framework below.
-3. Route by flag:
-   - `--generate`: build cards from source (outline path, notes, casebook) per card-writing rules. Write to `~/.claude/plugins/config/claude-for-legal/law-student/flashcards/[subject]/cards.md`.
-   - `--drill` (default): prioritize due cards + new; show Q, wait for answer, show A, take self-assessment, update buckets + next review.
-   - `--review`: browse deck by bucket.
-   - `--stats`: progress snapshot; flag stuck cards for verbal drill.
-   - `--session <n>`: focused N-card session, prioritized by prior misses + due cards; appends results to `study-plan.yaml` → `session_history`.
-4. Apply confidence discipline: flag every card generated from knowledge-without-source with `[VERIFY]`.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplinas atuais, matérias frágeis, localização dos resumos.
+2. Aplique o framework abaixo.
+3. Roteie pela flag:
+   - `--generate`: monta cards a partir da fonte (caminho do resumo, notas, manual) conforme regras de redação de card. Escreva em `~/.claude/plugins/config/claude-for-legal/law-student/flashcards/[disciplina]/cards.md`.
+   - `--drill` (default): prioriza cards vencidos + novos; mostra Q, espera resposta, mostra A, toma auto-avaliação, atualiza buckets + próxima revisão.
+   - `--review`: navega deck por bucket.
+   - `--stats`: snapshot de progresso; sinaliza cards travados para drill verbal.
+   - `--session <n>`: sessão focada de N cards, priorizada por erros prévios + cards vencidos; acrescenta resultados a `study-plan.yaml` → `session_history`.
+4. Aplique disciplina de confiança: marque todo card gerado de conhecimento-sem-fonte com `[VERIFICAR]`.
 
 ---
 
-## Real-matter check
+## Checagem de caso real
 
-If the question the student is asking sounds like it's about a REAL situation — their lease, their parking ticket, their family's business, their friend's arrest, a real dollar amount, a real deadline, a real party name — stop.
+Se a pergunta do(a) estudante soa como sendo sobre situação REAL — contrato de aluguel dele(a), multa de trânsito, negócio da família, prisão de amigo, valor real, prazo real, parte identificada — pare.
 
-> "This sounds like a real situation, not a hypothetical. I can't give you legal advice, and you can't give it either — you're not a lawyer yet. If this is real, [the person] needs an actual lawyer: legal aid, your school's clinic, a lawyer referral service (your jurisdiction's bar association, law society, or legal aid body), or (if there's money) a private attorney. I'm happy to help you understand the general legal concepts involved, but that's study, not advice."
+> "Isto soa como situação real, não hipótese de estudo. Não posso dar parecer jurídico, e você também não pode — você ainda não é advogado(a) inscrito(a) na OAB. Se for real, [a pessoa] precisa de orientação concreta: se você é estagiário(a) sob supervisão na DP/MP/NPJ, use o fluxo institucional via plugin `legal-clinic`. Se for problema próprio ou de pessoa identificável, procure a OAB Seccional, a Defensoria Pública do seu estado, ou o serviço de assistência judiciária da sua IES. Posso te ajudar a entender os conceitos jurídicos em abstrato — isso é estudo, não orientação concreta."
 
-Watch for: real names, real addresses, real dates, specific dollar amounts, "my landlord/boss/parent/friend," "I got a ticket/letter/notice," deadlines measured in days. Any one of these is a trigger.
+Atenção para: nomes reais, endereços reais, datas reais, valores específicos, "meu(minha) locador(a)/chefe/pai/mãe/amigo(a)", "recebi multa/notificação/intimação", prazos em dias. Qualquer um destes é gatilho.
 
-## Purpose
+## Propósito
 
-Outlines are for synthesis; flashcards are for memorization. The bar exam and most law school exams reward fast rule recall. This skill generates cards from your outline (or notes or casebook excerpts), drills them with light spacing, and tracks what's stuck and what hasn't.
+Resumos são para síntese; flashcards são para memorização. A OAB e a maioria das provas de faculdade premiam recall rápido de regra. Esta skill gera cards do seu resumo (ou notas ou trechos de manual), drila com espaçamento leve, e rastreia o que fixou e o que não.
 
-**Not a full SRS system.** Simple Leitner-style buckets. Good enough to study, light enough to maintain. If you want Anki, use Anki; this is for when you're in chat and want a quick drill.
+**Não é sistema SRS completo.** Buckets simples estilo Leitner. Bom o suficiente para estudar, leve o suficiente para manter. Se você quer Anki, use Anki; isto é para quando você está no chat e quer drill rápido.
 
-## Confidence discipline
+## Disciplina de confiança
 
-Same rule as the other content-generating skills:
+Mesma regra das outras skills geradoras de conteúdo:
 
-- If generating cards from a source you provide (outline, notes, casebook excerpt), the card's Q and A come from that source. Confident.
-- If generating cards from my knowledge without a source, I flag every card that states a rule I'm not fully confident on with `[VERIFY: rule — confirm against source]`. You should check before committing to the card as a learning target.
-- If I don't know an area well, I generate fewer cards rather than inventing. Better to have 8 good cards than 20 where 5 are wrong.
+- Se gerando cards de fonte que você fornece (resumo, notas, trecho de manual), Q e A vêm dali. Confiante.
+- Se gerando cards de conhecimento sem fonte, marco todo card que enuncia regra na qual não estou totalmente confiante com `[VERIFICAR: regra — confirmar contra fonte]`. Você deve checar antes de fixar o card como alvo de aprendizado.
+- Se não conheço bem a área, gero menos cards em vez de inventar. Melhor ter 8 cards bons que 20 onde 5 estão errados.
 
-## Load context
+## Carregar contexto
 
-- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, weak subjects, existing outlines
-- `~/.claude/plugins/config/claude-for-legal/law-student/flashcards/[subject]/cards.md` if it exists (incremental build)
-- User-provided source (outline path, notes, casebook excerpt) if given
+- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → disciplinas atuais, matérias frágeis, resumos existentes
+- `~/.claude/plugins/config/claude-for-legal/law-student/flashcards/[disciplina]/cards.md` se existir (build incremental)
+- Fonte fornecida pelo(a) usuário(a) (caminho do resumo, notas, trecho de manual) se dada
 
-## Modes
+## Modos
 
-Flag: `--generate | --drill | --review | --stats | --session <n>` (default: prompt)
+Flag: `--generate | --drill | --review | --stats | --session <n>` (default: pergunta)
 
-### `--session <n>` — focused N-card session
+### `--session <n>` — sessão focada de N cards
 
-For when the student says "let's do 5 cards on Contracts" or runs `/law-student:session Contracts 5 --flashcards`.
+Para quando o(a) estudante diz "vamos fazer 5 cards de Civil" ou roda `/law-student:session Civil 5 --flashcards`.
 
-- Load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists and read `session_history` for this subject.
-- Prioritize: cards previously marked wrong > due cards > new cards.
-- Run N cards one at a time per the `--drill` flow.
-- At session end, append results to `study-plan.yaml` → `session_history`:
+- Carregue `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` se existir e leia `session_history` para esta disciplina.
+- Priorize: cards anteriormente marcados errado > cards vencidos > cards novos.
+- Rode N cards um por vez conforme o fluxo `--drill`.
+- No fim da sessão, acrescente resultados a `study-plan.yaml` → `session_history`:
 
 ```yaml
 session_history:
   - date: 2026-05-08
-    subject: Contracts
+    subject: Civil
     type: flashcards
     n_cards: 5
     right: 3
     partial: 1
     wrong: 1
-    stuck_topics: [parol-evidence-rule]
+    stuck_topics: [prescricao-extracontratual]
 ```
 
-- If no `study-plan.yaml`, write to `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml` instead.
+- Se não houver `study-plan.yaml`, escreva em `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml` em vez.
 
-### `--generate` — create cards
+### `--generate` — cria cards
 
 **Inputs:**
-- Subject (class name or topic)
-- Source (outline path, notes, or "use my existing outline from ~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md")
-- Optional: card count target (default 10-20 per session)
+- Disciplina (nome da matéria ou tópico)
+- Fonte (caminho do resumo, notas, ou "usa meu resumo existente em ~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md")
+- Opcional: meta de quantidade de cards (default 10-20 por sessão)
 
-**Card structure:**
+**Estrutura do card:**
 
 ```markdown
 ### Card [N]
-**Q:** [question — one concept, one card]
-**A:** [answer — the rule, one or two sentences]
-**Source:** [outline section, casebook page, class note date]
-**Bucket:** new
-**Last reviewed:** —
-**Next review:** [today's date]
-**Notes:** [optional — distinctions, exceptions, traps]
+**Q:** [pergunta — um conceito, um card]
+**A:** [resposta — a regra, uma ou duas frases]
+**Fonte:** [seção do resumo, página do manual, data da nota de aula]
+**Bucket:** novo
+**Última revisão:** —
+**Próxima revisão:** [data de hoje]
+**Notas:** [opcional — distinções, exceções, armadilhas]
 ```
 
-**Card-writing rules:**
-1. **One concept per card.** "Elements of negligence" becomes 4 cards, not 1.
-2. **Front is a question, not a topic.** "Negligence duty" bad. "What are the four elements of negligence?" good.
-3. **Back is a rule, not a paragraph.** If the answer needs a paragraph, split into multiple cards.
-4. **Cite the source** so you can re-check during drill.
+**Regras de redação de card:**
+1. **Um conceito por card.** "Elementos da responsabilidade civil" vira 4 cards, não 1.
+2. **Frente é pergunta, não tópico.** "Dever de cuidado na responsabilidade" ruim. "Quais os elementos da responsabilidade civil subjetiva (CC art. 186)?" bom.
+3. **Verso é regra, não parágrafo.** Se a resposta precisa de parágrafo, divide em múltiplos cards.
+4. **Cite a fonte** para você poder rechecar durante o drill.
 
-**Citation check.** When cards are generated from my knowledge rather than a source you pasted, the rule and any case/statute cited on the back were generated by an AI model and have not been verified. Before you memorize a card, confirm it against your outline, casebook, or a research tool (Westlaw, Fastcase, CourtListener). A wrong card drilled to mastery is worse than no card.
+**Checagem de citação.** Quando cards são gerados do meu conhecimento em vez de fonte que você colou, a regra e qualquer julgado/dispositivo citado no verso foram gerados por modelo de IA e não foram verificados. Antes de memorizar um card, confirme contra seu resumo, manual, ou ferramenta de pesquisa (JusRatio, BNP, CJF, planalto.gov.br). Card errado drilado até maestria é pior que card nenhum.
 
-### `--drill` — study session
+### `--drill` — sessão de estudo
 
-**Prioritization:**
-1. Cards where `next_review <= today` AND bucket != mastered
-2. New cards not yet attempted
-3. If no cards due and no new cards: ask if user wants review of mastered cards (for decay prevention)
+**Priorização:**
+1. Cards onde `next_review <= hoje` E bucket != fixado
+2. Cards novos ainda não tentados
+3. Se nenhum vencido nem novo: pergunte se quer revisar cards fixados (para prevenir decaimento)
 
-**Drill flow per card:**
-1. Show Q. Wait for answer.
-2. User answers (or types "skip" / "don't know")
-3. Show A.
-4. User self-assesses: `right` / `partial` / `wrong` / `don't know`
-5. Update bucket + next review per the table below:
+**Fluxo de drill por card:**
+1. Mostre Q. Espere a resposta.
+2. Usuário(a) responde (ou digita "pulo" / "não sei")
+3. Mostre A.
+4. Usuário(a) se auto-avalia: `certo` / `parcial` / `errado` / `não sei`
+5. Atualize bucket + próxima revisão conforme tabela:
 
-| Self-assessment | Bucket change | Next review |
+| Auto-avaliação | Mudança de bucket | Próxima revisão |
 |---|---|---|
-| right | up one (new → learning → review → mastered) | +1d new, +3d learning, +7d review, +21d mastered |
-| partial | same bucket | +1d |
-| wrong | down one (review → learning; learning → new; new stays new) | today +4h |
-| don't know | down one | today +4h |
+| certo | sobe um (novo → aprendendo → revisão → fixado) | +1d novo, +3d aprendendo, +7d revisão, +21d fixado |
+| parcial | mesmo bucket | +1d |
+| errado | desce um (revisão → aprendendo; aprendendo → novo; novo fica novo) | hoje +4h |
+| não sei | desce um | hoje +4h |
 
-### `--review` — browse deck
+### `--review` — navega deck
 
-Show all cards in a subject. Grouped by bucket. Useful for scanning what's in the deck and manually adjusting card content.
+Mostre todos os cards de uma disciplina. Agrupados por bucket. Útil para escanear o que está no deck e ajustar manualmente conteúdo de card.
 
-### `--stats` — progress snapshot
+### `--stats` — snapshot de progresso
 
-Per subject: total cards, bucket distribution, due today, reviewed this week. Highlight any cards that have bounced down to `new` more than twice — those are the stuck concepts worth drilling verbally via `/law-student:socratic-drill`.
+Por disciplina: total de cards, distribuição por bucket, vencidos hoje, revisados na semana. Destaque qualquer card que tenha caído para `novo` mais de duas vezes — esses são os conceitos travados que valem drill verbal via `/law-student:socratic-drill`.
 
-## Integration with other skills
+## Integração com outras skills
 
-- **outline-builder:** after building or extending an outline, offer to generate flashcards from the new material
-- **socratic-drill:** if a card has been wrong 2+ times, route it to `/law-student:socratic-drill` for verbal working-through — flashcards aren't enough for concepts you don't actually understand
-- **bar-prep-questions:** bar prep subjects with poor flashcard stats weight higher in MBE drilling
+- **outline-builder:** depois de montar ou estender um resumo, ofereça gerar flashcards do novo material
+- **socratic-drill:** se um card foi errado 2+ vezes, roteie para `/law-student:socratic-drill` para trabalhar verbalmente — flashcards não bastam para conceitos que você não entende
+- **bar-prep-questions:** disciplinas OAB com stats ruins de flashcard pesam mais na rodagem de 1ª fase FGV
 
-## Storage
+## Armazenamento
 
 ```
 flashcards/
-└── [subject]/
+└── [disciplina]/
     └── cards.md
 ```
 
-One file per subject. Cards are markdown. Bucket/review metadata is inline per card. Not optimal for very large decks (>500) but fine for typical law school deck sizes.
+Um arquivo por disciplina. Cards em markdown. Metadados de bucket/revisão inline por card. Não ideal para decks muito grandes (>500) mas bom para tamanhos típicos.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Replace Anki.** If you already have a flashcard habit, keep it. This is for when you're in chat and want to drill without switching apps.
-- **Invent cards to hit a count target.** If I can only generate 8 confident cards from your source, you get 8. Padding with `[VERIFY]`-heavy guesses is worse than a smaller deck.
-- **Enforce study discipline.** Missed review days compound; the skill just shows what's due. You decide whether to drill.
-- **Teach you the rule.** Cards are for drilling what you've already studied. If a card is consistently wrong, the problem is upstream — use `/law-student:socratic-drill` or re-read the source.
+- **Substituir Anki.** Se você já tem hábito de flashcard, mantenha. Isto é para quando está no chat e quer drilar sem trocar de app.
+- **Inventar cards para bater meta de quantidade.** Se só consigo gerar 8 cards confiantes da sua fonte, você recebe 8. Encher com chute marcado `[VERIFICAR]` é pior que deck menor.
+- **Forçar disciplina de estudo.** Dias perdidos de revisão se acumulam; a skill só mostra o que está vencido. Você decide se drila.
+- **Te ensinar a regra.** Cards são para drilar o que você já estudou. Se um card está consistentemente errado, o problema é a montante — use `/law-student:socratic-drill` ou releia a fonte.

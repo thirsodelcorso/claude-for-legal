@@ -1,279 +1,279 @@
 ---
 name: chronology
-description: Build or update a chronology from declared document sources and uploads — dated events extracted, de-duped, and tagged by significance per the matter theory. Use when the user asks to build a chronology or timeline from a production or matter file, says "chron from the production" or "what happened when", or needs a working, statement-of-facts, or witness-specific timeline.
+description: Construa ou atualize cronologia a partir de fontes documentais declaradas e uploads — eventos datados extraídos, deduplicados, tagueados por significância conforme a tese do caso. Use quando o usuário pede para construir cronologia ou timeline de uma produção ou pasta de caso, diz "cronologia da produção" ou "o que aconteceu quando", ou precisa de timeline de trabalho, peça de fatos ou específica de testemunha.
 argument-hint: "[slug] [--format=working|sof|witness-[name]]"
 ---
 
 # /chronology
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` → theory, pivot fact, key facts.
-2. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Document storage sources, default matter folder pattern.
-3. Follow the workflow and reference below.
-4. Identify sources in order: user-provided paths this session, default matter folder, declared sources from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.
-5. For readable sources: extract dated events. For unreachable sources: note in Gaps.
-6. De-dupe, merge with sources list per event.
-7. Tag significance (🔴/🟡/⚪) per matter theory.
-8. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/chronology.md` (or format variant per flag).
-9. If prior version exists: version number increments, diff summary presented to user.
-10. Confirm before finalizing: "Here's what I built. Scan the 🔴 entries — anything I miscalled?"
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` → tese, fato pivô, fatos-chave.
+2. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → fontes de armazenamento documental, padrão de pasta de caso default.
+3. Siga o workflow e a referência abaixo.
+4. Identifique fontes na ordem: paths fornecidos pelo usuário nesta sessão, pasta de caso default, fontes declaradas em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.
+5. Para fontes legíveis: extraia eventos datados. Para fontes inacessíveis: anote em Lacunas.
+6. Deduplique, agrupe com lista de fontes por evento.
+7. Tagueie significância (🔴/🟡/⚪) conforme tese do caso.
+8. Grave `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/chronology.md` (ou variante de formato per flag).
+9. Se versão anterior existe: número de versão incrementa, sumário de diff apresentado ao usuário.
+10. Confirme antes de finalizar: "Eis o que construí. Passe os olhos nas entradas 🔴 — algo que classifiquei errado?"
 
 ---
 
-# Chronology
+# Cronologia
 
-## Disclosed-document use restrictions
+## Restrições de uso de documento divulgado
 
-Before working with a set of litigation documents, ask: "Were any of these documents obtained through disclosure or discovery in legal proceedings?" If yes:
+Antes de trabalhar com conjunto de documentos do processo, pergunte: "Algum destes documentos veio de instrução probatória em processo judicial, ou de divulgação compelida em sede de tutela cautelar de exibição (CPC arts. 396-404)?" Se sim:
 
-- **England & Wales (CPR 31.22):** Documents obtained through disclosure are subject to the implied undertaking — you may only use them for the purpose of the proceedings in which they were disclosed, unless the court grants permission, the disclosing party consents, or the document has been read in open court. Using them for a different matter, a different claim, or a commercial purpose without permission is a contempt.
-- **US:** Protective orders and Rule 26(c) may impose similar restrictions. Check the order.
-- **Other jurisdictions:** Similar restrictions commonly apply. Check the local rule.
+- **Brasil — segredo de justiça (CPC art. 189):** documentos que tramitam em segredo de justiça têm acesso restrito às partes e seus(suas) procuradores(as). Usá-los fora da finalidade processual a que se destinam pode configurar quebra de segredo (CP art. 154 — violação de segredo profissional; CPC art. 80 — litigância de má-fé).
+- **Brasil — tutela exibitória (CPC arts. 396-404):** documento exibido por terceiro ou parte adversa por força de decisão judicial está afeto à finalidade da prova produzida; uso para outro caso, outra pretensão, ou finalidade comercial sem autorização judicial é abuso.
+- **Outras jurisdições:** restrições análogas costumam aplicar. Confira a regra local.
 
-Confirm: "This use is within the proceedings in which the documents were disclosed, or I have permission / consent, or the documents are now public." If not confirmed, flag it: "⚠️ Disclosed documents may have use restrictions. Confirm this use is permitted before proceeding."
+Confirme: "Este uso está dentro do processo em que os documentos foram divulgados, ou tenho autorização judicial / consentimento da parte, ou os documentos já são públicos." Se não confirmado, sinalize: "⚠️ Documentos divulgados podem ter restrição de uso. Confirme que este uso é permitido antes de prosseguir."
 
-## Purpose
+## Propósito
 
-Facts happen in order. The chronology is the spine every narrative hangs on — the statement of facts in a brief, reserve memos, settlement memos, depo prep, witness prep. Building a chron by hand is slow; AI is good at structured extraction. The catch: garbage-in, garbage-out. This skill pulls from the sources the configuration declares and from whatever the user uploads.
+Fatos acontecem em ordem. A cronologia é a espinha em que cada narrativa se pendura — a peça de fatos numa razão, memos de provisão, memos de acordo, preparação de oitiva, preparação de testemunha. Construir cronologia à mão é lento; IA é boa em extração estruturada. O catch: lixo entra, lixo sai. Esta skill puxa das fontes que a configuração declara e do que o usuário fizer upload.
 
-## Modes
+## Modos
 
-This skill serves two practice settings. Pick a default from the user's `## Role` in the plugin's configuration CLAUDE.md; the user can override per-run with a flag.
+Esta skill atende dois settings de prática. Escolha o default a partir do `## Papel` do usuário no CLAUDE.md de configuração do plugin; o usuário pode sobrescrever per-run com flag.
 
-- **`--matter` mode (default for in-house litigation counsel).** Matter-history-focused. Reads the matter's case theory and key facts from `matter.md`, pulls from declared document-storage sources (Google Drive, SharePoint, Gmail, iManage, CLM — whatever the `## Landscape` section of CLAUDE.md declares), and treats `history.md` as the running internal log (decisions, holds, reserve memos — intentionally not in the chronology). Output is matter-centric: what happened across the dispute, tagged for advocacy use.
-- **`--documents` mode (default for firm associate / paralegal).** Production-document-focused. Reads the case theory from the configuration, then extracts from an eDiscovery export, a custodial file set, or a Bates-numbered production. Output is production-centric: what the documents show, with Bates citations, tagged per the case theory.
+- **modo `--matter` (default para contencioso em DJ ou Defensoria).** Focado em histórico de caso. Lê a tese e fatos-chave do caso em `matter.md`, puxa de fontes de armazenamento documental declaradas (Google Drive, SharePoint, Gmail, sistema de gestão jurídica, CLM — o que a seção `## Panorama` do CLAUDE.md declara), e trata `history.md` como o log interno corrente (decisões, devers de guarda, memos de provisão — intencionalmente fora da cronologia). Output é centrado em caso: o que aconteceu ao longo da disputa, tagueado para uso advocatício.
+- **modo `--documents` (default para advogado(a) em sociedade / paralegal).** Focado em documento de produção. Lê a tese do caso da configuração, depois extrai de uma exportação de plataforma de gestão documental, conjunto de arquivos por custodiante, ou produção numerada por movimentação CNJ. Output é centrado em produção: o que os documentos mostram, com citações de movimentação, tagueado conforme a tese do caso.
 
-Both modes converge on the same output structure (timeline, 🔴/🟡/⚪ significance tags, gaps, SoF variant). The difference is the source profile and the significance frame.
+Ambos os modos convergem para a mesma estrutura de output (timeline, tags de significância 🔴/🟡/⚪, lacunas, variante de peça de fatos). A diferença é o perfil de fonte e o frame de significância.
 
-If `## Role` is `solo` or `other`, default to `--matter` but mention both modes on the first run and let the user pick.
+Se `## Papel` é `advogado-autonomo` ou `outro`, default para `--matter` mas mencione ambos os modos na primeira execução e deixe o usuário escolher.
 
-## Side framing (significance tags)
+## Frame de polo (tags de significância)
 
-The same event is significant in different ways depending on whether the practitioner is proving a claim or disproving it. Read `## Side` in the practice profile (and the per-matter posture if the matter overrides the default):
+O mesmo evento é significativo de formas diferentes conforme o(a) profissional está provando ou desprovando uma pretensão. Leia `## Posição processual` no perfil de atuação (e a postura por caso, se o caso sobrescreve o default):
 
-- **Plaintiff (offensive framing)** — 🔴 marks events that *establish* elements of the claim (liability, causation, damages, notice), *close* gaps the defense will try to open, or *start* statute-of-limitations clocks in the plaintiff's favor. 🟡 marks events that support the claim but are subject to impeachment. ⚪ is background context.
-- **Defense (defensive framing)** — 🔴 marks events that *break* elements of the claim (failure of causation, notice, reliance), *open* statute-of-limitations or jurisdictional defenses, or *support* affirmative defenses (release, waiver, assumption of risk, comparative fault). 🟡 marks events that undermine the plaintiff's narrative. ⚪ is background.
-- **Both / varies** — ask the user per-chronology which side's framing to apply for significance tags. The underlying timeline is side-neutral; only the significance read changes.
+- **Autor (frame ofensivo)** — 🔴 marca eventos que *estabelecem* elementos da pretensão (responsabilidade, nexo, danos, ciência), *fecham* lacunas que a defesa tentará abrir, ou *disparam* contagens de prescrição (CC arts. 205-206) ou decadência a favor do autor. 🟡 marca eventos que sustentam a pretensão mas estão sujeitos a impugnação. ⚪ é contexto de fundo.
+- **Réu (frame defensivo)** — 🔴 marca eventos que *quebram* elementos da pretensão (falha de nexo, ciência, confiança), *abrem* defesas de prescrição/decadência ou de competência, ou *sustentam* defesas autônomas (quitação, renúncia, assunção de risco, culpa concorrente). 🟡 marca eventos que minam a narrativa do autor. ⚪ é fundo.
+- **Ambos / varia** — pergunte ao usuário por-cronologia qual frame aplicar para tags de significância. A timeline subjacente é neutra; só a leitura de significância muda.
 
-Note the applied framing at the top of the output: `Significance tags applied from [plaintiff / defense] perspective.` When producing a Statement of Facts variant, use the side default unless the user specifies otherwise.
+Anote o frame aplicado no topo do output: `Tags de significância aplicadas do ponto de vista de [autor / réu].` Ao produzir variante peça de fatos, use o default do polo a menos que o usuário especifique diferente.
 
-## Load context
+## Carregar contexto
 
-Common:
-- Plugin configuration CLAUDE.md → case theory context (in-house: `## Landscape` for document sources; firm associate: `## Case theory` and `## Document review` for platform + custodians), `## Outputs` for the work-product header, `## Decision posture` for the privilege-flagging rule.
-- Prior `chronology.md` for this matter, if it exists.
-- Any files the user uploads or paths they provide in-session.
+Comum:
+- CLAUDE.md de configuração do plugin → contexto de tese do caso (DJ: `## Panorama` para fontes documentais; advogado em sociedade: `## Tese do caso` e `## Revisão documental` para plataforma + custodiantes), `## Outputs` para o cabeçalho de trabalho-produto, `## Postura de decisão` para a regra de flagging de sigilo.
+- `chronology.md` anterior deste caso, se existe.
+- Quaisquer arquivos que o usuário fizer upload ou paths que fornecer in-session.
 
-`--matter` mode also reads:
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` → case theory, key facts, pivot fact (for significance tagging), key dates.
-- Default matter folder pattern from CLAUDE.md → where docs for this slug live.
+modo `--matter` também lê:
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` → tese, fatos-chave, fato pivô (para tagging de significância), datas-chave.
+- Padrão de pasta de caso default do CLAUDE.md → onde docs deste slug vivem.
 
-`--documents` mode also reads:
-- eDiscovery platform metadata if a connector is available (Everlaw, Relativity, DISCO, Aurora) — by custodian + date range.
-- Bates-range manifest or production index if the user points at one.
+modo `--documents` também lê:
+- Metadados da plataforma de gestão documental jurídica se conector disponível — por custodiante + faixa de data.
+- Manifesto de produção ou índice de produção se o usuário aponta para um.
 
-**Conflicts gate — unbypassable (`--matter` mode).** Before building the chronology, check `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+**Gate de impedimentos — incontornável (modo `--matter`).** Antes de construir a cronologia, cheque `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` para o slug. Se o caso não está em `_log.yaml`, recuse e route:
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't build a chronology on a matter that hasn't been intaken — the conflicts check is the gate."
+> "Não vejo [slug do caso] no log de casos. Rode `/litigation-legal:matter-intake` primeiro para a checagem de impedimentos rodar e o workspace ser montado. Não construo cronologia em caso não-intaken — a checagem de impedimentos é o gate."
 
-Do not proceed on an unintaken matter. Intake is what runs conflicts and writes the `_log.yaml` row this skill reads from. `--documents` mode (running against an ad-hoc document set without a matter slug) is exempt from the gate, but its outputs should be treated as pre-matter research and not filed as if matter work product.
+Não prossiga em caso não-intaken. Intake é o que roda impedimentos e grava a linha de `_log.yaml` que esta skill lê. modo `--documents` (rodando contra um conjunto ad-hoc sem slug) é isento do gate, mas seus outputs devem ser tratados como pesquisa pré-caso e não arquivados como se fossem trabalho-produto de caso.
 
-## Workflow
+## Fluxo de trabalho
 
-### Step 0: Privilege gate (runs first, every time)
+### Passo 0: Gate de sigilo (roda primeiro, sempre)
 
-Chronology work pulls from documents. Documents are often privileged (attorney-client, work product, common interest, joint defense) — in-house matter files often are by default; eDiscovery productions, especially rolling productions or common-interest productions, often contain privileged or unreviewed material. Extracting content from a privileged document into a chronology that later gets shared can *risk* waiver, depending on who receives it and under what doctrine (common-interest, joint-defense, Kovel, and work-product protections may apply). Waiver analysis is fact-specific — get counsel sign-off before distributing.
+Trabalho de cronologia puxa de documentos. Documentos frequentemente são sigilosos (comunicação advogado-cliente Lei 8.906/94 art. 7º XIX, trabalho preparatório, interesse comum, defesa conjunta — para Defensor, sigilo do(a) assistido(a) LC 80/94 art. 4º-A V) — pastas internas de caso em DJ frequentemente são por default; produções na gestão documental, especialmente produções iterativas ou produções de interesse comum, frequentemente contêm material sigiloso ou não-revisado. Extrair conteúdo de documento sigiloso para uma cronologia que depois é compartilhada pode *arriscar* quebra de sigilo, dependendo de quem recebe e sob que doutrina (interesse comum, defesa conjunta, e o sigilo profissional do(a) advogado(a) podem aplicar). Análise de quebra é específica do caso — obtenha sign-off antes de distribuir.
 
-The skill will not extract until the user picks a privilege posture:
+A skill não extrai até o usuário escolher uma postura de sigilo:
 
-> Before I extract: how have the sources been privilege-screened?
+> Antes de extrair: como as fontes foram filtradas para sigilo?
 >
-> - **A. All sources cleared** — you've already screened these. I extract without privilege flags. Output is discovery-ready posture; still marked work product.
+> - **A. Todas as fontes liberadas** — você já filtrou. Extraio sem flags de sigilo. Output é postura pronta para instrução; ainda marcado como trabalho-produto.
 >
-> - **B. Mixed or not yet screened** — I extract and tag every entry with a `priv` flag: `ok` (sourced from clearly non-privileged material), `flag` (sourced from potentially privileged material — A/C, WP, common interest), or `review` (source unclear). Flagged entries are visually marked in the output, and the Statement-of-Facts variant filters them out by default.
+> - **B. Misto ou ainda não filtrado** — extraio e tagueio cada entrada com flag `priv`: `ok` (de material claramente não-sigiloso), `flag` (de material potencialmente sigiloso — A/C, trabalho preparatório, interesse comum), ou `review` (fonte pouco clara). Entradas flagueadas são visualmente marcadas no output, e a variante peça de fatos as filtra por default.
 >
-> - **C. Abort — screen first** — pause the skill. Screen the sources. Return and re-run.
+> - **C. Abortar — filtrar primeiro** — pausa a skill. Filtre as fontes. Volte e rerode.
 
-Record the choice in the chronology header as `privilege_posture: A-cleared | B-mixed | C-aborted`. If B or C, record the rationale briefly.
+Registre a escolha no cabeçalho da cronologia como `privilege_posture: A-cleared | B-mixed | C-aborted`. Se B ou C, registre o racional brevemente.
 
-**Why a gate and not just a warning:** a warning gets read once and forgotten. A gate forces the posture decision into the record, which means every chronology file carries its own provenance — anyone reading it later knows whether entries were derived from privilege-screened material.
+**Por que gate e não só aviso:** um aviso é lido uma vez e esquecido. Um gate força a decisão de postura para o registro, o que significa que cada arquivo de cronologia carrega sua própria proveniência — qualquer um que leia depois sabe se as entradas vieram de material filtrado para sigilo.
 
-### Step 1: Identify document sources
+### Passo 1: Identificar fontes documentais
 
-**`--matter` mode:**
+**modo `--matter`:**
 
-1. **User-provided paths** — anything dropped in this session (file paths, drive links, email exports).
-2. **Default matter folder** — from CLAUDE.md's document-storage pattern, expanded for this slug (e.g., `G:/Legal/Matters/acme-v-us-2026`).
-3. **Declared sources** — the `Document storage` table in CLAUDE.md, filtered to ones this matter might touch (e.g., Gmail archive for sender-side communications, SharePoint legal folder).
-4. **Ask** — if sources look thin, prompt: "I can build from what I have, but the chronology will be incomplete. Anything else to point me at? Key emails, contracts, internal memos, production letters?"
+1. **Paths fornecidos pelo usuário** — qualquer coisa dropada nesta sessão (paths de arquivo, links de drive, exportações de e-mail).
+2. **Pasta de caso default** — do padrão de armazenamento documental do CLAUDE.md, expandido para este slug (ex.: `G:/Juridico/Casos/silva-vs-cemig-2026`).
+3. **Fontes declaradas** — a tabela `Armazenamento documental` no CLAUDE.md, filtrada para as que este caso possa tocar (ex.: arquivo Gmail para comunicações lado-remetente, pasta SharePoint Jurídico).
+4. **Pergunte** — se as fontes parecem finas, pergunte: "Posso construir com o que tenho, mas a cronologia ficará incompleta. Algo mais para apontar? E-mails-chave, contratos, memos internos, cartas de produção?"
 
-**`--documents` mode:**
+**modo `--documents`:**
 
-1. **Production export / Bates set** — the user points at the production directory or a manifest; the skill reads by Bates range + date.
-2. **eDiscovery connector** — if an MCP connector is available (Everlaw, Relativity, DISCO, Aurora), pull by custodian + date range.
-3. **Custodial files** — if the user provides raw custodial mailboxes or drive exports, read those too.
-4. **Ask** — if coverage looks thin for a key custodian or date range, prompt.
+1. **Exportação de produção / conjunto por movimentação CNJ** — o usuário aponta para o diretório de produção ou um manifesto; a skill lê por movimentação + data.
+2. **Conector de gestão documental** — se MCP de plataforma de gestão documental jurídica está disponível, puxe por custodiante + faixa de data.
+3. **Arquivos por custodiante** — se o usuário fornece mailboxes ou exportações de drive crus, leia também.
+4. **Pergunte** — se cobertura parece fina para custodiante-chave ou faixa de data, pergunte.
 
-### Step 2: Pull + read
+### Passo 2: Puxar + ler
 
-For each source with readable files:
+Para cada fonte com arquivos legíveis:
 
-- **PDFs, emails (.eml), .docx, .txt** — read directly.
-- **Email archives (Gmail, Outlook)** — if an MCP connector is authenticated, query by date range + counterparty / key terms; otherwise the user exports relevant threads to a folder.
-- **eDiscovery platforms (Everlaw, Relativity, DISCO, Aurora)** — if connector is available, pull by custodian + date range; otherwise the user provides an export.
+- **PDFs, e-mails (.eml), .docx, .txt** — leia diretamente.
+- **Arquivos de e-mail (Gmail, Outlook)** — se MCP autenticado, consulte por faixa de data + contraparte / termos-chave; senão o usuário exporta threads relevantes para uma pasta.
+- **Plataformas de gestão documental** — se conector disponível, puxe por custodiante + faixa de data; senão o usuário fornece exportação.
 
-If the skill can't access a declared source, name it explicitly in the output's Gaps section rather than silently proceeding.
+Se a skill não consegue acessar fonte declarada, nomeie explicitamente na seção Lacunas do output em vez de prosseguir silenciosamente.
 
-**No silent supplement.** If source coverage for an era of the matter is thin — fewer documents than expected for a claimed time window, a custodian whose mailbox isn't accessible, a production that hasn't landed — report what was found and stop. Do NOT fill gaps from web search, public record search, or model knowledge about the matter without asking. Say: "Sources returned [N] events for [period / custodian]. Coverage appears thin. Options: (1) point me at additional sources (Bates, folder, mailbox), (2) try a different MCP connector if configured, (3) search the web for public-record events in this window — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) stop here and note the gap. Which would you like?" A lawyer decides whether to accept lower-confidence sources; the skill does not decide for them.
+**Sem suplementação silenciosa.** Se cobertura de fonte para uma era do caso é fina — menos documentos que o esperado para uma janela de tempo alegada, custodiante cujo mailbox não é acessível, produção que ainda não aterrissou — reporte o que foi encontrado e pare. NÃO preencha lacunas com busca web, busca em registro público, ou conhecimento do modelo sobre o caso sem perguntar. Diga: "Fontes retornaram [N] eventos para [período / custodiante]. Cobertura parece fina. Opções: (1) aponte para fontes adicionais (movimentação, pasta, mailbox), (2) tente um MCP diferente se configurado, (3) busque na web por eventos de registro público nesta janela — resultados serão tagueados `[busca web — verificar]` e devem ser checados contra fonte primária antes de confiar, ou (4) pare aqui e anote a lacuna. Qual prefere?" Um(a) advogado(a) decide se aceita fontes de menor confiança; a skill não decide por ele.
 
-**Source attribution.** Tag every chronology entry with where the event came from: the file path, Bates number, MCP connector, or declared document-storage source for events extracted from retrieved documents (already captured in the Sources column). For any event or date that cannot be traced to a retrieved document — e.g., a fact recalled from model training data, a public-record event found via web search — tag it inline: `[web search — verify]`, `[model knowledge — verify]`, or `[user provided]` where the user stated the fact in-session. Entries tagged `verify` carry higher fabrication risk than document-sourced entries and should be checked first. Never strip or collapse the tags — they are counsel's fastest signal about which entries to verify before pulling them into a brief or SoF.
+**Atribuição de fonte.** Tagueie cada entrada da cronologia com de onde o evento veio: path do arquivo, ID de movimentação CNJ, conector MCP, ou fonte declarada de armazenamento documental para eventos extraídos de documentos recuperados (já capturado na coluna Fontes). Para qualquer evento ou data que não pode ser rastreado até um documento recuperado — ex.: fato lembrado de dados de treino do modelo, evento de registro público achado via busca web — tagueie inline: `[busca web — verificar]`, `[conhecimento do modelo — verificar]`, ou `[usuário forneceu]` onde o usuário declarou o fato in-session. Entradas tagueadas `verificar` carregam maior risco de fabricação que entradas com fonte documental e devem ser checadas primeiro. Nunca strip ou colapse as tags — são o sinal mais rápido do(a) advogado(a) sobre quais entradas verificar antes de puxar para razões ou peça de fatos.
 
-**Tagging reaches every section that states a legal conclusion, deadline, or computed date — not just timeline entries.** The timeline is sourced from documents. The Gaps section, the Key events section, the Theory tie lines, and any statement of limitations, tolling event, filing deadline, discovery cutoff, or privilege determination are legal analysis the skill writes from model knowledge unless sourced. Every such statement carries a provenance tag: `[computed from: <rule cited with tag>]`, `[model knowledge — verify]`, `[user provided]`, or a research-connector tag if retrieved in this session. A statute-of-limitations window with no tag defaults to `[model knowledge — verify]`. A "key event" line that characterizes a fact's legal significance is analysis and needs the tag. The rule is simple: if it's an assertion about the law, not an assertion about what a document says, it must carry the same provenance tag the timeline entries do. When no research connector is reachable and the skill is computing deadlines or citing rules, record it in the **Sources:** line of the reviewer note (see plugin CLAUDE.md `## Outputs`) — do not emit a standalone banner.
+**Tagging chega a toda seção que afirma conclusão jurídica, prazo ou data computada — não só entradas de timeline.** A timeline tem fonte em documentos. A seção Lacunas, a seção Eventos-chave, as linhas de amarração com a tese, e qualquer afirmação sobre prescrição, evento interruptivo, prazo de protocolo, encerramento de instrução, ou determinação de sigilo é análise jurídica que a skill escreve do conhecimento do modelo a menos que tenha fonte. Toda tal afirmação carrega tag de proveniência: `[computado de: <regra citada com tag>]`, `[conhecimento do modelo — verificar]`, `[usuário forneceu]`, ou tag de conector de pesquisa se recuperado nesta sessão. Uma janela de prescrição sem tag default para `[conhecimento do modelo — verificar]`. Uma linha de "evento-chave" que caracteriza a significância jurídica de um fato é análise e precisa da tag. A regra é simples: se é afirmação sobre a lei, não afirmação sobre o que um documento diz, deve carregar a mesma tag de proveniência que as entradas da timeline. Quando nenhum conector de pesquisa está alcançável e a skill está computando prazos ou citando regras, registre na linha **Fontes:** da nota do revisor (vide CLAUDE.md `## Outputs`) — não emita banner solto.
 
-### Step 3: Extract events
+### Passo 3: Extrair eventos
 
-For each document, identify dated events:
+Para cada documento, identifique eventos datados:
 
-- **Email:** `[date] [sender] told [recipient] [subject/content]`
-- **Meeting:** `[date] [attendees] met about [topic]` (per calendar entry or notes)
-- **Decision:** `[date] [decision-maker] decided [what]` (per memorializing doc)
-- **Filing / pleading:** `[date] [party] filed [motion/complaint/response]`
-- **External event:** `[date] [thing happened]` (contract signed, product launched, regulator acted, event crossed a threshold)
+- **E-mail:** `[data] [remetente] disse a [destinatário] [assunto/conteúdo]`
+- **Reunião:** `[data] [presentes] reuniram-se sobre [tópico]` (per entrada de calendário ou notas)
+- **Decisão:** `[data] [decisor] decidiu [o quê]` (per doc memorialístico)
+- **Protocolo / peça:** `[data] [parte] protocolou [peça/inicial/manifestação]`
+- **Evento externo:** `[data] [coisa aconteceu]` (contrato assinado, produto lançado, regulador agiu, evento cruzou limiar)
 
-One event per document usually. Occasionally zero (undated or no event established). Sometimes multiple (meeting summary covering several decisions).
+Um evento por documento usualmente. Ocasionalmente zero (não datado ou nenhum evento estabelecido). Às vezes múltiplos (sumário de reunião cobrindo várias decisões).
 
-**Privilege flag per entry (only when privilege_posture == B-mixed). Three-state rule — never silently decide a subjective privilege test isn't met:**
+**Flag de sigilo por entrada (só quando privilege_posture == B-mixed). Regra tri-estado — nunca decida silentemente que um teste subjetivo de sigilo não é atendido:**
 
-- `priv: ok` — source is **confidently** non-privileged (filings, regulatory correspondence, public docs, counterparty communications without our counsel). Used only when there's no plausible privilege theory.
-- `priv: flag` — source is confidently or likely privileged (communications with counsel, work-product memos, privileged drafts, joint-defense material). **Default for anything uncertain** — if the dominant-purpose call is close, or litigation contemplation is borderline, or the content is mixed, it goes here, not in `ok`.
-- `priv: review` — source unclear on its face, but the skill could not make the call at all (no sender/recipient metadata, unreadable, etc.).
+- `priv: ok` — fonte é **confiantemente** não-sigilosa (peças protocoladas, correspondência regulatória, docs públicos, comunicações com contraparte sem nosso(a) advogado(a)). Use só quando não há teoria plausível de sigilo.
+- `priv: flag` — fonte é confiantemente ou provavelmente sigilosa (comunicações com advogado(a)/Defensor(a), memos preparatórios, minutas sigilosas, material de defesa conjunta). **Default para qualquer coisa incerta** — se a chamada de propósito dominante é apertada, ou litígio em contemplação é borderline, ou o conteúdo é misto, vai aqui, não em `ok`.
+- `priv: review` — fonte pouco clara em sua face, mas a skill não conseguiu fazer a chamada (sem metadados de remetente/destinatário, ilegível, etc.).
 
-When `priv: flag` or `priv: review`, add `[SME VERIFY: privilege status]` inline so the counsel sees it during review. Under-flagging waives privilege (one-way door); over-flagging is corrected by counsel in review (two-way door). Prefer the recoverable error.
+Quando `priv: flag` ou `priv: review`, adicione `[SME VERIFICAR: status de sigilo]` inline para que o(a) advogado(a) veja na revisão. Sub-flag quebra sigilo (porta de mão única); super-flag é corrigida pelo(a) advogado(a) em revisão (porta dupla). Prefira o erro recuperável.
 
-### Step 4: De-dupe
+### Passo 4: Deduplicar
 
-The same event surfaces in multiple documents: a meeting is on three calendars and produces a summary email — that's **one event with four sources**, not four events. Merge. The merged entry cites all sources.
+O mesmo evento aflora em vários documentos: uma reunião está em três agendas e produz e-mail-sumário — isso é **um evento com quatro fontes**, não quatro eventos. Mescle. A entrada mesclada cita todas as fontes.
 
-### Step 5: Tag significance — per case theory
+### Passo 5: Tagueie significância — per tese do caso
 
-Read the pivot fact and key facts from `matter.md` (`--matter` mode) or from the configuration's `## Case theory` section (`--documents` mode). Tag each event:
+Leia o fato pivô e fatos-chave de `matter.md` (modo `--matter`) ou da seção `## Tese do caso` da configuração (modo `--documents`). Tagueie cada evento:
 
-- 🔴 **Key** — event is part of the pivot fact or a key fact for/against us
-- 🟡 **Relevant** — context, pattern evidence, supports a secondary argument
-- ⚪ **Background** — useful for completeness, not going in the brief
+- 🔴 **Chave** — evento é parte do fato pivô ou fato-chave a favor/contra nós
+- 🟡 **Relevante** — contexto, padrão evidencial, sustenta argumento secundário
+- ⚪ **Fundo** — útil para completude, não vai na razão
 
-**Discipline:** a chronology of 300 entries with 300 🔴 tags has no tags. Reserve 🔴 for events that would genuinely move a factfinder. If in doubt, 🟡.
+**Disciplina:** cronologia de 300 entradas com 300 tags 🔴 não tem tags. Reserve 🔴 para eventos que efetivamente moveriam um juízo. Em dúvida, 🟡.
 
-**Borderline tagging:** when an entry sits between 🔴 and 🟡 (or 🟡 and ⚪), tag at the lower significance and add `[SME VERIFY — borderline significance call]` inline. Counsel's judgment will override the skill's call. A chronology that confidently over-tags is less useful than one that surfaces its uncertainty.
+**Tagging borderline:** quando uma entrada está entre 🔴 e 🟡 (ou 🟡 e ⚪), tagueie no nível inferior e adicione `[SME VERIFICAR — chamada borderline de significância]` inline. O juízo do(a) advogado(a) sobrescreverá a chamada da skill. Cronologia que confiantemente super-tagueia é menos útil que uma que aflora sua incerteza.
 
-### Step 6: Write
+### Passo 6: Gravar
 
-Default output is the working chronology. Variants on request.
+Output default é a cronologia de trabalho. Variantes sob pedido.
 
-## Output formats
+## Formatos de output
 
-### Working chronology (default)
+### Cronologia de trabalho (default)
 
-Location: `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/chronology.md`. Complete, tagged, annotated. The reference doc counsel works from.
+Local: `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/chronology.md`. Completa, tagueada, anotada. O doc de referência do qual o(a) advogado(a) trabalha.
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — por config do plugin ## Outputs — varia por papel; vide `## Quem está usando`]
 
-> **Privilege inheritance.** This chronology is derived from matter documents that may be attorney-client-privileged, work-product-protected, common-interest / joint-defense material, or a mix. It inherits the sources' protection status. Distributing it beyond the privilege circle — to business stakeholders outside the engagement, to opposing counsel, to a regulator — can waive protection over both the chronology and the underlying sources. Store with privileged matter material, mark consistently with house privilege conventions, and make distribution decisions deliberately. The privilege-posture choice captured below is the provenance stamp for any later distribution call.
+> **Herança de sigilo.** Esta cronologia deriva de documentos do caso que podem ser sigilosos por comunicação advogado-cliente, material preparatório, interesse comum / defesa conjunta, ou misto. Herda o status de proteção das fontes. Distribuí-la além do círculo de sigilo — a stakeholders de negócio fora do patrocínio, a advogado(a) contrário(a), a regulador — pode quebrar a proteção tanto da cronologia quanto das fontes subjacentes. Armazene com material sigiloso do caso, marque consistente com convenções de sigilo da casa, e tome decisões de distribuição deliberadamente. A escolha de postura de sigilo capturada abaixo é o carimbo de proveniência para qualquer decisão de distribuição posterior.
 
-# Chronology — [Matter Name]
+# Cronologia — [Nome do caso]
 
-> Significance tags (🔴/🟡/⚪) and privilege flags (🔒) are first-pass reads requiring `[SME VERIFY]` before use in any external work product (briefs, SoF, board memo, outside counsel deliverable).
+> Tags de significância (🔴/🟡/⚪) e flags de sigilo (🔒) são leituras de primeira passagem exigindo `[SME VERIFICAR]` antes de uso em qualquer trabalho-produto externo (razões, peça de fatos, memo para diretoria, entregável a escritório externo).
 
-**Matter:** [slug]
-**Mode:** matter | documents
-**Built:** [YYYY-MM-DD]
-**Sources:** [N] documents across [source types]
-**Entries:** [N] ([N] 🔴 / [N] 🟡 / [N] ⚪)
-**Pivot fact:** [one sentence]
-**Privilege posture:** A-cleared | B-mixed | C-aborted
-**Flagged entries:** [N] 🔒 *(only present when posture == B-mixed)*
+**Caso:** [slug]
+**Modo:** matter | documents
+**Construído:** [YYYY-MM-DD]
+**Fontes:** [N] documentos em [tipos de fonte]
+**Entradas:** [N] ([N] 🔴 / [N] 🟡 / [N] ⚪)
+**Fato pivô:** [uma frase]
+**Postura de sigilo:** A-cleared | B-mixed | C-aborted
+**Entradas flagueadas:** [N] 🔒 *(só presente quando postura == B-mixed)*
 
 ---
 
 ## Timeline
 
-| Date | Event | Tag | 🔒 | Sources |
+| Data | Evento | Tag | 🔒 | Fontes |
 |---|---|---|---|---|
-| [YYYY-MM-DD] | [what happened, one sentence] | 🔴/🟡/⚪ | [blank / 🔒-flag / 🔒-review] | [file paths or Bates] |
+| [YYYY-MM-DD] | [o que aconteceu, uma frase] | 🔴/🟡/⚪ | [vazio / 🔒-flag / 🔒-review] | [paths ou movimentações] |
 
 ---
 
-## Key events (🔴 only)
+## Eventos-chave (só 🔴)
 
-[Pulled out, each with a line on why it matters to the theory.]
+[Puxados, cada um com linha sobre por que importa para a tese.]
 
-### [date] — [event title]
-- What: [one line]
-- Theory tie: [why this matters]
-- Sources: [list]
-
----
-
-## Gaps
-
-**Date ranges with no events:**
-[ranges — where are documents for this period?]
-
-**Expected but missing:**
-[events we'd expect to see documented but don't — e.g., "contract amendments between 2024-06 and 2025-03 — not produced"]
-
-**Unreadable sources:**
-[sources declared in CLAUDE.md but not accessible this run — e.g., "Everlaw production — no MCP connector; export needed"]
+### [data] — [título do evento]
+- O quê: [uma linha]
+- Amarração com tese: [por que importa]
+- Fontes: [lista]
 
 ---
 
-## Marker discipline
+## Lacunas
 
-- `[VERIFY: factual assertion — date, attendees, content]` — not yet confirmed against the underlying doc
-- `[UNCERTAIN: legal characterization — e.g., whether an event establishes a regulatory trigger]`
-- `[CITE NEEDED: Bates / exhibit / depo page:line]`
-- `[SME VERIFY: privilege status | borderline significance call]` — counsel judgment needed
+**Faixas de data sem eventos:**
+[faixas — onde estão os documentos deste período?]
+
+**Esperados mas ausentes:**
+[eventos que esperaríamos ver documentados mas não estão — ex.: "aditivos contratuais entre 2024-06 e 2025-03 — não produzidos"]
+
+**Fontes ilegíveis:**
+[fontes declaradas em CLAUDE.md mas não acessíveis neste run — ex.: "produção da plataforma de gestão documental — sem conector MCP; exportação necessária"]
 
 ---
 
-## Version
-- v[N] built on [date] from [source summary]
-- v[N-1] built on [date] (prior, superseded)
+## Disciplina de marcador
+
+- `[VERIFICAR: alegação factual — data, presentes, conteúdo]` — ainda não confirmado contra o doc subjacente
+- `[INCERTO: caracterização jurídica — ex.: se um evento estabelece gatilho regulatório]`
+- `[CITE FALTANDO: ID de movimentação CNJ / pinpoint da peça / fl. da ata]`
+- `[SME VERIFICAR: status de sigilo | chamada borderline de significância]` — juízo de advogado(a) necessário
+
+---
+
+## Versão
+- v[N] construído em [data] de [sumário de fontes]
+- v[N-1] construído em [data] (anterior, superseded)
 ```
 
-### Statement-of-facts chronology (on request)
+### Cronologia peça-de-fatos (sob pedido)
 
-Filter to 🔴 and relevant 🟡 only. Present as prose in chronological narrative order — the skeleton for a brief's fact section. Each paragraph is one event or tightly linked cluster, with record citations.
+Filtre para 🔴 e 🟡 relevantes apenas. Apresente como prosa em ordem narrativa cronológica — o esqueleto para a seção de fatos de uma razão. Cada parágrafo é um evento ou cluster estreitamente ligado, com citações do registro.
 
-**Privilege filter default:** when `privilege_posture == B-mixed`, 🔒-flagged and 🔒-review entries are **excluded** by default. The SoF variant is intended for eventual external use (briefs, disclosures, negotiating counterparty) — 🔒 entries don't belong there until counsel confirms privilege status. If the user wants 🔒 entries included anyway, require explicit `--include-flagged` acknowledgment; capture the acknowledgment in the output header as permanent record.
+**Filtro de sigilo default:** quando `privilege_posture == B-mixed`, entradas 🔒-flag e 🔒-review são **excluídas** por default. A variante peça-de-fatos é destinada a uso externo eventual (razões, divulgações, negociação com contraparte) — entradas 🔒 não pertencem ali até o(a) advogado(a) confirmar status de sigilo. Se o usuário quer entradas 🔒 incluídas mesmo assim, exija acknowledgment explícito `--include-flagged`; capture no cabeçalho do output como registro permanente.
 
-### Witness-specific chronology (on request)
+### Cronologia específica de testemunha (sob pedido)
 
-Filter to events where a named witness is sender, recipient, attendee, or subject. Feeds witness prep and helps reconstruct what a witness knew when.
+Filtre para eventos onde uma testemunha nomeada é remetente, destinatário, presente ou sujeito. Alimenta preparação de testemunha e ajuda a reconstruir o que uma testemunha sabia e quando.
 
-## Incremental builds
+## Builds incrementais
 
-If `chronology.md` exists:
+Se `chronology.md` existe:
 
-- Read prior version
-- Build new chronology from current sources
-- Diff: new events (since last build), modified entries (new sources added to existing events), removed entries (rare; note why)
-- Preserve the prior version number; write new version with `v[N+1]`
-- Output summary of what changed
+- Leia versão anterior
+- Construa cronologia nova das fontes atuais
+- Diff: eventos novos (desde último build), entradas modificadas (novas fontes adicionadas a eventos existentes), entradas removidas (raro; anote o porquê)
+- Preserve o número de versão anterior; grave versão nova com `v[N+1]`
+- Output sumário do que mudou
 
-## Integration with matter.md / history.md
+## Integração com matter.md / history.md
 
-**Intentionally separate** (in-house `--matter` mode). `history.md` is counsel's running log — decisions, updates, procedural milestones, internal strategy notes. `chronology.md` is the advocacy-facing timeline of facts. They overlap but don't merge:
+**Intencionalmente separados** (modo `--matter` em DJ ou Defensoria). `history.md` é o log corrente do(a) advogado(a) — decisões, updates, marcos procedimentais, notas internas de estratégia. `chronology.md` é a timeline advocatícia dos fatos. Sobrepõem mas não se fundem:
 
-- A hold was issued → goes in history.md (internal action). Usually not in chronology (not a fact of the dispute).
-- The counterparty sent a breach notice on March 14 → goes in chronology.md (🟡 — establishes their knowledge). Also in history.md if the intake referenced it.
-- Our reserve recommendation memo was drafted → history.md only.
+- Um dever de guarda foi emitido → vai em history.md (ação interna). Usualmente não em cronologia (não é fato da disputa).
+- A contraparte mandou notificação de mora em 14 de março → vai em chronology.md (🟡 — estabelece a ciência dela). Também em history.md se o intake referenciou.
+- Nosso memo de recomendação de provisão foi redigido → só history.md.
 
-When counsel wants history events in the chronology, they can paste them. The default is they stay separate.
+Quando o(a) advogado(a) quer eventos do histórico na cronologia, pode colar. O default é ficarem separados.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Resolve contradictions.** When two documents say different things about when an event happened, both entries go in with a flag. Resolution is counsel's call; may require witness interview or further discovery.
-- **Invent events not in the sources.** If it's not in the documents (and not in matter.md or the configuration as a captured fact), it's not in the chronology — but "Gaps" might call it out as missing.
-- **Guarantee completeness.** A chronology is only as good as the sources. If the eDiscovery production is ongoing and only 20% has landed, the chronology reflects that. Name the limitation.
-- **Decide privilege status for the user.** The Step 0 gate forces the posture choice; the per-entry `priv` flag captures first-pass classification. Actual privilege determinations are counsel's call per `[SME VERIFY]` flags.
+- **Resolve contradições.** Quando dois documentos dizem coisas diferentes sobre quando um evento aconteceu, ambas as entradas entram com flag. Resolução é chamada do(a) advogado(a); pode exigir entrevista de testemunha ou mais instrução probatória.
+- **Inventa eventos que não estão nas fontes.** Se não está nos documentos (e não em matter.md ou na configuração como fato capturado), não está na cronologia — mas "Lacunas" pode apontar como ausente.
+- **Garante completude.** Uma cronologia é só tão boa quanto as fontes. Se a produção da gestão documental está em andamento e só 20% aterrissou, a cronologia reflete. Nomeie a limitação.
+- **Decide status de sigilo pelo usuário.** O gate do Passo 0 força a escolha de postura; o flag `priv` por entrada captura classificação de primeira passagem. Determinações reais de sigilo são chamadas do(a) advogado(a) per flags `[SME VERIFICAR]`.

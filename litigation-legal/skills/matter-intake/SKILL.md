@@ -1,310 +1,345 @@
 ---
 name: matter-intake
-description: Intake a new matter — uniform questions covering identification, conflicts, source, risk triage, materiality, outside counsel, owners, legal hold, and key dates; writes matter.md and history.md and appends a structured row to _log.yaml. Use when the user says "new matter", "intake this matter", or wants to bring a new matter into the portfolio.
-argument-hint: "[optional matter name]"
+description: Intake de novo caso — perguntas uniformes cobrindo identificação, conflitos/vedações institucionais, fonte, triagem de risco (humanitário para Defensor; CPC 25 para DJ), materialidade ou escalonamento institucional, escritório externo ou DPs colaboradoras, owners internos, dever de guarda, datas-chave; escreve matter.md e history.md e anexa linha estruturada ao _log.yaml. Use quando disser "novo caso", "fazer intake deste caso", ou quiser trazer caso novo para o portfólio. Para Defensor Público, vira intake do(a) assistido(a) — formulário social + hipossuficiência presumida (Súmula 481 STJ) + urgência humanitária.
+argument-hint: "[nome opcional do caso]"
 ---
 
 # /matter-intake
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → risk calibration (for triage), landscape (for context, conflicts method), stakeholders (for who to loop in).
-2. Follow the workflow and reference below.
-3. Run the uniform intake: identification, conflicts check, source, risk triage, materiality, outside counsel, internal owners, legal hold, key dates, initial posture.
-4. Generate slug from matter name (lowercase, hyphens, year).
-5. Create `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — full narrative intake.
-6. Create `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — seeded with the intake as the first entry.
-7. Append structured row to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`.
-8. Confirm with the user: "Here's the row I'll write — any edits?"
+1. Carregue `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → calibração de risco (para triagem), panorama (para contexto, método de checagem de impedimento/conflito), stakeholders (para quem envolver).
+2. Siga o workflow e a referência abaixo.
+3. Rode o intake uniforme: identificação, checagem de conflitos/impedimentos, fonte, triagem de risco, materialidade ou escalonamento institucional, escritório externo ou DPs colaboradoras/núcleos, owners internos, dever de guarda, datas-chave, postura inicial.
+4. Gere slug a partir do nome do caso (minúsculo, hifens, ano).
+5. Crie `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — intake narrativo completo.
+6. Crie `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — semeado com o intake como primeira entrada.
+7. Anexe linha estruturada em `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`.
+8. Confirme com o(a) usuário(a): "Esta é a linha que vou escrever — alguma edição?"
 
 ---
 
-# Matter Intake
+# Intake de Caso
 
-## Purpose
+## Propósito
 
-Every new matter goes through the same intake so the portfolio stays comparable. Uniform rows in `_log.yaml` let the status skill roll up. Narrative in `matter.md` captures what the row can't. History file seeded here becomes the event record.
+Todo caso novo passa pelo mesmo intake para o portfólio ficar comparável. Linhas uniformes em `_log.yaml` permitem que a skill de status faça rollup. Narrativa em `matter.md` captura o que a linha não captura. Arquivo de histórico semeado aqui vira o registro de eventos.
 
-## Load context
+**Para Defensor Público,** "caso" e "cliente" são lidos como "atendimento" e "assistido(a)" — o vocabulário muda, a engenharia uniforme do intake permanece. Formulário social, hipossuficiência presumida (Súmula 481 STJ) e urgência humanitária aparecem onde DJ corporativo teria "due-diligence financeiro" e "memo de provisão CPC 25".
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — risk calibration (triage thresholds, materiality, settlement ladder), landscape (stakeholders, outside counsel bench).
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — to confirm slug uniqueness.
+## Carregue contexto
 
-## The intake
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — calibração de risco (limiares de triagem, materialidade ou escalonamento institucional, alçada), panorama (stakeholders, bench de escritórios externos ou DPs colaboradoras), atribuição (varas, escala da unidade — só Defensor).
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — para confirmar unicidade do slug.
 
-### 1. Identification
+## O intake
 
-- Matter name (as commonly referenced, e.g., "Acme v. Us 2026")
-- Counterparty
-- Matter type: `contract | employment | ip | regulatory | investigation | product | other`
-- Our role: `plaintiff | defendant | claimant | respondent | investigated`
-  - If the practice profile's `## Side` is `plaintiff`, `defense`, or a "both — default X" variant, pre-fill the role from that default and confirm. If `## Side` is `varies by matter`, ask cold. Never silently assume a posture the practice profile hasn't set.
-  - The role drives downstream skills: plaintiff-posture matters route risk triage to case value / contingency economics; defense-posture matters route to exposure / reserves / insurance tender.
-- Jurisdiction (court, arbitration forum, or regulatory body)
+### 1. Identificação
 
-### 2. Conflicts check
+- Nome do caso (como referenciado, ex.: "ACME v. Nós 2026" ou para Defensor: "Maria S. — fornecimento medicamento oncológico — 2026")
+- Contraparte (ou ré, se o(a) assistido(a) é autor(a))
+- Tipo de caso: `civel-consumidor | civel-saude | civel-previdenciario | familia | sucessoes | locacao | possessoria | trabalhista | empresarial | regulatorio | investigacao | outro`
+- Nossa posição: `autor | requerente | impugnante | reu | requerido | impugnado | investigado | terceiro/amicus`
+  - Se a `## Posição processual` do perfil é `autor`, `réu`, ou variante "ambos — default X", pré-preencha a posição daquele default e confirme. Se a posição é `varia por caso`, pergunte friamente. Nunca assuma silenciosamente uma postura que o perfil não setou.
+  - Para Defensor: posição é majoritariamente autor (assistido(a) deduzindo pretensão). Defesa em ação de cobrança, despejo, embargos à execução ou ação penal por escala roteia para frame réu.
+  - A posição direciona skills downstream: autor roteia triagem para valor da causa / urgência humanitária (Defensor) / honorários ad exitum (autônomo); réu roteia para exposição / provisões CPC 25 (DJ) / cobertura de seguros.
+- Jurisdição (juízo, câmara arbitral, ou órgão regulatório)
+- **Para Defensor:** vara da atribuição (1ª/12ª JEC, 19ª/20ª Cível Comum, etc.) e rito (Lei 9.099/95 vs CPC 2015)
 
-Before going further, run the conflicts step per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Conflicts clearance.
+### 2. Checagem de conflitos / impedimentos institucionais
+
+Antes de avançar, rode o passo per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Checagem de conflitos.
 
 - **Status:** `cleared | pending | not-run | waived`
-- **Method:** match what `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` declares (`corporate-legal | outside-counsel | system-check | informal | other`). If the declared method is `informal`, say so — the record still captures that a counsel's-judgment check was the basis.
-- **Cleared by:** name / team / firm
-- **Cleared date:** YYYY-MM-DD
-- **Checked against:** brief list of the specific names/entities run (counterparty, known affiliates, adverse counsel if known, key witnesses). Thin is fine; "no" is not.
-- **Notes:** anything flagged but cleared (e.g., "Smith on our board sat on counterparty's board 2019–2021 — cleared as non-overlapping to this matter").
+- **Método:** case o que o `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` declara (`defensoria-publica | corporate-legal | escritorio-externo | system-check | informal | outro`). Se o método declarado é `informal`, diga — o registro ainda captura que checagem de juízo do(a) advogado(a)/Defensor(a) foi a base.
+- **Cleared por:** nome / equipe / escritório
+- **Cleared em:** AAAA-MM-DD
+- **Checado contra:** lista breve dos nomes/entidades efetivamente rodados (contraparte, afiliadas conhecidas, advogado(a) adverso(a) se conhecido(a), testemunhas-chave). Para Defensor: lista de impedimentos pessoais (parentes da contraparte, casos antes patrocinados em escritório anterior, etc.) + checagem de vedações institucionais LC 80/94 art. 46.
+- **Notas:** qualquer coisa sinalizada mas cleared (ex.: "Silva membro do nosso conselho atuou no conselho da contraparte 2019-2021 — cleared como não-sobreposto a este caso"; para Defensor: "Já patrocinei pelo NPJ caso similar 2018, sem conflito atual").
 
-Behavior by status:
+Comportamento por status:
 
-- `cleared` → proceed.
-- `pending` → proceed with intake; flag prominently in `matter.md` and in the log row that conflicts are outstanding; surface again on every `/matter-update` and in `/portfolio-status` until resolved.
-- `waived` → rare; requires a conflict-waiver rationale (writing the waiver is outside this skill — capture that one exists, who signed it, and where it lives).
-- `not-run` → **STOP. This is a gate.** The skill will not create `matter.md`, `history.md`, or a `_log.yaml` entry until the conflicts posture is resolved. Three acceptable paths:
+- `cleared` → prosseguir.
+- `pending` → prosseguir com intake; flag em destaque no `matter.md` e na linha do log que conflitos estão pendentes; surface de novo em todo `/matter-update` e em `/portfolio-status` até resolvido.
+- `waived` → raro; exige racional de renúncia (escrever a renúncia está fora desta skill — capture que uma existe, quem assinou, e onde vive). Para Defensor: renúncia institucional via decisão fundamentada do(a) próprio(a) Defensor(a) submetida ao(à) Coordenador(a) em casos sensíveis.
+- `not-run` → **PARE. Isso é um gate.** A skill não cria `matter.md`, `history.md`, ou entrada `_log.yaml` até a postura de conflitos ser resolvida. Três caminhos aceitáveis:
 
-  **Path 1 — Run conflicts now.** Pause this intake. Clear per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` Conflicts clearance. Return with `status: cleared` or `status: waived` with rationale.
+  **Caminho 1 — Rode conflitos agora.** Pause este intake. Faça clear per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` Checagem de conflitos. Retorne com `status: cleared` ou `status: waived` com racional.
 
-  **Path 2 — Mark pending with owner + due date.** Allowed only when `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` Conflicts clearance declares parallel-intake acceptable. Capture: who is running conflicts, when they're expected to return, what entities they're checking. Intake proceeds; matter row carries `conflicts.status: pending`; `/portfolio-status` flags it every run; `/matter-update` re-prompts until resolved.
+  **Caminho 2 — Marque pending com owner + prazo.** Permitido apenas quando `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` Checagem de conflitos declara intake-paralelo aceitável. Capture: quem está rodando, quando esperado retornar, quais entidades checando. Intake prossegue; linha do caso carrega `conflicts.status: pending`; `/portfolio-status` flag em todo run; `/matter-update` re-pergunta até resolvido.
 
-  **Path 3 — Bypass with documented rationale.** Only if the user explicitly acknowledges the bypass. Record in `conflicts.override`:
+  **Caminho 3 — Bypass com racional documentado.** Apenas se o(a) usuário(a) explicitamente reconhece o bypass. Registre em `conflicts.override`:
 
   ```yaml
   conflicts:
-    status: not-run               # preserved as-is
+    status: not-run               # preservado como está
     override:
-      by: [user name]
-      date: [YYYY-MM-DD]
-      rationale: [why conflicts were bypassed — permanent record; does not auto-expire]
+      by: [nome do usuário]
+      date: [AAAA-MM-DD]
+      rationale: [por que conflitos foram bypassed — registro permanente; não expira automaticamente]
   ```
 
-  This field is visible in every `/portfolio-status`, every `/matter` briefing, and every `/matter-update` until removed. It is never removed by the skill — only by explicit user edit to `_log.yaml` after conflicts are actually cleared.
+  Este campo é visível em todo `/portfolio-status`, todo `/matter` briefing, e todo `/matter-update` até removido. Nunca é removido pela skill — só por edição explícita do(a) usuário(a) no `_log.yaml` depois que conflitos forem efetivamente cleared.
 
-  **Do not proceed silently.** "I'll do it later" is not an acceptable response. One of Path 1/2/3 must be chosen, and the choice is captured in the record.
+  **Não prossiga silenciosamente.** "Eu faço depois" não é resposta aceitável. Um dos Caminhos 1/2/3 deve ser escolhido, e a escolha é capturada no registro.
 
-This step is not about the skill deciding whether a conflict exists — that's the user's/firm's judgment. It's about making sure the check happened and the record reflects it.
+Este passo não é sobre a skill decidir se conflito existe — isso é juízo do(a) usuário(a). É sobre garantir que a checagem aconteceu e o registro reflete.
 
-### 3. Source
+### 3. Fonte
 
-How did this arrive?
-- `demand-letter | complaint-served | subpoena | regulator-inquiry | internal-report | pre-suit-threat`
-- *Seed doc opportunity:* "If you have the initiating document (complaint, demand, subpoena), attach or share the path. It sharpens the intake."
+Como isto chegou?
+- `notificacao-extrajudicial | peticao-inicial-citacao | oficio | requisicao-administrativa | denuncia-interna | ameaça-pre-litigatoria | atendimento-na-defensoria | encaminhamento-CRAS-CREAS | encaminhamento-156`
+- *Oportunidade de doc-semente:* "Se você tem o documento iniciante (petição inicial, notificação, ofício, formulário social do(a) assistido(a)), anexe ou compartilhe o caminho. Afia o intake."
 
-### 4. Risk triage — against house calibration
+### 4. Triagem de risco — contra a calibração da casa
 
-- Severity: high | medium | low (reference the `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` severity bands)
-- Likelihood: high | medium | low (reference the `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` likelihood bands)
-- Resulting risk rating (per the matrix): high | medium | low | critical
-- Damages exposure range (best estimate)
-- Non-monetary exposure (injunction? consent decree? publicity? precedent?)
+- Severidade: alta | média | baixa (referencie as bandas em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`)
+- Probabilidade: alta | média | baixa (referencie as bandas em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`)
+- Risk rating resultante (per a matriz): alto | médio | baixo | crítico
+- Exposição em R$ (faixa estimada) — para autor: valor da causa; para réu: exposição
+- Exposição não-monetária:
+  - DJ/banca: tutela inibitória, decisão coletiva precedente, publicidade adversa
+  - **Defensor:** urgência humanitária (vida/saúde/dignidade em risco), prescrição próxima, impacto coletivo da tese
+- **Para Defensor — risco humanitário separado:** vida/saúde em risco (BPC negado a idoso sem outra fonte, medicamento essencial não fornecido, despejo iminente com criança, violência doméstica em curso); prescrição em 30 dias para tese principal.
 
-If the risk calibration in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` is thin, don't fake precision. Use the user's gut and note the thinness.
+Se a calibração de risco em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` é fina, não simule precisão. Use o juízo do(a) usuário(a) e anote a finura.
 
-### 5. Materiality
+### 5. Materialidade ou escalonamento institucional
 
-Against the house thresholds in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
-- `reserved | disclosed | monitored | none`
-- If `reserved`: reserve amount and whether finance has been notified
-- If `disclosed`: filing and footnote location
+**Para DJ corporativo:** contra os limiares da casa em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
+- `provisionado | divulgado | monitorado | nenhum`
+- Se `provisionado`: valor da provisão (CPC 25) e se o financeiro foi notificado
+- Se `divulgado`: localização da divulgação no Formulário de Referência CVM (se companhia listada)
 
-### 6. Outside counsel
+**Para Defensor Público:** escalonamento institucional:
+- `escalado-DPG | escalado-coordenador | enviado-nucleo-especializado | monitorado | nenhum`
+- Se `escalado-DPG`: tese inédita com impacto coletivo, acordo que renuncia parcela material do direito, TAC (Termo de Ajustamento de Conduta), Ação Civil Pública
+- Se `enviado-nucleo-especializado`: qual núcleo (Saúde / Idoso / Consumidor / Mulher Maria da Penha / Fazenda Pública / Criminal / Infância / LGBTQIA+)
 
-- Firm
-- Lead partner
-- **Lead partner email** (used by `/oc-status` to draft status requests)
-- Engagement letter status: `signed | pending | none`
-- Budget authorization: amount and approver
-- *Seed doc opportunity:* "Engagement letter path, if signed."
+**Para autônomo / em-sociedade:** revisão por sócio ou consulta a co-counsel:
+- `escalado-socio | consultado-co-counsel | monitorado | nenhum`
 
-If risk is medium or higher and no outside counsel is assigned — flag it.
+### 6. Escritório externo / DPs colaboradoras / núcleos especializados
 
-### 7. Internal owners
+**Para DJ / em-sociedade / autônomo — escritório externo:**
+- Escritório
+- Sócio líder
+- **E-mail do sócio líder** (usado pelo `/oc-status` para redigir pedidos de status)
+- Status de contrato de honorários: `assinado | pendente | nenhum`
+- Autorização orçamentária: valor e aprovador
+- *Doc-semente:* "Caminho do contrato de honorários, se assinado."
 
-From `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` landscape — which internal stakeholders are involved?
-- Business lead
-- HR partner (if employment)
-- Comms contact (if reputational risk)
-- CISO (if data or cyber)
-- Other
+**Para Defensor — DP colaboradora ou núcleo especializado:**
+- Núcleo (Saúde / Idoso / Mulher / Consumidor / Fazenda / Criminal / Infância / LGBTQIA+)
+- Defensor(a) responsável do núcleo (se conhecido)
+- Tipo de cooperação: `consultoria | atuação conjunta | encaminhamento | parecer técnico`
+- Doc-semente: nota de encaminhamento ao núcleo, se já feita.
 
-### 8. Legal hold
+Se risco é médio ou maior e nenhum escritório externo / núcleo está atribuído — flag.
 
-- Issued? If yes: date, scope, custodians (list of names).
-- Next refresh date (default: six months from issuance; adjust per matter).
-- If no and this is active litigation or reasonably anticipated: flag urgently; offer to run `/litigation-legal:legal-hold [slug] --issue` after intake completes.
-- *Seed doc opportunity:* "Hold notice, if issued."
+### 7. Owners internos
 
-### 9. Key dates
+De `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` panorama — quais stakeholders internos estão envolvidos?
+- **DJ corporativo:** business lead, RH (se trabalhista), Comunicação (se reputacional), CISO (se dados/cyber), DPO (se LGPD).
+- **Defensor:** outro(a) Defensor(a) com atuação subsidiária (substituição em férias, etc.); estagiário(a) sob supervisão (se aplicável); servidor(a) administrativo(a) responsável pela pasta; assessoria psicossocial da DP (caso envolva vítima de violência, criança, idoso(a)).
+- **Em-sociedade:** sócio supervisor, outros(as) advogados(as) na equipe do caso.
+- Outro
 
-- Response deadline (answer, objection, opposition)
-- Next hearing / conference
-- Statute of limitations cutoff (if applicable)
-- Any regulatory deadlines
+### 8. Dever de guarda documental
 
-### 10. Initial posture
+- Emitido? Se sim: data, escopo, custodiantes (lista de nomes).
+- Próxima renovação (default: seis meses da emissão; ajuste por caso).
+- Se não e isto é litigação ativa ou razoavelmente antecipada: flag urgente; ofereça rodar `/litigation-legal:legal-hold [slug] --issue` depois do intake completar.
+- *Doc-semente:* "Comunicação de dever de guarda, se emitida."
 
-One-paragraph theory:
-- What's our story?
-- What's theirs?
-- What's the pivot fact?
-- Initial posture: `fight | settle | investigate | wait`
+Para Defensor: relevância menor (DP raramente é parte com dever de preservar provas corporativas), mas pode aplicar em ação coletiva ou em casos onde o(a) próprio(a) assistido(a) é detentor de documentos relevantes — orientar para preservação.
 
-## Writing the outputs
+### 9. Datas-chave
+
+- Prazo de resposta (contestação, impugnação, oposição, manifestação) — **em dias úteis (CPC art. 219)**, suspensão CPC art. 220 (20/12-20/1)
+- **Para JEC (Lei 9.099/95):** dias corridos (jurisprudência STJ)
+- **Para Defensor:** aplicar prazo em dobro CPC art. 186
+- Próxima audiência / conciliação (CPC 334 — obrigatória salvo dispensa expressa)
+- Corte de prescrição (se aplicável) — CC arts. 205-206
+- Decadência (CC art. 178) — se aplicável
+- Qualquer prazo administrativo
+
+### 10. Postura inicial
+
+Tese de um parágrafo:
+- Qual nossa história?
+- Qual a deles?
+- Qual o fato-pivô?
+- Postura inicial: `litigar | transacionar | investigar | aguardar | tutela-urgência-imediata` (último para Defensor em casos de risco humanitário grave)
+
+## Escrevendo os outputs
 
 ### Slug
 
-Lowercase, hyphens, year at the end. Examples: `acme-v-us-2026`, `employment-smith-2026`, `ftc-inquiry-2026`.
+Minúsculo, hifens, ano no final. Exemplos: `acme-v-nos-2026`, `maria-s-medicamento-2026`, `silva-divorcio-2026`.
 
-Confirm slug is unique in `_log.yaml` before writing.
+Confirme que o slug é único em `_log.yaml` antes de escrever.
 
 ### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md`
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[CABEÇALHO DE SIGILO — per plugin config ## Outputs — difere por papel; vide `## Quem está usando`]
 
-# [Matter Name]
+# [Nome do Caso]
 
 **Slug:** [slug]
-**Opened:** [YYYY-MM-DD]
-**Our role:** [plaintiff/defendant/etc.]
+**Aberto:** [AAAA-MM-DD]
+**Nossa posição:** [autor / réu / etc.]
 **Status:** [status]
+**Vara da atribuição (Defensor):** [ex.: 19ª Vara Cível Comum — Capital de Manaus]
 
 ---
 
-## Identification
+## Identificação
 
-[counterparty, jurisdiction, matter type, source]
+[contraparte, jurisdição/vara, tipo de caso, fonte, número CNJ se já distribuído]
 
-## Conflicts
+## Conflitos / impedimentos institucionais
 
 **Status:** [cleared / pending / not-run / waived]
-**Method:** [corporate-legal / outside-counsel / system-check / informal / other]
-**Cleared by:** [name]
-**Cleared date:** [YYYY-MM-DD]
-**Checked against:** [entities run]
-**Notes:** [any flags cleared, waiver reference if applicable]
+**Método:** [defensoria-publica / corporate-legal / escritorio-externo / system-check / informal / outro]
+**Cleared por:** [nome]
+**Cleared em:** [AAAA-MM-DD]
+**Checado contra:** [entidades rodadas + vedações LC 80/94 art. 46 se Defensor]
+**Notas:** [qualquer flag cleared, referência de renúncia se aplicável]
 
-## Risk triage
+## Triagem de risco
 
-**Severity:** [band] — [why, with reference to house severity definitions]
-**Likelihood:** [band] — [why]
-**Risk rating:** [high/medium/low/critical]
-**Exposure:** [dollar range + non-monetary]
+**Severidade:** [banda] — [por quê, com referência às definições de severidade da casa]
+**Probabilidade:** [banda] — [por quê]
+**Risk rating:** [alto/médio/baixo/crítico]
+**Exposição R$:** [faixa]
+**Risco humanitário (Defensor):** [descrição da urgência, se aplicável: vida, saúde, despejo iminente, violência, prescrição próxima]
+**Exposição não-monetária:** [tutela inibitória, decisão coletiva, publicidade, impacto coletivo]
 
-## Materiality
+## Materialidade ou escalonamento
 
-[reserved/disclosed/monitored/none — with reserve amount, disclosure location, or reasoning if "none"]
+[provisionado/divulgado/monitorado/nenhum (DJ) — com valor da provisão e local de divulgação, ou racional se "nenhum"]
+[escalado-DPG/escalado-coordenador/enviado-nucleo/monitorado/nenhum (Defensor) — com justificativa]
 
-## Outside counsel
+## Escritório externo / DP colaboradora / núcleo especializado
 
-[firm, lead, engagement status, budget]
+[escritório+sócio+contrato+budget (DJ/banca/autônomo)]
+[núcleo+Defensor responsável+tipo de cooperação (Defensor)]
 
-## Internal owners
+## Owners internos
 
-[stakeholders and why each is involved]
+[stakeholders e por que cada está envolvido]
 
-## Legal hold
+## Dever de guarda
 
-[status, date, scope]
+[status, data, escopo]
 
-## Key dates
+## Datas-chave
 
-[list]
+[lista — com cálculo CPC 219 dias úteis + prazo em dobro Defensor onde aplicável]
 
-## Initial theory
+## Tese inicial
 
-[one paragraph: our story, their story, pivot fact, initial posture] `[SME VERIFY — theory at intake is a working hypothesis; confirm with outside counsel before any filing or material communication that assumes this framing]`
+[um parágrafo: nossa história, a deles, fato-pivô, postura inicial] `[SME VERIFICAR — tese no intake é hipótese de trabalho; confirme com escritório externo / DP colaboradora / co-counsel antes de qualquer protocolização ou comunicação material que assuma este enquadramento]`
 
-## Open questions
+## Perguntas em aberto
 
-[anything not yet known that matters — e.g., "insurance tender pending", "unclear whether we have coverage for X"]
+[qualquer coisa ainda não sabida que importa — ex.: "aviso de sinistro pendente", "não está claro se temos cobertura para X", "aguardando laudo psicossocial"]
 
 ---
 
-## Seed documents
+## Documentos-semente
 
-| Doc | Path / pointer |
+| Doc | Caminho / ponteiro |
 |---|---|
-| [e.g., complaint] | [path or "not yet shared"] |
+| [ex.: petição inicial / notificação / formulário social do(a) assistido(a)] | [caminho ou "ainda não compartilhado"] |
 ```
 
 ### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`
 
-Seed the history file with the intake as entry zero:
+Semeie o arquivo de histórico com o intake como entrada zero:
 
 ```markdown
-# History: [Matter Name]
+# Histórico: [Nome do Caso]
 
-Append-only event log. Most recent at top.
+Log append-only de eventos. Mais recente no topo.
 
 ---
 
-## [YYYY-MM-DD] — Matter opened
+## [AAAA-MM-DD] — Caso aberto
 
-[Source, who brought it in, initial triage summary, outside counsel assigned, legal hold issued yes/no.]
+[Fonte, quem trouxe (escala da unidade / referência), sumário da triagem inicial, escritório externo ou núcleo especializado atribuído, dever de guarda emitido sim/não, urgência humanitária se aplicável.]
 ```
 
-### Append to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### Anexar a `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
 
-Add a row per the schema. Example:
+Adicione linha per o schema. Exemplo:
 
 ```yaml
-- id: acme-v-us-2026
-  name: "Acme Corp v. Company"
-  type: contract
-  role: defendant
-  counterparty: "Acme Corp"
-  jurisdiction: "N.D. Cal."
-  # status is derived from source:
-  #   source: pre-suit-threat | demand-letter           → status: threatened
-  #   source: complaint-served | subpoena | regulator-inquiry → status: active
-  #   source: internal-report                           → status: threatened (default) or active if formal process has started
-  status: active
-  stage: pleadings
-  source: complaint-served
-  outside_counsel:
-    firm: "Wilson Sonsini"
-    lead: "J. Reyes"
-    email: "jreyes@wsgr.example.com"
-    engagement: signed
+- id: maria-s-medicamento-2026
+  name: "Maria S. — fornecimento medicamento oncológico (TJAM 19ª Vara Cível)"
+  type: civel-saude
+  role: autor
+  counterparty: "Estado do Amazonas + Município de Manaus"  # solidariedade Tema 793 STF
+  jurisdiction: "TJAM — 19ª Vara Cível — Capital"
+  numero_cnj: "0123456-78.2026.8.04.0001"
+  # status é derivado da fonte:
+  #   source: pre-suit-threat | demand-letter | atendimento-na-defensoria  → status: pre-protocolo
+  #   source: complaint-served | subpoena | regulator-inquiry | peticao-inicial-citacao → status: ativo
+  #   source: internal-report                           → status: pre-protocolo (default) ou ativo se processo formal já iniciou
+  status: ativo
+  stage: postulatoria
+  source: atendimento-na-defensoria
+  outside_counsel:            # para Defensor: núcleo especializado
+    firm: "Núcleo de Saúde DPEAM"
+    lead: "Dra. (Defensora do Núcleo)"
+    email: "nucleo.saude@defensoria.am.def.br"
+    engagement: nao-aplicavel
   conflicts:
     status: cleared
-    method: corporate-legal
-    cleared_by: "K. Patel"
-    cleared_date: 2026-04-20
-    override:                   # populated only on Path 3 bypass
+    method: defensoria-publica
+    cleared_by: "[Defensor titular]"
+    cleared_date: 2026-05-20
+    override:                   # populado apenas em Caminho 3 bypass
       by: null
       date: null
       rationale: null
-  risk: high
-  materiality: reserved
-  exposure_range: "$2M–$5M"
+  risk: alto
+  risco_humanitario: "Medicamento essencial (carboplatina) negado pelo SUS; ciclo oncológico interrompido; risco à vida"
+  materiality: escalado-nucleo  # ou outro enum por papel
+  exposure_range: "R$ 8K/mês (custeio mensal do tratamento)"
   internal_owners:
-    business_lead: "Jane Smith"
-    hr_partner: null
-    comms_contact: null
+    business_lead: null         # N/A para Defensor
+    defensor_substituto: "Dr. (suplente em férias)"
+    assessoria_psicossocial: true
   legal_hold:
-    issued: true
-    issued_date: 2026-02-15
-    scope: "Sales org 2023–2026"
-    custodians: ["Jane Smith", "R. Chen", "T. Patel"]
-    last_refresh: 2026-02-15
-    next_refresh: 2026-08-15
+    issued: false
+    issued_date: null
+    scope: null
+    custodians: []
+    last_refresh: null
+    next_refresh: null
     released: null
   related_matters: []
-  opened: 2026-04-20
-  next_deadline: 2026-05-15
-  last_updated: 2026-04-20
-  path: matters/acme-v-us-2026/
+  opened: 2026-05-20
+  prazo_em_dobro_defensor: true   # CPC 186 — todo prazo deste caso é dobrado
+  next_deadline: 2026-05-25       # tutela de urgência CPC 300 — 5 dias úteis
+  last_updated: 2026-05-20
+  path: matters/maria-s-medicamento-2026/
 ```
 
-## Confirm before writing
+## Confirmar antes de escrever
 
-Show the user the row and the matter.md content:
+Mostre ao(à) usuário(a) a linha e o conteúdo do matter.md:
 
-> Here's what I'll write. Flag anything wrong or thin before I commit.
+> Eis o que vou escrever. Flag qualquer coisa errada ou fina antes de eu comitar.
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Termine com a árvore per CLAUDE.md `## Outputs`. Customize as opções ao que esta skill acabou de produzir — as cinco branches default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não lock-in. A árvore É o output; o(a) Defensor(a)/advogado(a) escolhe.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Run the conflicts check itself.** It records the result, status, method, and the entities checked. The actual clearance happens in whatever system (or judgment) the house practice profile declares. If the user says "cleared," the skill takes that at face value and captures the metadata.
-- Decide the initial theory. It captures what the user says; it doesn't invent one.
-- Issue the legal hold. Flags it if missing. User issues it.
+- **Rodar a checagem de conflitos / impedimentos em si.** Registra o resultado, status, método, e as entidades checadas. O clearance efetivo acontece em qualquer sistema (ou juízo) que o perfil da casa declara. Se a pessoa diz "cleared", a skill aceita e captura os metadados.
+- Decidir a tese inicial. Captura o que a pessoa diz; não inventa.
+- Emitir o dever de guarda. Flag se ausente. Usuário(a) emite.
+- **Para Defensor:** não decide se o(a) assistido(a) é hipossuficiente — a presunção da Súmula 481 STJ rege; cabe ao(à) Defensor(a) registrar e à contraparte impugnar se quiser.

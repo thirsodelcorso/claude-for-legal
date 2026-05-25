@@ -1,184 +1,184 @@
 ---
 name: matter-workspace
-description: Manage matter workspaces for multi-client practices — create, list, switch, close, or detach the active matter. Use when the user wants to create a new matter workspace, switch the active matter, list matters, archive a matter, or work at practice-level only without an active matter.
+description: Gerencia workspaces de caso para advocacia multi-cliente — cria, lista, troca, fecha ou desliga o caso ativo. Use quando o usuário quer criar novo workspace de caso, trocar o caso ativo, listar casos, arquivar um caso, ou trabalhar em nível-prática sem caso ativo.
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
 # /matter-workspace
 
-Practitioners work across multiple clients and matters. A matter workspace keeps one client or engagement's context separate from every other. This command manages those workspaces.
+Profissionais atuam em vários clientes/assistidos e casos. Um workspace de caso mantém o contexto de um(a) cliente/assistido(a) ou patrocínio separado de todos os outros. Este comando gerencia esses workspaces.
 
-## Subcommands
+## Subcomandos
 
-- `/litigation-legal:matter-workspace new <slug>` — create a new matter workspace, run a short intake, write `matter.md`
-- `/litigation-legal:matter-workspace list` — list matters with status and active flag
-- `/litigation-legal:matter-workspace switch <slug>` — set the active matter
-- `/litigation-legal:matter-workspace close <slug>` — archive a matter (move to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_archived/`, never delete)
-- `/litigation-legal:matter-workspace none` — detach from any active matter, work at practice-level only
+- `/litigation-legal:matter-workspace new <slug>` — cria novo workspace de caso, roda intake curto, grava `matter.md`
+- `/litigation-legal:matter-workspace list` — lista casos com status e flag de ativo
+- `/litigation-legal:matter-workspace switch <slug>` — define o caso ativo
+- `/litigation-legal:matter-workspace close <slug>` — arquiva um caso (move para `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_archived/`, nunca apaga)
+- `/litigation-legal:matter-workspace none` — desacopla de qualquer caso ativo, trabalha só em nível-prática
 
-Note: `/litigation-legal:matter-briefing [slug]` (no subcommand) is a separate command that produces a briefing on a specific matter — useful for in-house portfolio review. Matter workspace management lives here.
+Nota: `/litigation-legal:matter-briefing [slug]` (sem subcomando) é um comando separado que produz um briefing de caso específico — útil para revisão de portfólio em DJ. A gestão de workspace de caso vive aqui.
 
-## Instructions
+## Instruções
 
-1. Read `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — confirm the `## Matter workspaces` section is populated. If `Enabled` is `✗`, tell the user: "Matter workspaces are off — you're configured as an in-house practice with one client, so the plugin works from practice-level context automatically. If you actually work across multiple clients, re-run `/litigation-legal:cold-start-interview --redo` and select a private-practice setting. Otherwise, you don't need `/matter-workspace` at all." Don't error — the disabled state is the expected one for in-house users.
-2. Follow the workflow and reference below.
-3. Dispatch on the first token of `$ARGUMENTS`:
-   - `new` → run the intake interview, write `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<slug>/matter.md`, seed `history.md` and `notes.md`.
-   - `list` → enumerate `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/*/matter.md`, print a table, mark the active matter.
-   - `switch` → update the `Active matter:` line in the practice-level CLAUDE.md.
-   - `close` → move `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<slug>/` to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_archived/<slug>/`, log the close date in `history.md`.
-   - `none` → set `Active matter:` to `none — practice-level context only`.
-4. Show the user what changed and confirm before writing.
+1. Leia `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — confirme que a seção `## Workspaces de caso` está populada. Se `Habilitado` é `✗`, diga ao usuário: "Workspaces de caso estão desligados — você está configurado como prática com um cliente, então o plugin trabalha a partir do contexto de nível-prática automaticamente. Se você efetivamente atende múltiplos clientes/assistidos, rerode `/litigation-legal:cold-start-interview --redo` e selecione uma configuração de advocacia privada ou Defensoria. Caso contrário, não precisa de `/matter-workspace`." Não dê erro — o estado desligado é o esperado para usuários de DJ.
+2. Siga o workflow e a referência abaixo.
+3. Despache no primeiro token de `$ARGUMENTS`:
+   - `new` → rode a entrevista de intake, grave `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<slug>/matter.md`, semeie `history.md` e `notes.md`.
+   - `list` → enumere `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/*/matter.md`, imprima tabela, marque o caso ativo.
+   - `switch` → atualize a linha `Caso ativo:` no CLAUDE.md de nível-prática.
+   - `close` → mova `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<slug>/` para `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_archived/<slug>/`, registre a data de fechamento em `history.md`.
+   - `none` → defina `Caso ativo:` como `nenhum — só contexto de nível-prática`.
+4. Mostre ao usuário o que mudou e confirme antes de gravar.
 
-## Notes
+## Notas
 
-- The skill never reads across matters unless `Cross-matter context` is `on` in the practice-level CLAUDE.md.
-- Archiving is not deletion — closed matters remain readable for retention/conflicts purposes.
-- Slugs are lowercase with hyphens. If a slug is reused across archived and active, the archived one is preserved under `_archived/<slug>/`.
+- A skill nunca lê entre casos a menos que `Contexto cruzado entre casos` esteja `on` no CLAUDE.md de nível-prática.
+- Arquivar não é apagar — casos fechados permanecem legíveis para fins de retenção / checagem de impedimentos.
+- Slugs são minúsculos com hífens. Se um slug é reutilizado entre arquivados e ativos, o arquivado é preservado sob `_archived/<slug>/`.
 
 ---
 
 # Matter Workspace
 
-Multi-client practitioners (private practice — solo, small firm, large firm) work across many matters. Context from one must not leak into another. This skill is the thin file-management layer that makes that true.
+Profissionais multi-cliente (advocacia privada — autônomo, banca pequena, banca grande; Defensoria Pública atendendo múltiplos(as) assistidos(as)) atuam em vários casos. Contexto de um não pode vazar no outro. Esta skill é a camada fina de gestão de arquivos que torna isso verdadeiro.
 
-**Default state is off.** In-house users never see this — they run at practice-level only. Matter workspaces turn on at cold-start for private-practice users, or by editing `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗`, this skill does not run; the `/matter-workspace` skill explains the disabled state and suggests `/cold-start-interview --redo` for users who actually need matter isolation.
+**Estado default é desligado.** Usuários de DJ nunca veem isto — rodam só em nível-prática. Workspaces de caso ligam no cold-start para usuários de advocacia privada ou Defensoria, ou editando `## Workspaces de caso` no CLAUDE.md de nível-prática. Se `Habilitado` é `✗`, esta skill não roda; a skill `/matter-workspace` explica o estado desligado e sugere `/cold-start-interview --redo` para usuários que efetivamente precisam de isolamento de caso.
 
-## Storage layout
+## Layout de armazenamento
 
-All matter data lives under:
+Todo dado de caso vive sob:
 
 ```
 ~/.claude/plugins/config/claude-for-legal/litigation-legal/
-├── CLAUDE.md                       # practice-level practice profile
+├── CLAUDE.md                       # perfil de atuação nível-prática
 └── matters/
     ├── <slug>/
-    │   ├── matter.md               # client, counterparty, matter type, key facts, overrides
-    │   ├── history.md              # dated log of events, decisions, drafts, reviews
-    │   ├── notes.md                # free-form working notes
-    │   └── outputs/                # skill outputs for this matter (optional subfolder)
+    │   ├── matter.md               # cliente/assistido, contraparte, tipo de caso, fatos-chave, overrides
+    │   ├── history.md              # log datado de eventos, decisões, minutas, revisões
+    │   ├── notes.md                # notas de trabalho em formato livre
+    │   └── outputs/                # outputs de skills para este caso (subpasta opcional)
     └── _archived/
-        └── <slug>/                 # closed matters — readable but not active
+        └── <slug>/                 # casos fechados — legíveis mas não ativos
 ```
 
-Slugs are lowercase with hyphens. Examples: `acme-msa-2026`, `zenith-renewal`, `vendor-xyz-nda`.
+Slugs são minúsculos com hífens. Exemplos: `silva-vs-cemig-2026`, `bpc-loas-maria-souza`, `obriga-fazer-amil-2026`.
 
-## Active matter is in the practice CLAUDE.md
+## Caso ativo está no CLAUDE.md de nível-prática
 
-The `Active matter:` line under `## Matter workspaces` in the practice-level CLAUDE.md is the single source of truth. Switching a matter edits that line. No separate state file.
+A linha `Caso ativo:` sob `## Workspaces de caso` no CLAUDE.md de nível-prática é a fonte única da verdade. Trocar de caso edita aquela linha. Sem arquivo de estado separado.
 
-## Subcommand logic
+## Lógica dos subcomandos
 
 ### `new <slug>`
 
-1. Confirm slug is not already present in `matters/<slug>/` or `matters/_archived/<slug>/`. If reused, ask the user to pick a different slug.
-2. Run the intake interview:
-   - **Client** (the party we represent, or the internal business unit if in-house)
-   - **Counterparty** (the other side — may be multiple)
-   - **Matter type** (read the plugin's practice profile for typical categories; for litigation-legal: contract dispute | employment | IP | regulatory / investigation | product liability | class action | other)
-   - **Confidentiality level** (standard | heightened | clean-team — heightened prompts extra care in cross-matter settings)
-   - **Key facts** (2–5 sentences: what this matter is about, who the stakeholders are, what's at stake)
-   - **Matter-specific overrides to the practice playbook** (e.g., "client requires 24-month LoL cap not 12", "counterparty is a strategic partner — relationship-preserving tone")
-   - **Related matters** (slugs of any connected matters)
-3. Write `matters/<slug>/matter.md` using the template below.
-4. Seed `matters/<slug>/history.md` with a single "Opened" entry.
-5. Create an empty `matters/<slug>/notes.md`.
-6. Do **not** auto-switch to the new matter. Ask: "Want to switch to `<slug>` now? (`/litigation-legal:matter-workspace switch <slug>`)"
+1. Confirme que o slug já não está presente em `matters/<slug>/` ou `matters/_archived/<slug>/`. Se reutilizado, peça ao usuário para escolher outro slug.
+2. Rode a entrevista de intake:
+   - **Cliente / Assistido(a)** (a parte que representamos, ou a unidade interna de negócio se DJ)
+   - **Contraparte** (o outro lado — pode ser múltiplas)
+   - **Tipo de caso** (leia o perfil de atuação do plugin para categorias típicas; para litigation-legal: cível contratual | trabalhista | consumidor | PI | regulatório / investigação | responsabilidade civil | ação coletiva | obrigação de fazer/saúde | benefício previdenciário (BPC, aposentadoria) | família / sucessões | outro)
+   - **Nível de confidencialidade** (padrão | reforçado | segredo de justiça (CPC art. 189) — reforçado solicita cuidado extra em settings cross-matter)
+   - **Fatos-chave** (2–5 frases: do que se trata o caso, quem são os stakeholders, o que está em jogo)
+   - **Overrides específicos do caso ao playbook da prática** (ex.: "cliente exige limite de responsabilidade de 24 meses, não 12", "contraparte é parceiro estratégico — tom preservador da relação", "assistida em situação de violência doméstica — articular com rede de proteção")
+   - **Casos relacionados** (slugs de quaisquer casos conexos)
+3. Grave `matters/<slug>/matter.md` usando o template abaixo.
+4. Semeie `matters/<slug>/history.md` com uma única entrada "Aberto".
+5. Crie um `matters/<slug>/notes.md` vazio.
+6. **Não** troque automaticamente para o novo caso. Pergunte: "Quer trocar para `<slug>` agora? (`/litigation-legal:matter-workspace switch <slug>`)"
 
 ### `list`
 
-Enumerate `matters/*/matter.md`. Read each file's front-matter or first few lines to extract status. Print a table:
+Enumere `matters/*/matter.md`. Leia frontmatter ou primeiras linhas de cada arquivo para extrair status. Imprima uma tabela:
 
-| Slug | Client | Matter type | Status | Opened | Active |
+| Slug | Cliente / Assistido(a) | Tipo de caso | Status | Aberto | Ativo |
 |---|---|---|---|---|---|
 
-Mark the currently-active matter with `*`. Include `_archived/*` under a separate "Archived" heading if any exist.
+Marque o caso atualmente ativo com `*`. Inclua `_archived/*` sob heading separado "Arquivados" se existir algum.
 
 ### `switch <slug>`
 
-1. Confirm `matters/<slug>/matter.md` exists. If not, offer `/litigation-legal:matter-workspace new <slug>`.
-2. Edit the `Active matter:` line in the practice-level CLAUDE.md to `Active matter: <slug>`.
-3. Show the user the matter.md summary so they can confirm they're on the right matter.
+1. Confirme que `matters/<slug>/matter.md` existe. Se não, ofereça `/litigation-legal:matter-workspace new <slug>`.
+2. Edite a linha `Caso ativo:` no CLAUDE.md de nível-prática para `Caso ativo: <slug>`.
+3. Mostre ao usuário o sumário de matter.md para confirmar que está no caso certo.
 
 ### `close <slug>`
 
-1. Confirm `matters/<slug>/` exists.
-2. Append a "Closed" entry to `matters/<slug>/history.md` with today's date.
-3. Move `matters/<slug>/` → `matters/_archived/<slug>/`.
-4. If the closed matter was the active matter, set `Active matter:` to `none — practice-level context only`.
+1. Confirme que `matters/<slug>/` existe.
+2. Anexe entrada "Fechado" a `matters/<slug>/history.md` com a data de hoje.
+3. Mova `matters/<slug>/` → `matters/_archived/<slug>/`.
+4. Se o caso fechado era o ativo, defina `Caso ativo:` como `nenhum — só contexto de nível-prática`.
 
 ### `none`
 
-Set `Active matter:` in the practice-level CLAUDE.md to `none — practice-level context only`. Confirm with the user.
+Defina `Caso ativo:` no CLAUDE.md de nível-prática como `nenhum — só contexto de nível-prática`. Confirme com o usuário.
 
-## `matter.md` template
+## Template `matter.md`
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this` in the practice-level CLAUDE.md]
+[CABEÇALHO DE SIGILO — por config do plugin ## Outputs — varia por papel; vide `## Quem está usando` no CLAUDE.md de nível-prática]
 
-# Matter: [Client] — [short description]
+# Caso: [Cliente / Assistido(a)] — [descrição curta]
 
 **Slug:** [slug]
-**Opened:** [YYYY-MM-DD]
-**Status:** active
-**Confidentiality:** [standard / heightened / clean-team]
+**Aberto:** [YYYY-MM-DD]
+**Status:** ativo
+**Confidencialidade:** [padrão / reforçado / segredo de justiça]
 
 ---
 
-## Parties
+## Partes
 
-**Client:** [name]
-**Counterparty:** [name(s)]
+**Cliente / Assistido(a):** [nome]
+**Contraparte:** [nome(s)]
 
-## Matter type
+## Tipo de caso
 
-[vendor MSA | customer agreement | NDA | SaaS subscription | amendment | renewal | other — with one-line rationale]
+[obrigação de fazer / cobrança / indenização / ação revisional / BPC / família / outro — com racional de uma linha]
 
-## Key facts
+## Fatos-chave
 
-[2–5 sentences. What this matter is about. Who the stakeholders are. What's at stake. What makes it different from the default playbook.]
+[2–5 frases. Do que se trata o caso. Quem são os stakeholders. O que está em jogo. O que torna diferente do playbook default.]
 
-## Matter-specific overrides
+## Overrides específicos do caso
 
-*Any deviation from the practice-level playbook that applies to this matter and only this matter.*
+*Qualquer desvio do playbook nível-prática que se aplique a este caso e só a ele.*
 
-- [e.g., "LoL cap: client requires 24 months, not house standard 12."]
-- [e.g., "Tone: relationship-preserving — counterparty is a strategic partner."]
-- [e.g., "Governing law: must be English law, not Delaware."]
+- [ex.: "Tom: preservador da relação — contraparte é parceiro estratégico."]
+- [ex.: "Lei de regência: deve ser direito inglês, não brasileiro."]
+- [ex.: "Assistida em risco de violência — articular com CREAS e CRAM antes de cada audiência."]
 
-## Related matters
+## Casos relacionados
 
-- [slug — one line why related]
+- [slug — uma linha do porquê estão relacionados]
 
-## Notes on confidentiality
+## Notas de confidencialidade
 
-[If heightened or clean-team, describe why. Who may see matter files. Whether cross-matter context is permissible even if globally on.]
+[Se reforçado ou segredo de justiça (CPC art. 189), descreva o porquê. Quem pode ver os arquivos do caso. Se contexto cross-matter é admissível mesmo se globalmente ligado.]
 ```
 
-## `history.md` seed
+## Seed de `history.md`
 
 ```markdown
-# History: [Client] — [short description]
+# Histórico: [Cliente / Assistido(a)] — [descrição curta]
 
-Append-only event log. Most recent at top.
+Log de eventos somente-anexar. Mais recente no topo.
 
 ---
 
-## [YYYY-MM-DD] — Matter opened
+## [YYYY-MM-DD] — Caso aberto
 
-Intake completed. Slug: `[slug]`. Status: active.
-[Any initial context worth preserving beyond matter.md — e.g., "Opened in response to inbound MSA draft from [counterparty]."]
+Intake completo. Slug: `[slug]`. Status: ativo.
+[Qualquer contexto inicial que valha preservar além de matter.md — ex.: "Aberto em resposta a notificação extrajudicial recebida da [contraparte]."]
 ```
 
-## Cross-matter context
+## Contexto cruzado entre casos
 
-The practice-level CLAUDE.md has a `Cross-matter context:` flag. When it's `off` (the default), a skill working in matter A **never reads** files in `matters/B/` for any other `B`. Period. This is the confidentiality guarantee the setting exists to provide.
+O CLAUDE.md de nível-prática tem uma flag `Contexto cruzado entre casos:`. Quando está `off` (o default), uma skill trabalhando no caso A **nunca lê** arquivos em `matters/B/` para nenhum outro `B`. Ponto final. Esta é a garantia de confidencialidade pela qual a configuração existe.
 
-When it's `on`, a skill may read files across matter folders only when the user explicitly asks it to (e.g., "compare our position on liability caps across the last five vendor matters"). Even when `on`, the default is to load only the active matter unless the user asks for a cross-matter view.
+Quando está `on`, uma skill pode ler arquivos entre pastas de caso só quando o usuário explicitamente pede (ex.: "compare nossa posição sobre limitação de responsabilidade nos últimos cinco casos com fornecedores"). Mesmo quando `on`, o default é carregar só o caso ativo a menos que o usuário peça visão cross-matter.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Run a conflicts check.** Conflicts are the practitioner's/firm's job; the intake captures what the user declares.
-- **Enforce retention.** Closing archives a matter; it does not delete. Retention policy is out of scope.
-- **Auto-route outputs.** The substantive skill decides where to write; this skill tells it *which folder* is active, not what to put in it.
-- **Decide whether cross-matter is appropriate.** It reads the flag and obeys.
+- **Roda checagem de impedimentos.** Impedimentos são responsabilidade do(a) profissional / banca / unidade da DP; o intake captura o que o usuário declara.
+- **Aplica retenção.** Fechar arquiva um caso; não apaga. Política de retenção está fora de escopo.
+- **Roteia outputs automaticamente.** A skill substantiva decide onde gravar; esta skill diz *qual pasta* está ativa, não o que pôr nela.
+- **Decide se cross-matter é apropriado.** Lê a flag e obedece.

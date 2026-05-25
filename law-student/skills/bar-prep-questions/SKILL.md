@@ -1,270 +1,281 @@
 ---
 name: bar-prep-questions
 description: >
-  Bar prep questions — MBE or essay, targeted at your weak subjects and bar
-  jurisdiction. Tracks misses and comes back to patterns. Use when the user
-  says "bar prep", "MBE questions", "practice essay", or "test me for the
-  bar".
-argument-hint: "[subject, or --mbe / --essay / --session <n>]"
+  Questões de OAB — 1ª fase FGV (objetiva, 80 questões, 17 disciplinas do
+  edital vigente) ou 2ª fase prático-profissional (peça + 4 discursivas por
+  área), focadas em suas disciplinas frágeis e na seccional alvo. Rastreia
+  erros e volta a padrões. Use quando disser "OAB", "questões objetivas",
+  "discursiva", "peça prática" ou "me teste para a OAB".
+argument-hint: "[disciplina, ou --oab1 / --oab2 / --session <n>]"
 ---
 
 # /bar-prep-questions
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → bar jurisdiction, exam format (NextGen / traditional UBE / state-specific), weak subjects, prep course.
-2. Also load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists — it tells you what subject is scheduled for today and what subtopics are still weak.
-3. Apply the framework below.
-4. **Exam-type gate (do not skip).** If exam format or jurisdiction isn't in the practice profile, ask before generating anything. The NextGen Bar Exam and the traditional UBE test materially different subjects — studying the wrong list is the one mistake that isn't recoverable. Point the student at the NCBE's jurisdiction page (<https://www.ncbex.org/>) to confirm their exam format and subject scope.
-5. **Jurisdiction-rule gate.** If the student's jurisdiction has a state-specific component (CA, LA, NY Law Exam, FL state essay, VA, etc.) AND the subject is one where majority-vs-state rules diverge (Evidence, PR, Civ Pro, Criminal), ask whether this session is UBE/majority-rule, state-specific, or mixed. Do not silently default.
-6. Generate questions **scoped to subjects tested on the student's exam**, weighted toward weak subjects. Label each question by rule body (`[UBE/majority]` or `[CA-specific]` / `[NY-specific]` / etc.) when running mixed.
-7. When rules diverge between UBE/majority and the student's jurisdiction, explain the split explicitly in the answer — see `## Jurisdiction handling` below.
-8. After each answer: explain why right/wrong. Track patterns in misses.
-9. `--session <n>` runs a focused N-question session and writes results to `study-plan.yaml` under `session_history`.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → OAB Seccional alvo, fase do exame (1ª fase FGV objetiva, 2ª fase prático-profissional, ou área de 2ª fase escolhida — Civil/Penal/Trabalho/Tributário/Empresarial/Administrativo/Constitucional), disciplinas frágeis, cursinho.
+2. Carregue também `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` se existir — diz que disciplina está agendada para hoje e quais subtópicos ainda estão fracos.
+3. Aplique o framework abaixo.
+4. **Gate de fase do exame (não pule).** Se a fase do exame ou seccional não está no perfil, pergunte antes de gerar nada. 1ª fase e 2ª fase testam coisas materialmente diferentes — preparar a fase errada é o erro que não se recupera. Aponte para o site da FGV (<https://oab.fgv.br/>) para confirmar formato e edital.
+5. **Gate de área de 2ª fase.** Se a fase é 2ª e a área não está no perfil, pergunte: Civil, Penal, Trabalho, Tributário, Empresarial, Administrativo, ou Constitucional. Cada área tem peça-tipo + 4 discursivas próprias.
+6. Gere questões **escopadas às disciplinas testadas na fase escolhida**, ponderadas para disciplinas frágeis. Rotule cada questão por base normativa quando relevante (`[CF/88]` / `[CC]` / `[CDC]` / `[CPC]` / `[CLT]` / `[CTN]` / `[ECA]` / `[Súmula Vinculante X]` / `[Tema Repetitivo Y]`).
+7. Quando regras divergem entre posição doutrinária majoritária e súmula/Tema STF/STJ, explique a divisão explicitamente — vide `## Tratamento de divergência` abaixo.
+8. Depois de cada resposta: explique por que certa/errada. Rastreie padrões nos erros.
+9. `--session <n>` roda sessão focada de N questões e escreve resultados em `study-plan.yaml` sob `session_history`.
 
 ---
 
-## Real-matter check
+## Checagem de caso real
 
-If the question the student is asking sounds like it's about a REAL situation — their lease, their parking ticket, their family's business, their friend's arrest, a real dollar amount, a real deadline, a real party name — stop.
+Se a pergunta parece ser sobre situação REAL — contrato seu, multa que recebeu, negócio da família, prisão de amigo, valor real em R$, prazo real, nome de parte real — pare.
 
-> "This sounds like a real situation, not a hypothetical. I can't give you legal advice, and you can't give it either — you're not a lawyer yet. If this is real, [the person] needs an actual lawyer: legal aid, your school's clinic, a lawyer referral service (your jurisdiction's bar association, law society, or legal aid body), or (if there's money) a private attorney. I'm happy to help you understand the general legal concepts involved, but that's study, not advice."
+> "Isto soa como situação real, não hipotética. Não posso te dar orientação jurídica, e você não pode dar tampouco — você ainda não é OAB inscrito(a). Se for real, [a pessoa] precisa de profissional habilitado(a): Defensoria Pública estadual (atende hipossuficiente), OAB Seccional (Comissão de Assistência Judiciária Gratuita), NPJ de faculdade local, ou (se há recurso) advogado(a) particular. Tenho prazer em ajudar você a entender os conceitos jurídicos gerais envolvidos, mas isso é estudo, não orientação."
 
-Watch for: real names, real addresses, real dates, specific dollar amounts, "my landlord/boss/parent/friend," "I got a ticket/letter/notice," deadlines measured in days. Any one of these is a trigger.
+Atente para: nomes reais, endereços reais, datas reais, valores em R$ específicos, "meu locador/chefe/parente/amigo", "recebi multa/notificação/intimação", prazos em dias. Qualquer um destes é gatilho.
 
-## Purpose
+## Propósito
 
-The bar exam tests a defined body of subjects. This skill drills you on them — weighted toward your weak spots.
+A OAB FGV testa um corpo definido de disciplinas. Esta skill drilla você nelas — ponderadas para seus pontos fracos.
 
-## Exam type — ask first, do not assume
+## Fase do exame — pergunte primeiro, não assuma
 
-**The bar exam is in transition.** As of the July 2026 administration, the NextGen Bar Exam (developed by the NCBE) has launched in some jurisdictions, while others continue to administer the traditional Uniform Bar Exam (UBE). State-specific exams (California, Louisiana, Puerto Rico, etc.) are their own thing. The subject scope is materially different between the NextGen and the traditional UBE — **subjects no longer independently tested on the NextGen include Trusts & Estates, Family Law, Conflict of Laws, and Secured Transactions** (some underlying concepts may appear inside integrated "foundational concepts and skills" questions, but they are not standalone tested subjects the way they were on MEE).
+**A OAB tem duas fases.** A **1ª fase FGV** é objetiva: 80 questões de múltipla escolha (com 5 alternativas — A a E), aplicadas em uma manhã de domingo (5 horas), cobrindo 17 disciplinas do edital vigente:
 
-Do not assume the subject list. Before generating any questions:
+1. Ética e Disciplina (Estatuto OAB Lei 8.906/94 + Código de Ética OAB + Regulamento Geral) — 8 questões típicas
+2. Filosofia do Direito
+3. Direito Constitucional (CF/88)
+4. Direitos Humanos
+5. Direito Internacional Público e Privado
+6. Direito Tributário (CTN + leis específicas)
+7. Direito Administrativo (Lei 8.666 → 14.133, Lei 9.784, doutrina)
+8. Direito Ambiental (Lei 6.938, Lei 12.651 Código Florestal)
+9. Direito Civil (CC, Lei 8.245 Locação, Lei 9.610 Direito Autoral)
+10. Direito Empresarial (CC + Lei 11.101 Recuperação)
+11. Direito do Consumidor (CDC Lei 8.078)
+12. ECA (Lei 8.069)
+13. Direito Penal (CP + leis especiais)
+14. Direito Processual Penal (CPP)
+15. Direito do Trabalho (CLT)
+16. Direito Processual do Trabalho (CLT + súmulas TST)
+17. Direito Processual Civil (CPC 2015)
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` and read the bar jurisdiction and bar date.
-2. If the practice profile does not specify which exam format the student is sitting for (NextGen / traditional UBE / state-specific), **ask**:
+Aprovação: 50% (40 acertos), com peso igual entre disciplinas (~5 questões por disciplina, salvo Ética que tem mais).
 
-   > Which bar exam are you sitting for?
-   > 1. **NextGen Bar Exam** (NCBE, launched July 2026 in some jurisdictions)
-   > 2. **Traditional Uniform Bar Exam (UBE)** (MBE + MEE + MPT)
-   > 3. **State-specific exam** (California, Louisiana, Puerto Rico, Washington, etc. — tell me which)
-   >
-   > And which jurisdiction? The scope of what's tested depends on both.
+A **2ª fase prático-profissional** é dissertativa, em uma área que o(a) candidato(a) escolhe no momento da inscrição. Sete áreas possíveis: Direito Civil, Penal, do Trabalho, Tributário, Empresarial, Administrativo, Constitucional. Cada prova: **uma peça processual** (geralmente 30 a 40 pontos) + **4 questões discursivas** (geralmente 15 a 17,5 pontos cada). Tempo: 5 horas. Aprovação: 60% (60 pontos).
 
-3. **Point the student at the authoritative source.** Jurisdiction-by-jurisdiction exam format (and whether a given state has moved to NextGen) is on the NCBE's website at <https://www.ncbex.org/> under "Exams" → jurisdiction information. The NextGen subject outline lives at <https://www.ncbex.org/exams/nextgen>. The traditional UBE subjects (MBE and MEE) are at <https://www.ncbex.org/exams/mbe> and <https://www.ncbex.org/exams/mee>.
+A peça-tipo varia por área. Exemplos: Civil → petição inicial / contestação / recurso; Penal → denúncia (impossível para advogado, então será defesa preliminar / habeas corpus / apelação criminal / razões / contrarrazões); Trabalho → reclamação trabalhista / contestação / recurso ordinário.
 
-> **Verify your jurisdiction's exam format and subject list against the NCBE's current outline before studying. This is the single most important thing you can get right** — studying the wrong subject list is the one mistake this skill can't undo for you. If your prep course (Barbri/Themis/Kaplan) and the NCBE outline disagree, go with the NCBE outline and tell your prep course.
+Não assuma a fase. Antes de gerar qualquer questão:
 
-Scope every question-generation session to the subjects actually tested on the student's exam. If the practice profile lists a weak subject that is not tested on their exam (e.g., Secured Transactions for a NextGen jurisdiction), flag it:
+1. Carregue `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` e leia OAB Seccional + fase + data alvo + (se 2ª fase) área.
+2. Se o perfil não especifica fase, **pergunte**:
 
-> You listed Secured Transactions as a weak essay subject, but the NextGen Bar Exam doesn't test it as a standalone subject. Do you want to (a) skip it, (b) drill the UCC Article 9 concepts that may appear inside integrated NextGen questions, or (c) drill it anyway because you're curious / auditing the area?
+   > Qual fase da OAB você está fazendo?
+   > 1. **1ª fase FGV** (objetiva, 80 questões, 17 disciplinas)
+   > 2. **2ª fase prático-profissional** (peça + 4 discursivas — qual área? Civil / Penal / Trabalho / Tributário / Empresarial / Administrativo / Constitucional)
 
-## Jurisdiction handling
+3. **Aponte para a FGV como fonte autorizada.** O site oficial da FGV (https://oab.fgv.br/) tem os editais vigentes, simulados de provas anteriores e gabaritos comentados. Para 2ª fase, há também o sítio do Conselho Federal da OAB (https://www.oab.org.br/) com informações de inscrição e datas.
 
-The bar exam is not one exam. It is a family of exams. Rules that are "correct" on one are "wrong" on another. Getting this right matters more than almost anything else this skill does.
+> **Verifique o edital vigente e a lista de disciplinas atual antes de estudar. A FGV pode mudar pesos, incluir nova lei superveniente, ou ajustar formato.** Se seu cursinho (CERS, Damásio, Estratégia, Mege, Praetorium, Ênfase, Supremo TV) e o edital FGV divergem, vá com o edital e avise seu cursinho.
 
-### Two things to distinguish
+Escope toda sessão de geração de questão às disciplinas efetivamente testadas na fase escolhida. Se o perfil lista disciplina frágil que não é testada (ex.: Direito do Trabalho fragilizado mas você fez 2ª fase Civil), flag:
 
-1. **Exam structure.** What does the student's jurisdiction administer?
-   - **Pure UBE** jurisdictions: MBE + MEE + MPT, one set of rules, no state-specific content tested.
-   - **UBE + state-specific component:** many UBE states require a separate state law component (e.g., NY Law Exam, DC Mandatory Course). These are pass/fail or supplementary, not graded into the UBE score.
-   - **Non-UBE state-specific exams:** California runs its own exam (GBX + essays with California-specific subjects — Community Property, CA Civil Procedure/Evidence distinctions, CA Professional Responsibility — plus a Performance Test). Louisiana runs a civil-law exam that shares almost nothing with the UBE. Florida, Virginia, and several others keep state-specific essay days alongside or instead of the MEE.
-   - **NextGen jurisdictions** (rolling out starting July 2026): integrated foundational concepts format, drops Trusts & Estates / Family Law / Conflict of Laws / Secured Transactions as standalone tested subjects.
+> Você listou Trabalho como disciplina frágil, mas a sua 2ª fase é Civil. Quer (a) pular Trabalho neste cronograma, (b) reservar 1 dia por semana só para Trabalho de fundo (caso reprove e tenha que voltar), ou (c) drillar mesmo assim porque você quer reforço geral?
 
-   Before generating questions, confirm structure via the `## Exam type` gate above. Do not assume.
+## Tratamento de divergência
 
-2. **Rule content — where majority rule, UBE default, and the student's jurisdiction's rule can diverge.** Common divergence areas:
-   - **Criminal law:** common-law vs. MPC vs. state code (e.g., CA Penal Code on murder degrees, felony murder scope, consent defenses).
-   - **Evidence:** FRE vs. state rules (CA Evidence Code diverges materially — hearsay exceptions, character, propensity in sex-offense cases, privileges).
-   - **Civil procedure:** FRCP vs. state (CA Code of Civil Procedure — 170.6 peremptory challenges, demurrers vs. 12(b)(6), different discovery scope).
-   - **Community property states** (CA, TX, AZ, NV, NM, WA, ID, LA, WI): tested on state-specific essays in CA; irrelevant on pure UBE.
-   - **Professional responsibility:** MPRE tests ABA Model Rules; CA tests California Rules of Professional Conduct (which diverge on confidentiality, conflicts, fees).
+A OAB FGV testa um corpo de doutrina + súmulas + Temas + jurisprudência consolidada. Acertar isso importa mais que qualquer outra coisa nesta skill.
 
-### Rule when generating questions
+### Coisas a distinguir
 
-For every question, internally classify by which body of rules applies:
+1. **Estrutura do exame.** 1ª fase ou 2ª fase? Qual área da 2ª fase?
 
-- **General / federal / majority-rule questions** (MBE-style, federal courts, FRE, FRCP, constitutional, common-law core): the "correct answer" is the UBE/majority rule. State.
-- **Jurisdiction-specific questions** (CA PR, CA Evidence, community property, LA civil code, NY Law Exam topics): the "correct answer" is the student's jurisdiction's rule. State that.
+2. **Conteúdo de regra — onde pode haver divergência entre doutrina majoritária, posição da FGV, e súmula/Tema vinculante.** Áreas de divergência típica:
+   - **Direito Civil:** controvérsia sobre prescrição em responsabilidade civil (CC 206 §3º V — 3 anos vs. 205 — 10 anos para casos sem prazo); súmula 412 STF sobre legitimidade ativa em alimentos contra avós; cumulação de danos morais e materiais.
+   - **Processo Civil:** entendimentos pós-Tema 988 STJ (taxatividade mitigada do agravo de instrumento); ônus dinâmico CPC 373 §1º.
+   - **Processo Penal:** divergência sobre execução provisória da pena após HC 126.292 STF (modulada em ADCs 43/44/54).
+   - **Tributário:** posição STF vs STJ em algumas matérias (Tema 69 STF — ICMS na base PIS/COFINS; Tema 962 STF — IRPJ/CSLL sobre Selic em repetição).
+   - **Ética OAB:** posições do Conselho Federal vs. Seccional.
 
-### Divergence tags — per-rule, not per-subject
+### Regra ao gerar questão
 
-**Tag divergences at the rule level, not the subject level.** "[CA does not materially diverge on this rule]" stamped on every question in a subject is noise — a student sees the same tag on every Contracts question and stops reading. Scope the tag to the specific rule being tested.
+Para cada questão, classifique internamente qual corpo de regras aplica:
 
-Rules to apply when emitting divergence tags:
+- **Questão "doutrinária pura":** dispositivo, doutrina majoritária, sem súmula. A "resposta correta" é a doutrina majoritária + súmula se houver. Indique.
+- **Questão "súmula vinculante / Tema Repetitivo":** quando há vinculante, indique. Súmula Vinculante OBRIGA todos os tribunais e administração; Tema Repetitivo obriga juízes em casos idênticos.
+- **Questão de jurisprudência recente:** se a FGV cobra entendimento de informativo STJ/STF do ano corrente, sinalize. Apenas inclua se for posição consolidada (com mais de uma decisão no mesmo sentido).
 
-- If the specific rule tested in a question has no material CA/NY/LA/etc. divergence, tag **at the rule level** within that question: `[CA does not diverge on UCC § 2-207 — this answer holds on the CA bar.]`
-- If the specific rule tested has a material divergence, fire the `**Your jurisdiction (X) diverges:**` block per the format above. Do not use a subject-level tag when a rule-level divergence exists.
-- Do NOT blanket-apply a subject-level tag like "[CA does not materially diverge on this subject]" across all questions in a subject. Contracts-as-a-subject has both divergent rules (CA statute of frauds specific carve-outs, CA-specific consumer contract rules) and non-divergent ones (UCC § 2-207, Restatement § 71 consideration), and stamping them all with the same tag hides the divergences that matter.
-- If a question is CA-specific by construction (e.g., a CA Community Property question on a state-specific essay day), skip the tag — the CA-specific framing is already explicit.
+### Tags de divergência — nível-regra, não nível-disciplina
 
-Short rule: the tag lives inside the question (at the rule being tested), not outside it (at the subject level).
+**Tag divergências no nível da regra, não da disciplina.** "[Posição majoritária]" estampado em toda questão de Civil é ruído — você vê a mesma tag em toda questão e para de ler. Escope a tag à regra específica testada.
 
-### Rule when the rules diverge
+Regras a aplicar quando emitir tags de divergência:
 
-When a question's answer differs between the majority/UBE rule and the student's jurisdiction's rule, the explanation must say so explicitly:
+- Se a regra específica testada na questão tem entendimento consolidado e não-divergente, sem tag.
+- Se a regra específica tem divergência material (STF vs STJ, doutrina vs jurisprudência, FGV cobra ambos), use o bloco `**Atenção à divergência:**` per formato abaixo. Não use tag nível-disciplina.
+- Se uma questão é específica de uma corrente (ex.: questão sobre tese consequencialista vs principiológica em Filosofia do Direito), pule a tag — o enquadramento já é explícito.
 
-```markdown
-**Correct: C**
+### Regra quando há divergência
 
-**Why C (UBE/majority rule):** [rule + application]
-
-**Your jurisdiction (CA) diverges:** Under [California Evidence Code § X / CRPC Rule Y / CA Penal Code § Z], the rule is [jurisdiction-specific rule]. Under that rule, the answer would be [A/B/C/D].
-
-**On the bar exam:** On the MBE and MEE portions, the default answer is the UBE/majority rule unless the question tells you to apply state law. On a state-specific essay day (e.g., California's essay subjects, NY Law Exam, Florida state essay), the default is your jurisdiction's rule. Check the call of the question.
-
-**Rule to remember:** [one-line takeaway flagging the split]
-```
-
-If the student sits for a state-specific exam day (CA, LA, FL state essay, VA, NY Law Exam, etc.), weight some sessions toward state-specific content. Ask:
-
-> You're sitting for California. Do you want this session to be (a) MBE-style federal/majority rule, (b) California-specific essay subjects (Community Property, CA Evidence, CA PR, CA Civ Pro), or (c) mixed?
-
-Never silently default to one. If the student says "mixed" or doesn't answer, generate a mix and label each question `[MBE / UBE default]` or `[CA-specific]` so they know which body of rules governs.
-
-### When unsure of the jurisdiction's rule
-
-The skill does not know every state's idiosyncrasies with confidence. If the student's jurisdiction has a known divergence but the skill is not confident on the specific current rule, flag it: `[UNCERTAIN: CA's exact rule here — verify against CA-specific prep materials (e.g., BarMax CA, Themis CA supplement, the California Bar's released essay graded answers)]`. Do not invent. The cost of a wrong California rule stated confidently is higher than the cost of flagging uncertainty.
-
-## Confidence discipline
-
-Every question generated states a rule. A wrong rule stated confidently is worse than no question. The rule for this skill:
-
-- **Confident:** rule is black-letter in the subject; write the question normally.
-- **Uncertain:** rule varies by jurisdiction, is a minority rule, or I'm not sure I've got it exactly right — flag inline with `[UNCERTAIN: specific reason]` and tell the student to verify against their prep course materials before relying on the question.
-- **Don't know:** don't invent a question. Say "I don't have a reliable rule for this area; skip or use your prep course." Do not fabricate.
-
-Every MBE question answer explanation carries the same rule: if the "why C is correct" rule isn't one the skill is confident on, flag `[VERIFY: rule — confirm against Barbri/Themis/Kaplan outline]`. Use liberally.
-
-## Load context
-
-`~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → bar jurisdiction, exam format (NextGen / traditional UBE / state-specific), weak subjects, prep course. If exam format isn't specified, run the "Exam type" gate above before continuing. If jurisdiction is specified, apply the `## Jurisdiction handling` rules — label questions by which rule body governs, and flag divergences explicitly.
-
-Also load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists (written by the `study-plan` skill). If the plan has a session scheduled for today or specifies weak subjects to weight, honor it.
-
-## Session mode
-
-`--session <n>` runs a focused N-question session on a specific subject, tracks performance, and writes session results back to `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` under `session_history` so the study plan adapts.
-
-Trigger phrasing the student might use: "let's do 5 questions on Contracts", "run me 10 Evidence questions", "/law-student:session Evidence 10".
-
-**Session flow:**
-
-1. Confirm subject, N, and MBE-vs-essay (or mixed). If the student's jurisdiction has a state-specific component and the subject is one where rules diverge (Evidence, PR, Civ Pro, Criminal), ask whether to run UBE/majority rule, state-specific rule, or mixed.
-2. Generate N questions. Weight by subtopics the student has missed before (read `session_history`).
-3. Present them one at a time. After each, show correct answer + why each wrong answer is wrong, with jurisdiction handling per the rules above.
-4. At session end, report:
+Quando a resposta de uma questão difere entre doutrina majoritária e jurisprudência consolidada STF/STJ, a explicação deve dizer explicitamente:
 
 ```markdown
-## Session: [Subject], [N] questions
+**Correta: C**
 
-**Score:** [X]/[N] ([percentage])
-**Missed:** [list — subtopic + what went wrong]
-**Weak subtopics:** [the 2-3 subtopics where misses clustered]
-**Strong subtopics:** [where the student nailed it]
+**Por que C (posição majoritária + súmula):** [regra + aplicação]
 
-**Pattern vs. prior sessions:** [if session_history has prior sessions on this subject: "Hearsay exceptions missed in 3 of last 4 sessions — this is stuck. Route to /law-student:socratic-drill." Or: "Improvement from 40% to 70% on Evidence. Still shaky on character evidence."]
+**Atenção à divergência:** O STJ no Tema X (REsp Y) sustenta posição diferente — [resumo]. A FGV nas últimas três edições tem cobrado a posição [majoritária / Tema STJ]. Para a 1ª fase OAB, vá com a posição que a FGV historicamente cobra. Para a 2ª fase, na peça/discursiva, podem ser citadas as duas posições com escolha fundamentada.
 
-**Study plan update:** Weak subtopics added to priority list. Next scheduled [Subject] session: [date from study-plan.yaml].
+**Regra para lembrar:** [takeaway de uma linha]
 ```
 
-5. Append session results to `study-plan.yaml` under `session_history`:
+### Quando incerto sobre a regra
+
+A skill não conhece toda divergência ou todo edital recente com confiança. Se a questão envolve regra divergente e a skill não está confiante sobre a posição atual da FGV, flag: `[INCERTO: posição exata da FGV neste tema — verificar contra material do cursinho (CERS / Damásio / Estratégia / Mege / Praetorium / Ênfase) ou provas anteriores da FGV no edital vigente]`. Não invente. O custo de uma regra errada confiantemente afirmada é mais alto que o custo de flagar incerteza.
+
+## Disciplina de confiança
+
+Toda questão gerada afirma uma regra. Uma regra errada afirmada com confiança é pior que sem questão. A regra para esta skill:
+
+- **Confiante:** regra é texto-claro ou súmula consolidada — escreva normalmente.
+- **Incerto:** regra varia, é minoritária, ou não tenho certeza se é exatamente assim — flag inline `[INCERTO: razão específica]` e diga para conferir contra material do cursinho antes de confiar.
+- **Não sei:** não invente. Diga "não tenho regra confiável para esta área; pule ou use seu cursinho". Não fabrique.
+
+Toda explicação de questão objetiva carrega a mesma regra: se a regra do "por que C é correta" não é uma que a skill é confiante, flag `[VERIFICAR: regra — conferir contra resumo de cursinho (CERS / Damásio / Estratégia / Mege / Praetorium / Supremo TV / Ênfase) ou contra dispositivo/súmula vigente]`. Use liberalmente.
+
+## Carregar contexto
+
+`~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → OAB Seccional, fase, área (se 2ª fase), disciplinas frágeis, cursinho. Se fase não está especificada, rode o gate "Fase do exame" antes de continuar. Aplique as regras de `## Tratamento de divergência` — rotule questões pela base normativa controlante, e flag divergências explicitamente.
+
+Carregue também `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` se existir (escrito pela skill `study-plan`). Se o plano tem sessão agendada para hoje ou especifica disciplinas frágeis a ponderar, honre.
+
+## Modo sessão
+
+`--session <n>` roda sessão focada de N questões em disciplina específica, rastreia desempenho, e escreve resultados em `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` sob `session_history` para o plano se adaptar.
+
+Frases que estudante pode usar: "vamos fazer 5 questões de Civil", "rode 10 questões de Tributário", "/law-student:session Civil 10".
+
+**Fluxo da sessão:**
+
+1. Confirme disciplina, N, e fase (1ª objetiva ou 2ª discursiva/peça). Se a fase é 2ª, confirme área. Para disciplinas com divergência (Civil em prescrição, Penal em execução provisória, Tributário em ICMS/PIS/COFINS), pergunte se rodar a posição majoritária + súmula, ou questão que explore a divergência.
+2. Gere N questões. Pondere por subtópicos que faltaram antes (leia `session_history`).
+3. Apresente uma por vez. Depois de cada, mostre resposta correta + por que cada alternativa errada está errada, com tratamento de divergência per regras acima.
+4. No final da sessão, reporte:
+
+```markdown
+## Sessão: [Disciplina], [N] questões
+
+**Score:** [X]/[N] ([percentual])
+**Erradas:** [lista — subtópico + o que deu errado]
+**Subtópicos frágeis:** [os 2-3 subtópicos onde erros se concentraram]
+**Subtópicos fortes:** [onde acertou tudo]
+
+**Padrão vs. sessões anteriores:** [se session_history tem sessões anteriores nesta disciplina: "Hipóteses de cabimento do agravo erradas em 3 das últimas 4 sessões — está travado. Rote para /law-student:socratic-drill." Ou: "Melhora de 40% para 70% em Civil. Ainda frágil em obrigações solidárias."]
+
+**Atualização do plano:** Subtópicos frágeis adicionados à lista prioritária. Próxima sessão agendada de [Disciplina]: [data do study-plan.yaml].
+```
+
+5. Anexe resultados da sessão em `study-plan.yaml` sob `session_history`:
 
 ```yaml
 session_history:
   - date: 2026-05-08
-    subject: Evidence
-    type: bar-prep-mbe
+    subject: Civil
+    type: oab1
     n_questions: 10
     score: 6
-    weak_subtopics: [hearsay-exceptions, character-evidence]
-    jurisdiction_mode: mixed  # or ube / state-specific
+    weak_subtopics: [prescricao, obrigacoes-solidarias]
+    fase: oab1  # ou oab2 + area específica
 ```
 
-If no `study-plan.yaml` exists, write session history to `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml` instead so future sessions can still weight appropriately.
+Se não há `study-plan.yaml`, escreva histórico em `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml` para futuras sessões poderem ponderar.
 
-## MBE mode
+## Modo 1ª fase (OAB1 — objetiva)
 
-> **Note on "MBE" terminology.** The traditional UBE uses the MBE (Multistate Bar Examination) for the multiple-choice portion. The NextGen Bar Exam replaces the MBE with its own integrated multiple-choice + short-answer question sets. If the student is sitting for the NextGen, generate NextGen-style questions (integrated foundational concepts across subjects, some shorter scenarios with selected-response answers) rather than classic MBE questions, and say so. Use the student's NCBE-listed subject outline as the subject universe.
+### Gerar questões
 
-### Generate questions
+Formato FGV 1ª fase: enunciado (fato + texto legal/súmula relevante) + comando ("Assinale a alternativa correta") + 4 alternativas (A a D) — historicamente FGV usa 4 alternativas, sem alternativa E (que existe em alguns concursos públicos).
 
-Classic MBE format (traditional UBE): fact pattern + call + four answer choices, one correct.
-NextGen format: refer the student to released NextGen sample questions on the NCBE site for the current authoritative format and mimic that structure.
+Distribuição por disciplina: pondere para disciplinas frágeis **dentro do conjunto efetivamente testado na 1ª fase**. Se `CLAUDE.md` diz frágil em Civil e Tributário, 60% das questões dessas duas.
 
-Subject distribution: weight toward weak subjects **within the subjects actually tested on the student's exam**. If `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` says weak on Evidence and Civ Pro, 60% of questions come from those.
+Dificuldade: nível OAB. Não nível de prova de graduação (que pode ser mais alta, especialmente em casebooks de Marinoni/Didier). Questão OAB é sobre saber a regra preto-no-branco e aplicar limpo.
 
-Difficulty: bar-level. Not law school issue-spotter difficulty (which is higher). Bar questions are about knowing the black-letter rule and applying it cleanly.
+### Depois de cada resposta
 
-### After each answer
-
-Show correct answer + why each wrong answer is wrong.
+Mostre resposta correta + por que cada errada está errada.
 
 ```markdown
-**Correct: C**
+**Correta: C**
 
-**Why C:** [the rule + application]
+**Por que C:** [a regra + aplicação]
 
-**Why not A:** [what rule it's testing and why it's wrong here]
-**Why not B:** [same]
-**Why not D:** [same]
+**Por que não A:** [que regra está testando e por que errada aqui]
+**Por que não B:** [igual]
+**Por que não D:** [igual]
 
-**Rule to remember:** [the one-line takeaway]
+**Regra para lembrar:** [takeaway de uma linha]
 
 ---
 
-**Citation check.** Rules and any cases cited in the explanation were generated by an AI model and have not been verified. Before you commit a rule to memory for the bar, cross-check it against your prep course outline (Barbri, Themis, Kaplan) or a jurisdiction-specific source. AI-generated rule statements are sometimes wrong on elements or confused across jurisdictions.
+**Checagem de citação.** Regras e julgados citados na explicação foram gerados por modelo de IA e não foram verificados. Antes de fixar regra para a prova, confira contra resumo do seu cursinho (CERS / Damásio / Estratégia / Mege / Praetorium / Ênfase / Supremo TV) ou contra dispositivo / súmula vigente em planalto.gov.br ou portais STF/STJ. Regras geradas por IA às vezes erram em elementos ou confundem entre súmulas similares.
 ```
 
-### Track patterns
+### Rastreie padrões
 
-Keep a running tally: which subjects, which sub-topics, which wrong-answer traps. After a session:
+Mantenha tally: que disciplinas, que subtópicos, que armadilhas de alternativa errada. Depois de uma sessão:
 
-> "You missed 3 of 5 Evidence questions, all on hearsay exceptions. That's a pattern. Let's drill hearsay specifically."
+> "Você errou 3 de 5 questões de Processo Civil, todas em recurso (cabimento de agravo). Isso é padrão. Vamos drillar agravo especificamente."
 
-## Essay mode
+## Modo 2ª fase (OAB2 — peça e discursiva)
 
-### Generate a prompt
+### Gerar prompt
 
-Bar essay format for the student's exam and jurisdiction.
-- **Traditional UBE states:** MEE format.
-- **NextGen jurisdictions:** NextGen integrated performance task / short-answer format (per current NCBE released samples).
-- **State-specific exams:** that state's essay format (California, Louisiana, etc.).
+Formato 2ª fase para a área escolhida:
+- **Peça:** enunciado de caso + comando ("Elabore a peça processual cabível..."); tempo sugerido 2h30. Avaliada por estrutura, requisitos da peça (CPC 319 / CPP 41 / CLT 840 / etc.), fundamentação, pedidos.
+- **Discursiva:** enunciado breve (1-2 parágrafos) + 2-4 perguntas pontuais; tempo sugerido 30 min cada (4 discursivas × 30 min = 2h); peso 15-17,5 pontos cada. Avaliada por identificação correta do instituto + fundamentação + resposta às perguntas pontuais.
 
-Subject per weak areas or user choice — **constrained to subjects tested on the student's exam.**
+Por área:
+- **Civil:** peça típica — petição inicial cível (alimentos, divórcio, despejo, indenização) ou contestação ou recurso (apelação, agravo). Discursivas: contratos, responsabilidade civil, família/sucessões, obrigações.
+- **Penal:** peça — defesa preliminar (Lei 11.343 art. 55), habeas corpus, apelação criminal, razões/contrarrazões, revisão criminal. Discursivas: teoria do crime, parte especial, processo penal.
+- **Trabalho:** peça — reclamação trabalhista, contestação, recurso ordinário, agravo de petição. Discursivas: contrato individual, direitos trabalhistas (CLT + reforma 13.467/17), processo trabalhista.
+- **Tributário:** peça — mandado de segurança, embargos à execução fiscal, ação anulatória, repetição. Discursivas: sistema tributário, créditos e benefícios, processo administrativo, execução fiscal.
+- **Empresarial:** peça — recuperação judicial, falência, ação societária. Discursivas: sociedades, títulos de crédito, contratos empresariais.
+- **Administrativo:** peça — mandado de segurança, ação popular, ação civil pública. Discursivas: ato administrativo, licitações, servidores, responsabilidade civil do Estado.
+- **Constitucional:** peça — mandado de segurança constitucional, ADI/ADC (se cabível pelo edital), HC constitucional. Discursivas: controle de constitucionalidade, direitos fundamentais, organização do Estado.
 
-### Grade
+### Corrigir
 
-After the student writes:
+Depois de você escrever:
 
-- Issue spotting: what did they spot, what did they miss
-- Rule statements: accurate? Complete?
-- Analysis: did they apply the rule to the facts, or just restate both?
-- Organization: IRAC/CRAC or equivalent? Readable?
+- **Identificação de instituto:** identificou corretamente o que a peça/questão pediu? (FGV penaliza fortemente identificar errado.)
+- **Estrutura:** a peça atende aos requisitos formais (CPC 319, CPP 41, CLT 840, conforme o caso)? Há endereçamento, qualificação, fatos, fundamentos, pedidos, valor, provas, requerimento?
+- **Fundamentação:** dispositivos + súmulas + Temas certos? Doutrina citada onde necessário? Pinpoint do dispositivo?
+- **Pedidos:** específicos? Quantificados em R$ quando aplicável? Cumulação correta?
+- **Organização e linguagem:** clara? Sem latim desnecessário? Português técnico mas legível?
 
-Bar grading is about competence, not brilliance. A complete, organized, accurate answer passes. A brilliant but incomplete answer doesn't.
+Avaliação OAB é sobre suficiência e correção, não brilhantismo. Peça completa, organizada, com dispositivos certos passa. Peça brilhante mas faltando dispositivo essencial reprova.
 
 ```markdown
-## Essay feedback
+## Feedback da peça/discursiva
 
-**Issues spotted:** [X] of [Y]
-**Missed:** [list — these are points left on the table]
+**Identificação do instituto:** [correto / errado — qual era / qual você fez]
 
-**Rule statements:** [Accurate / close / wrong — for each issue]
+**Estrutura:** [completa / incompleta — itens faltantes]
 
-**Analysis:** [Did they actually apply, or just list rule + facts?]
+**Fundamentação:** [precisa / parcial / errada — dispositivos citados vs. esperados]
 
-**Organization:** [Clear or muddled]
+**Pedidos:** [específicos / genéricos]
 
-**If this were graded:** [Pass / borderline / not yet — with what to fix]
+**Organização:** [clara / confusa]
+
+**Se fosse corrigida:** [Passa / borderline / não-ainda — com o que arrumar]
 ```
 
-## Schedule integration
+## Integração com cronograma
 
-If the student has a study schedule: weight questions toward what's on the schedule for this week. Fresh material gets drilled.
+Se você tem cronograma: pondere questões para o que está agendado nesta semana. Conteúdo novo é drillado.
 
-## What this skill does not do
+## O que esta skill NÃO faz
 
-- Replace a bar prep course. Barbri/Themis/Kaplan have the full curriculum. This is supplemental drilling.
-- Predict the bar exam. Nobody can. Study everything.
-- Pass the bar for you. Obviously.
-- **State rules it isn't confident on without flagging.** If I'm not sure the rule is right, you will see `[UNCERTAIN]` or `[VERIFY]` — check the cited rule against your prep course before relying on the question. A wrong rule I state confidently is a worse study session than one I skip.
+- Substituir cursinho de OAB. CERS / Damásio / Estratégia / Mege / Praetorium / Supremo TV / Ênfase têm currículo completo. Isto é drilling suplementar.
+- Prever a OAB. Ninguém pode. Estude tudo do edital.
+- Passar na OAB por você. Obviamente.
+- **Afirmar regras das quais não está confiante sem flag.** Se não tem certeza se a regra está certa, você vai ver `[INCERTO]` ou `[VERIFICAR]` — confira contra cursinho antes de confiar. Regra errada que eu afirmo com confiança é sessão de estudo pior que questão pulada.
