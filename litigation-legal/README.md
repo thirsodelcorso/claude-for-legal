@@ -1,158 +1,172 @@
-# Litigation Counsel Plugin
+# Plugin Contencioso (Brasil)
 
-In-house litigation counsel support for managing a portfolio of matters. Cold-start captures your risk calibration, dispute landscape, and house style — the frame every matter is triaged against. Uniform intake turns new matters into structured log entries and per-matter history files. Status rollups and deep-dive briefings read from the log.
+Apoio ao advogado de contencioso para gerenciar um portfólio de casos. O cold-start captura sua calibração de risco, panorama de litigiosidade e estilo da casa — o frame contra o qual cada caso é triado. O intake padronizado transforma novos casos em entradas estruturadas no log e arquivos de histórico por caso. Os rollups de status e briefings aprofundados leem do log.
 
-Built for counsel who own many matters at once, most of which are run by outside firms. This plugin is a thinking partner, not a matter management system. If you have LawVu / SimpleLegal / Onit, this does not replace them — it sits alongside, as your structured reasoning layer.
+Construído para advogados que controlam vários casos simultaneamente, a maioria conduzida por escritórios externos (ou por você mesmo, na advocacia autônoma). Este plugin é um parceiro de raciocínio, não um sistema de gestão de processos. Se você usa LegalDesk, Themis, Projuris, Astrea, ADVBOX, LawDesk ou Tikal Tech — isto não substitui. Fica ao lado, como sua camada estruturada de raciocínio.
 
-**Every output is a draft for attorney review — cited, flagged, and gated — not a legal conclusion.** The plugin does the work: reads the documents, applies your playbook, finds the issues, drafts the memo. A lawyer reviews, verifies, and decides. Citations are tagged by source so you know which ones came from a research tool and which ones need checking. Privilege markers are applied conservatively so nothing waives by accident. Consequential actions — filing, sending, executing — are gated behind explicit confirmation.
+**Cada saída é uma minuta para revisão do advogado responsável — citada, sinalizada e com travas — não é parecer jurídico.** O plugin executa o trabalho: lê os documentos, aplica seu playbook, identifica os pontos, redige o memorando. Um advogado habilitado revisa, verifica e decide. As citações vêm marcadas por fonte para você saber quais vieram de ferramenta de pesquisa e quais precisam ser checadas. Marcas de sigilo são aplicadas de forma conservadora para nada vazar por acidente. Ações consequenciais — protocolar, enviar, executar — exigem confirmação explícita.
 
-## Prerequisites
+## Pré-requisitos
 
-Several features reference Gmail and scheduled-tasks integrations. These require MCP servers configured in your environment — they are not bundled. Without them, outputs are written to files for manual sending:
+Vários recursos referenciam integrações de Gmail e tarefas agendadas. Essas exigem servidores MCP configurados no seu ambiente — não vêm embutidos. Sem eles, as saídas são gravadas em arquivos para envio manual:
 
-- **Gmail MCP** — `/oc-status` creates Gmail drafts if authenticated; otherwise falls back to markdown drafts in `oc-status/[YYYY-MM-DD]/[slug].md`.
-- **Scheduled-tasks MCP** — no automatic scheduling is shipped. Set a recurring calendar reminder to invoke weekly commands.
+- **Gmail MCP** — `/oc-status` cria rascunhos no Gmail se autenticado; caso contrário, escreve minutas markdown em `oc-status/[YYYY-MM-DD]/[slug].md`.
+- **Tarefas agendadas MCP** — nada de agendamento automático vem embutido. Configure um lembrete recorrente de calendário para rodar os comandos semanais.
 
-The plugin runs end-to-end without either; the integrations are additive.
+O plugin funciona ponta a ponta sem qualquer integração — elas são aditivas.
 
-## Who this is for
+## Para quem é
 
-| Role | Primary use |
+| Papel | Uso principal |
 |---|---|
-| **In-house litigation counsel** | All of it — intake, triage, status, history, briefings |
-| **Associate GC / Deputy GC** | Portfolio oversight, board reporting rollups |
-| **GC** | Quick status on the portfolio, deep dive on any one matter |
+| **Advogado de DJ (contencioso interno)** | Tudo — intake, triagem, status, histórico, briefings |
+| **Coordenador / Head Jurídico** | Visão de portfólio, rollups para diretoria/conselho |
+| **Diretor Jurídico** | Status rápido do portfólio, deep dive em qualquer caso |
+| **Sócio / advogado em sociedade** | Carteira de casos por cliente, status para sócio sênior |
+| **Advogado autônomo / banca pequena** | Caseload pessoal, contrato de honorários, comunicação com cliente |
 
-## First run: cold-start
+## Primeira execução: cold-start
 
-The cold-start interview writes the *house* practice profile — persistent across every matter. Three pillars:
+A entrevista de cold-start escreve o perfil-casa de atuação — persistente em todos os casos. Três pilares:
 
-- **Risk calibration** — appetite, materiality thresholds, reserve/disclosure triggers, settlement authority, insurance profile, severity-likelihood matrix
-- **Landscape** — company, geographies, regulated status, dispute patterns, frequent adversaries, outside counsel bench, internal stakeholders
-- **House style** — board/audit committee memo format, reserve memo format, outside counsel directive style, privilege conventions, escalation norms
+- **Calibração de risco** — apetite, limiares de materialidade, gatilhos de provisão CPC 25 (in-house) / valoração de causa (autônomo), alçada de transação, perfil de seguros, matriz de severidade × probabilidade
+- **Panorama** — empresa/cliente típico, áreas geográficas, status regulatório, padrões de demandas, contrapartes frequentes, bancas externas de referência, stakeholders internos
+- **Estilo da casa** — formato de memo para diretoria/conselho, formato de memo de provisão, estilo de instrução para escritório externo, convenções de sigilo, normas de escalonamento
 
-It offers sensible defaults at each step (e.g., a 3×3 severity-likelihood grid) and keeps everything freeform-editable. If you don't have a written framework yet, this is the thing that forces the articulation.
+Oferece padrões sensatos em cada passo (ex.: matriz 3×3 de severidade-probabilidade) e mantém tudo editável livremente. Se você não tem um framework escrito ainda, esta é a etapa que força a articulação.
 
 ```
 /litigation-legal:cold-start-interview
 ```
 
-Your configuration is stored at `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` and survives plugin updates.
+Sua configuração fica em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` e sobrevive às atualizações do plugin.
 
-## Commands
+## Comandos
 
-| Command | Does |
+| Comando | Função |
 |---|---|
-| `/litigation-legal:cold-start-interview` | Cold-start → writes house `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` |
-| `/litigation-legal:matter-intake` | Uniform intake → writes `matters/[slug]/` + appends to `_log.yaml` |
-| `/litigation-legal:portfolio-status` | Portfolio rollup — risk distribution, upcoming deadlines, stale matters |
-| `/litigation-legal:matter-briefing [slug]` | Deep briefing on one matter — read-ready before a GC or outside counsel call |
-| `/litigation-legal:matter-update [slug]` | Append a dated event to a matter's history; refresh the log's `last_updated` |
-| `/litigation-legal:matter-close [slug]` | Archive a matter out of the active portfolio (retained, not deleted) |
-| `/litigation-legal:demand-intake [title]` | Pre-drafting context gathering for a demand letter (payment / breach / C&D / employment separation / preservation) |
-| `/litigation-legal:demand-draft [slug]` | Draft the letter from intake — runs FRE 408 / privilege gate, outputs `.docx`, writes post-send checklist |
-| `/litigation-legal:demand-received [path]` | Triage an inbound demand letter — options analysis, portfolio cross-check, hand off to matter/demand-intake |
-| `/litigation-legal:subpoena-triage [path]` | Triage a subpoena — classify, scope/burden/privilege, objections framework, compliance plan |
-| `/litigation-legal:legal-hold [slug] [--issue/--refresh/--release/--status]` | Issue, refresh, release, or report holds — writes `.docx` + updates log |
-| `/litigation-legal:chronology [slug]` | Build or update a chronology from declared doc sources + uploads — tagged by significance per matter theory |
-| `/litigation-legal:oc-status` | Draft weekly OC status-request emails across the portfolio; Gmail drafts if MCP available |
-| `/litigation-legal:claim-chart` | Build or review an element chart — patent claim chart (infringement / invalidity / review) or civil element chart (any cause of action or defense) with gap detection |
+| `/litigation-legal:cold-start-interview` | Cold-start → escreve perfil-casa em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` |
+| `/litigation-legal:matter-intake` | Intake padronizado → escreve `matters/[slug]/` + acrescenta ao `_log.yaml` |
+| `/litigation-legal:portfolio-status` | Rollup de portfólio — distribuição de risco, prazos próximos, casos parados |
+| `/litigation-legal:matter-briefing [slug]` | Briefing aprofundado de um caso — pronto para leitura antes de reunião com cliente / sócio / escritório externo |
+| `/litigation-legal:matter-update [slug]` | Acrescenta evento datado ao histórico do caso; atualiza `last_updated` no log |
+| `/litigation-legal:matter-close [slug]` | Arquiva o caso fora do portfólio ativo (mantido, não excluído) |
+| `/litigation-legal:demand-intake [título]` | Coleta de contexto pré-redação de notificação extrajudicial (pagamento / inadimplemento / cessar-e-desistir / rescisão de emprego / preservação documental) |
+| `/litigation-legal:demand-draft [slug]` | Redige a notificação a partir do intake — roda gate de confidencialidade negocial (Lei 13.140/2015) / sigilo, gera `.docx`, escreve checklist pós-envio |
+| `/litigation-legal:demand-received [path]` | Triagem de notificação extrajudicial recebida — análise de opções, cruzamento com portfólio, encaminhamento para criação de caso |
+| `/litigation-legal:subpoena-triage [path]` | Triagem de intimação / ofício / requisição — classifica, analisa escopo/ônus/sigilo, framework de objeções, plano de cumprimento |
+| `/litigation-legal:legal-hold [slug] [--issue/--refresh/--release/--status]` | Emite, renova, libera ou reporta dever de guarda documental — escreve `.docx` + atualiza log |
+| `/litigation-legal:chronology [slug]` | Constrói ou atualiza cronologia a partir das fontes documentais declaradas + uploads — marcada por relevância conforme a tese do caso |
+| `/litigation-legal:oc-status` | Redige e-mails semanais de status pedido ao escritório externo, em todo o portfólio; rascunhos no Gmail se MCP disponível |
+| `/litigation-legal:claim-chart` | Constrói ou revisa matriz de elementos — matriz de patente (infração / nulidade / revisão, sob LPI 9.279/96) ou matriz cível (qualquer causa de pedir ou defesa) com detecção de lacunas |
 
 ## Skills
 
-| Skill | Purpose |
+| Skill | Propósito |
 |---|---|
-| **cold-start-interview** | House practice profile — risk calibration, landscape, style |
-| **matter-intake** | Uniform intake questions; writes matter file + log row |
-| **portfolio-status** | Rollup across the log — risk, deadlines, staleness |
-| **matter-briefing** | Deep read of one matter from its file + history |
-| **matter-update** | Structured event append; updates `last_updated` in log |
-| **matter-close** | Archive semantics; captures outcome |
-| **demand-intake** | Adaptive context gathering for a demand letter — parties, facts, leverage, privilege filters |
-| **demand-draft** | FRE 408 / privilege gate, then drafts `.docx` with `[CITE:___]` placeholders; writes post-send checklist; offers matter creation |
-| **demand-received** | Triage an inbound demand — merit, options, portfolio cross-check |
-| **subpoena-triage** | Classify subpoena, analyze scope/burden/privilege, produce objections framework + compliance plan |
-| **legal-hold** | Issue / refresh / release / status-report on holds; writes `.docx` notice; updates log's `legal_hold` fields |
-| **chronology** | Extract dated events from declared doc sources + uploads; de-dupe; tag significance per matter theory |
-| **oc-status** | Weekly portfolio-wide OC status-request email drafter; markdown + Gmail drafts |
-| **claim-chart** | Patent claim chart (infringement / invalidity / review) or civil element chart (any cause of action or defense). Element-by-element mapping, every cell pin-cited, gap detection. Ships with a cause-of-action template library. |
+| **cold-start-interview** | Perfil-casa — calibração de risco, panorama, estilo |
+| **matter-intake** | Perguntas padronizadas de intake; escreve arquivo do caso + linha no log |
+| **portfolio-status** | Rollup no log — risco, prazos, casos parados |
+| **matter-briefing** | Leitura aprofundada de um caso a partir do arquivo + histórico |
+| **matter-update** | Acréscimo estruturado de evento; atualiza `last_updated` no log |
+| **matter-close** | Arquivamento; captura desfecho |
+| **demand-intake** | Coleta adaptativa de contexto para notificação extrajudicial — partes, fatos, alavanca, filtros de sigilo |
+| **demand-draft** | Gate de confidencialidade negocial / sigilo, depois redige `.docx` com placeholders `[CITE:___]`; escreve checklist pós-envio; oferece criação do caso |
+| **demand-received** | Triagem de notificação recebida — mérito, opções, cruzamento com portfólio |
+| **subpoena-triage** | Classifica intimação/ofício/requisição, analisa escopo/ônus/sigilo, produz framework de objeções + plano de cumprimento |
+| **legal-hold** | Emite / renova / libera / relata dever de guarda; escreve `.docx` de comunicação; atualiza campos `legal_hold` do log |
+| **chronology** | Extrai eventos datados das fontes declaradas + uploads; deduplica; marca relevância conforme tese |
+| **oc-status** | Redator semanal de e-mails de status pedido a escritórios externos, em todo o portfólio; markdown + Gmail drafts |
+| **claim-chart** | Matriz de patente (infração / nulidade / revisão, sob LPI) ou matriz cível (qualquer causa de pedir ou defesa). Mapeamento elemento por elemento, cada célula com citação pinpoint, detecção de lacunas. Vem com biblioteca-modelo de causas de pedir brasileiras. |
 
-## Interactive commands vs. scheduled agents
+## Comandos interativos vs. agentes agendados
 
-The commands above run when you invoke them — for when you're working a matter. The agents below run on a schedule — for what moves while you're not looking:
+Os comandos acima rodam quando você os invoca — para quando você está trabalhando um caso. Os agentes abaixo rodam em cadência — para o que se move enquanto você não está olhando:
 
-| Agent | What it watches | Default cadence |
+| Agente | O que observa | Cadência padrão |
 |---|---|---|
-| **docket-watcher** | Court dockets for matters in the active portfolio — pulls new filings, computes candidate deadlines, cross-references each matter's history and deliverables | Weekly |
+| **docket-watcher** | Modo jurisprudência: monitora mudanças em precedentes (STF/STJ/tribunais) relevantes às suas teses via JusRatio (overruling, novas súmulas, repetitivos); informa quando uma tese muda. Modo andamentos: placeholder — Brasil não tem MCP nativo de PJe / eproc / ESAJ / Projudi; integração com plataformas comerciais (Escavador, Jusbrasil PRO, Astrea, Projuris) é manual. | Semanal |
 
-## How the data is organized
+## Como os dados são organizados
 
 ```
 litigation-legal/
-├── CLAUDE.md                          # HOUSE practice profile — risk, landscape, style
+├── CLAUDE.md                          # Perfil-CASA — risco, panorama, estilo
 ├── matters/
-│   ├── _log.yaml                      # the portfolio ledger (one entry per matter)
-│   └── [matter-slug]/
-│       ├── matter.md                  # matter-specific intake + theory + posture
-│       ├── history.md                 # append-only event log
-│       ├── chronology.md              # advocacy-facing timeline (on demand)
-│       └── legal-hold-v[N].docx       # hold notices (issue, refresh, release)
-├── demand-letters/                    # outbound demands
+│   ├── _log.yaml                      # Ledger do portfólio (uma entrada por caso)
+│   └── [slug-do-caso]/
+│       ├── matter.md                  # Intake específico do caso + tese + posição
+│       ├── history.md                 # Log append-only de eventos
+│       ├── chronology.md              # Cronologia advocatícia (sob demanda)
+│       └── legal-hold-v[N].docx       # Comunicações de dever de guarda (emissão, renovação, liberação)
+├── demand-letters/                    # Notificações extrajudiciais expedidas
 │   └── [slug]/
 │       ├── intake.md
 │       ├── draft-v1.docx
 │       └── checklist.md
-├── inbound/                           # incoming demands, subpoenas, regulator letters
+├── inbound/                           # Notificações recebidas, intimações/ofícios, ofícios de órgãos
 │   └── [slug]/
 │       ├── incoming.[ext]
 │       ├── triage.md
-│       └── response-v1.docx           # if we respond
-└── oc-status/                         # weekly OC status-request drafts
+│       └── response-v1.docx           # Se respondermos
+└── oc-status/                         # Rascunhos semanais de pedido de status ao escritório externo
     └── [YYYY-MM-DD]/
         ├── _summary.md
-        └── [slug].md                  # one email per matter
+        └── [slug].md                  # Um e-mail por caso
 ```
 
-Separate folders because each has a distinct workflow. Matters get tracked in the portfolio; demand letters and inbound items may or may not rise to a matter; OC status drafts are periodic artifacts. When things relate, the `related_matters` field and cross-links in `matter.md` tie them together.
+Pastas separadas porque cada uma tem fluxo distinto. Casos entram no portfólio; notificações e itens recebidos podem ou não virar caso; pedidos de status ao escritório externo são artefatos periódicos. Quando se relacionam, o campo `related_matters` e cross-links em `matter.md` os amarram.
 
-The log is YAML because it's parseable by rollup skills. Per-matter files are markdown because that's where you read and edit. Both are checked into the folder as plain text — nothing proprietary.
+O log é YAML porque é parseável pelas skills de rollup. Arquivos por caso são markdown porque é onde você lê e edita. Ambos são versionáveis em texto puro — nada proprietário.
 
-## Connectors and citation verification
+## Conectores e verificação de citações
 
-**Connect a research tool first — the citation guardrails depend on it.** Without one, every cite is tagged `[verify]` and the reviewer note above each deliverable records that sources weren't verified. The plugin works either way; it just does more of the verification for you when a research tool is connected.
+**Conecte uma ferramenta de pesquisa primeiro — os guardrails de citação dependem dela.** Sem ela, cada citação é marcada `[verificar]` e a nota do revisor acima de cada entregável registra que as fontes não foram verificadas. O plugin funciona de qualquer jeito; ele só faz mais da verificação por você quando há ferramenta de pesquisa conectada.
 
-The legal research connectors in this plugin aren't just data sources — they're the difference between a verified citation and a citation you have to check. A citation retrieved through **CourtListener** (U.S. court opinions, PACER dockets, citation verification), **Trellis** (state trial court dataset — dockets, rulings, verdicts, judge and opposing counsel analytics), **Everlaw** (your eDiscovery projects), or **Aurora** (read-only Consilio ediscovery — every record cited to source) is tagged with its source and can be traced back. A citation from the model's knowledge or from web search is tagged `[verify]` or `[verify-pinpoint]` and should be checked against a primary source before anyone relies on it. The plugin tiers its citations so your verification time goes where it matters.
+Os conectores de pesquisa neste plugin não são apenas fontes de dados — eles fazem a diferença entre uma citação verificada e uma que você precisa checar. Uma citação obtida via **JusRatio** (jurisprudência brasileira — STF, STJ, tribunais estaduais; níveis de autoridade A/B/C/D/E, timeline de decisões, overruling por tema, busca de legislação, informativos) é marcada com a fonte e pode ser rastreada. Uma citação do conhecimento do modelo ou de busca web é marcada `[verificar]` ou `[verificar-pinpoint]` e deve ser conferida contra a fonte primária antes que alguém confie nela. O plugin estratifica as citações para que seu tempo de verificação vá onde importa.
 
-## Integrations
+**Priorize níveis A e B do JusRatio** ao fundamentar: A = vinculante forte (Súmula Vinculante, ADI/ADC/ADPF); B = precedente qualificado (Tema Repetitivo STJ, Repercussão Geral STF).
 
-Ships with the general bucket of connectors in `.mcp.json`:
+## Integrações
 
-- **Slack** — search messages, read channels, find discussions
-- **Google Drive** — search, read, and fetch documents
+Vem com o conjunto geral de conectores em `.mcp.json`:
 
-Designed to be useful with nothing connected. If/when you want to pull from Relativity, DISCO, CLMs, or email, integration skills can be added without changing the core architecture.
+- **Slack** — busca mensagens, lê canais, encontra discussões
+- **Google Drive** — busca, lê e recupera documentos
+- **JusRatio** — jurisprudência brasileira ranqueada por relevância semântica e autoridade
 
-## How it learns
+Projetado para ser útil sem nada conectado. Quando/se quiser puxar do PJe / eproc / ESAJ / Projudi / Escavador / Jusbrasil PRO / Astrea / DMS interno / e-mail, skills de integração podem ser adicionadas sem mudar a arquitetura central. **Não há MCP nativo para sistemas processuais brasileiros (PJe, eproc, ESAJ, Projudi) no momento** — a leitura de andamentos é manual ou via terceiros comerciais.
 
-Your practice profile at `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` isn't static — it improves as you use the plugin. Skills tell you when an output used a default you should tune. You can re-run setup, edit the file directly, or tell a skill to record a new position.
+## Como o plugin aprende
 
-## Notes
+Seu perfil de atuação em `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` não é estático — melhora conforme você usa. As skills avisam quando um output usou um default que você deveria afinar. Você pode re-rodar o setup, editar o arquivo direto ou pedir para uma skill registrar uma nova posição.
 
-- Every skill reads from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` first. If your risk appetite changes or you bring on new outside counsel, update it — don't paper over it in individual matters.
-- `## Company profile` is the first section of `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` by convention. If you run other `-legal` plugins, you can copy it across rather than re-entering the same context.
-- `_log.yaml` is the source of truth for portfolio state. Keep it clean.
-- Matter history is append-only. If something was wrong, note the correction as a new entry — don't edit the past.
-- Closed matters stay in `_log.yaml` (searchable history). `/portfolio-status` filters them out of active rollups by default.
+## Notas
 
-## Inline marker conventions
+- Toda skill lê de `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` primeiro. Se seu apetite ao risco muda ou um novo escritório externo entra na carteira, atualize lá — não maquile no caso individual.
+- `## Company profile` (ou `## Perfil do cliente` para autônomos) é a primeira seção por convenção. Se você roda outros plugins `-legal`, copie para evitar redigitar o mesmo contexto.
+- `_log.yaml` é a fonte da verdade para estado do portfólio. Mantenha limpo.
+- Histórico do caso é append-only. Se algo estava errado, registre a correção como nova entrada — não edite o passado.
+- Casos encerrados ficam em `_log.yaml` (histórico pesquisável). `/portfolio-status` os filtra dos rollups ativos por padrão.
 
-Three markers appear in skill outputs and drafts. They are not disclaimers — they are action items:
+## Convenções de marcas inline
 
-- `[CITE: specific cite needed]` — a legal authority placeholder. Counsel fills or confirms before sending.
-- `[VERIFY: specific fact]` — a factual assertion not yet confirmed to source. Counsel verifies before relying.
-- `[SME VERIFY: specific judgment call]` — a judgment (merit read, significance tag, objection strength, privilege status) that requires subject-matter expert review. SME = licensed attorney qualified in the relevant jurisdiction / area. Used liberally — anything judgment-heavy should carry this.
+Três marcas aparecem em outputs de skill e em minutas. Não são ressalvas — são itens de ação:
 
-A draft or triage with unresolved markers is not final, regardless of how polished it reads.
+- `[CITE: citação específica necessária]` — placeholder para autoridade legal. O advogado preenche ou confirma antes de enviar.
+- `[VERIFICAR: fato específico]` — alegação factual ainda não confirmada à fonte. O advogado verifica antes de confiar.
+- `[SME VERIFICAR: juízo específico]` — juízo (leitura de mérito, marcação de relevância, força de objeção, status de sigilo) que requer revisão de especialista. SME = advogado habilitado na área/jurisdição. Usada liberalmente — qualquer coisa carregada de juízo deve carregar essa marca.
+
+Uma minuta ou triagem com marcas não resolvidas não é final, por mais polida que pareça.
+
+## Provimento OAB 205/2021 — Uso de IA na advocacia
+
+Este plugin é ferramenta de apoio. O Provimento OAB 205/2021 e a Resolução CNJ 332/2020 impõem ao advogado:
+
+- **Dever de revisão**: toda peça gerada com auxílio de IA deve ser revista pelo advogado antes de protocolar/enviar
+- **Transparência com o cliente** sobre uso de IA em peças (quando aplicável conforme contrato)
+- **Vedação de delegar juízo profissional** à máquina — a decisão é sua
+
+Saídas deste plugin são minutas. A responsabilidade profissional, ética e disciplinar permanece integral do advogado habilitado.
 
 ## Testing & QA
-

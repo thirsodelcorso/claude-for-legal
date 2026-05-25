@@ -1,7 +1,7 @@
 {
   "name": "litigation-legal",
   "version": "1.0.2",
-  "description": "Manages the litigation portfolio \u2014 matters, deadlines, holds, demands, outside counsel \u2014 and does the work: claim charts (patent and civil), chronologies, depo prep, privilege logs, brief drafting. Adapts to how you work litigation: in-house, firm, or solo.",
+  "description": "Gerencia o portf\u00f3lio contencioso \u2014 casos, prazos processuais, dever de guarda documental, notifica\u00e7\u00f5es extrajudiciais, escrit\u00f3rios externos \u2014 e executa o trabalho: matrizes de elementos (c\u00edvel e de propriedade industrial), cronologias, prepara\u00e7\u00e3o de oitivas, rol de documentos sigilosos, reda\u00e7\u00e3o de pe\u00e7as. Adapta-se ao seu modo de litigar: departamento jur\u00eddico interno, sociedade de advogados ou advogado aut\u00f4nomo. Calibrado para o ordenamento brasileiro (CF/88, CPC 2015, CLT, CDC, LPI, LGPD, EAOAB).",
   "author": {
     "name": "Anthropic"
   }

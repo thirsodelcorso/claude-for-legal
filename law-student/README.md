@@ -1,16 +1,16 @@
-# Law Student Plugin
+# Plugin Estudante de Direito (Brasil)
 
-Learning mode, not answer mode. Socratic drilling that asks YOU questions and pushes back on sloppy reasoning. Case briefing, outline building, flashcards, IRAC grading, cold-call prep, writing feedback that never rewrites for you, and exam forecasting from past professor exams. Calibrated to you — your classes, your bar jurisdiction, whether you want to be drilled or scaffolded.
+Modo aprendizado, não modo resposta. Treino socrático que faz VOCÊ perguntas e te empurra quando o raciocínio está frouxo. Fichamento de julgados, montagem de resumo, flashcards, correção de IRAC, preparação para arguição oral (sustentação, sabatina, chamada de classe), feedback de redação que nunca reescreve por você, e previsão de prova a partir de provas antigas do mesmo professor. Calibrado para você — suas matérias, fase do Exame de Ordem, se quer ser sabatinado ou guiado.
 
-**Every output is a study scaffold, not a model answer. The plugin structures your thinking, drills you Socratically, and flags what you got wrong. It doesn't write the outline, the brief, or the essay for you — that would defeat the purpose. Citations in study materials are tagged for verification.**
+**Cada saída é uma estrutura para estudo, não uma resposta pronta. O plugin estrutura seu raciocínio, te treina socraticamente e marca o que você errou. Ele não escreve o resumo, o fichamento ou a peça para você — isso anularia o propósito. Citações em materiais de estudo são marcadas para verificação contra a fonte.**
 
-## Who this is for
+## Para quem é
 
-Law students. 1L through bar prep.
+Estudantes de Direito — 1º ano da graduação até preparação para 2ª fase OAB.
 
-## First run: cold-start
+## Primeira execução: cold-start
 
-This one's about you, not an org. Your classes, your bar jurisdiction, your learning style — drill-me vs. explain-to-me. Bring materials: past outlines, graded essays, old exams (especially same-professor), MBE sets, syllabi, papers. Ten to twenty items is the target; below that the practice profile is flagged `LIMITED DATA` and downstream skills will be thinner until more is added.
+Esta é sobre VOCÊ, não sobre uma organização. Suas matérias, sua fase do Exame de Ordem, seu estilo de aprendizado — me-sabate vs. me-explique. Traga material: resumos antigos, peças corrigidas em prática, provas passadas (especialmente do mesmo professor), questões da FGV/OAB, ementas, monografias. De 10 a 20 itens é o alvo; abaixo disso o perfil é marcado `DADOS LIMITADOS` e as skills downstream ficam mais finas até você adicionar mais.
 
 ```
 /law-student:cold-start-interview
@@ -18,88 +18,97 @@ This one's about you, not an org. Your classes, your bar jurisdiction, your lear
 
 ## Skills
 
-Every skill is invoked as `/law-student:<skill-name>`.
+Toda skill é invocada como `/law-student:<nome-da-skill>`.
 
-| Skill | Does |
+| Skill | Função |
 |---|---|
-| `/law-student:cold-start-interview` | About-you interview + materials intake — classes, bar, learning style, materials |
-| `/law-student:socratic-drill [subject]` | Socratic drilling — it asks, you answer, it pushes back. Does not give the answer. |
-| `/law-student:case-brief [case]` | Case brief in your preferred format |
-| `/law-student:outline-builder [subject]` | Build or extend an outline in your format from class materials |
-| `/law-student:bar-prep-questions [subject]` | Bar prep questions, MBE or essay — jurisdiction-aware (UBE / NextGen / state-specific), flags majority/UBE vs. your state's rule |
-| `/law-student:flashcards [subject]` | Generate or drill flashcards; Leitner-style buckets; per-subject markdown; `--session <n>` mode |
-| `/law-student:study-plan` | Build or update a long-term study plan — phases, subjects by weakness, adaptive daily schedule from session history |
-| `/law-student:session <subject> <n>` | Focused N-question session on a subject; updates the plan with results |
-| `/law-student:irac-practice` | Grade your IRAC essay — structure, issues, rules, analysis. Tracks patterns across sessions. Never rewrites. |
-| `/law-student:cold-call-prep [case]` | Prep for cold-call — predict professor questions and drill them |
-| `/law-student:legal-writing [path-or-paste]` | Structural feedback on any draft — never rewrites, ever |
-| `/law-student:exam-forecast [class]` | Analyze past exams from same professor; forecast upcoming |
+| `/law-student:cold-start-interview` | Entrevista sobre você + intake de materiais — matérias, fase OAB, estilo de aprendizado, materiais |
+| `/law-student:socratic-drill [matéria]` | Treino socrático — pergunta, você responde, empurra de volta. Não dá a resposta. |
+| `/law-student:case-brief [caso]` | Fichamento de julgado no seu formato preferido (ementa / relatório / voto / dispositivo, ou IRAC, ou híbrido) |
+| `/law-student:outline-builder [matéria]` | Constrói ou expande resumo no seu formato a partir do material de aula |
+| `/law-student:bar-prep-questions [matéria]` | Questões de OAB — 1ª fase objetiva (estilo FGV, 80 questões) ou 2ª fase prático-profissional (peça + 4 discursivas); sinaliza divergência STF / STJ / TST quando há |
+| `/law-student:flashcards [matéria]` | Gera ou treina flashcards; baldes estilo Leitner; markdown por matéria; modo `--session <n>` |
+| `/law-student:study-plan` | Constrói ou atualiza plano de estudo de longo prazo — fases, matérias por fraqueza, agenda diária adaptativa a partir do histórico |
+| `/law-student:session <matéria> <n>` | Sessão focada de N questões em uma matéria; atualiza o plano com resultados |
+| `/law-student:irac-practice` | Corrige seu IRAC — estrutura, identificação de questões, regras, análise. Rastreia padrões entre sessões. Nunca reescreve. |
+| `/law-student:cold-call-prep [caso]` | Prep para arguição oral / chamada de classe / sabatina — antecipa perguntas do professor e treina |
+| `/law-student:legal-writing [path-ou-cole]` | Feedback estrutural em qualquer minuta — nunca reescreve, jamais. Inclui checagem ABNT para monografia/TCC e estrutura de peças brasileiras (petição inicial / contestação / réplica / memoriais / recursos). |
+| `/law-student:exam-forecast [matéria]` | Analisa provas passadas do mesmo professor; prevê padrões da próxima |
 
-## What "learning mode" means
+## O que "modo aprendizado" significa
 
-Several skills here (socratic-drill, case-brief in drill-me mode, cold-call-prep, irac-practice, legal-writing) are deliberately built to *not* give you the answer or write the thing for you. The point is that you learn by doing. If you want an answer or a draft, use a different tool. This plugin is for the struggle.
+Várias skills aqui (socratic-drill, case-brief em modo me-sabate, cold-call-prep, irac-practice, legal-writing) são deliberadamente construídas para *não* te dar a resposta nem escrever o que precisa fazer. O ponto é que você aprende fazendo. Se quer resposta ou minuta, use outra ferramenta. Este plugin é para o esforço.
 
-**legal-writing is the strictest.** It reads your draft and tells you what's weak, but does not rewrite. Asking it to rewrite will return a polite refusal plus an offer of more specific structural feedback. This is a feature.
+**legal-writing é o mais estrito.** Lê sua minuta e diz o que está fraco, mas não reescreve. Pedir reescrita retorna recusa polida + oferta de feedback estrutural mais específico. Isso é feature.
 
-**outline-builder and case-brief follow the same rule in a softer form.** Outline builder scaffolds — topic tree, sub-topic slots, case placeholders — and asks Socratic questions as you fill the rules from your own notes and casebook. It won't generate a populated outline from a syllabus alone. Case brief works the same way in every mode (drill-me and explain-to-me both): the skill gives the template and pushes back on what you wrote; it doesn't brief the case for you. If you paste the case text, it can extract the court's own language into the slots — that's pointing at the source, not writing for you.
+**outline-builder e case-brief seguem a mesma regra em forma mais branda.** Outline-builder esqueletiza — árvore de tópicos, slots de subtópicos, placeholders de jurisprudência — e faz perguntas socráticas conforme você preenche as regras com suas próprias anotações e o manual doutrinário (Tartuce / Gonçalves / Marinoni / Didier / etc.). Não gera resumo populado só a partir da ementa do curso. Case-brief funciona igual em todo modo (me-sabate e me-explique): a skill dá o template e empurra sobre o que você escreveu; não ficha o julgado por você. Se você cola o texto do acórdão, ela extrai a linguagem do próprio tribunal para os slots — isso é apontar a fonte, não escrever por você.
 
-## Academic integrity
+## Integridade acadêmica e ética estudantil
 
-Before using this plugin on any graded work — take-home exams, graded writing assignments, journal notes, papers — check your school's honor code and your professor's syllabus policy on AI tools. Many schools prohibit or restrict AI use on graded work, and the rules vary by course and professor. This plugin is designed for study and practice; using it where your school prohibits it is an honor code violation, and the consequences are yours, not the tool's. When in doubt, ask your professor in writing.
+Antes de usar este plugin em qualquer trabalho avaliado — prova com consulta, monografia/TCC, artigo para periódico, prática jurídica supervisionada — **confira o código de ética da sua instituição e a política do professor sobre uso de IA**. Muitas faculdades brasileiras estão ainda formando regras; algumas proíbem ou restringem IA em trabalhos avaliados, e a regra varia por curso e professor. Este plugin é para estudo e prática; usá-lo onde a sua escola proíbe é violação ética estudantil, e a consequência é sua, não da ferramenta. Na dúvida, pergunte ao professor por escrito.
 
-The learning-mode skills here (socratic-drill, irac-practice, legal-writing, cold-call-prep) are deliberately designed to not give you the answer or write the thing for you — that's the pedagogy. It's also the design assumption behind treating some permitted uses (unassisted-looking practice drilling) differently from prohibited ones (ghostwriting a graded memo). Don't work around the guardrails.
+Adicionalmente, mesmo em estudo livre, vale o Provimento OAB 205/2021: como futuro advogado, comece a internalizar agora o dever de revisão crítica do que IA produz. Saída de IA tratada como verdade revelada é caminho para erro material em peça real depois.
 
-## Confidence markers
+As skills modo-aprendizado aqui (socratic-drill, irac-practice, legal-writing, cold-call-prep) são deliberadamente projetadas para não te dar a resposta nem escrever por você — isso é a pedagogia. É também o pressuposto de tratar diferentemente usos permitidos (treino com cara de não-assistido) de proibidos (ghostwriting de memorando avaliado). Não burle os guardrails.
 
-Content-generating skills flag their confidence inline. A rule statement or card without a marker is something the skill is confident on (but still not a substitute for your own source-checking before an exam). Markers used across the plugin:
+## Trabalho real com cliente (NPJ / Defensoria / clínica de prática)
 
-- `[VERIFY: claim — check source]` — stated as likely correct, but you should confirm against your outline, casebook, prep course, or the primary source before relying on it. Used liberally in bar-prep-questions, case-brief, flashcards, legal-writing, irac-practice.
-- `[UNCERTAIN: specific reason]` — the skill is not confident on this specific call (minority rule, debatable issue-spot, jurisdiction the skill doesn't know well). Make your own judgment; check the source.
-- `[GAP — fill from class notes]` — outline-builder marker for a topic where the skill has no reliable source and won't invent a rule. You fill it from your notes.
-- `[NEEDS CASES — rule stated but no illustrating case]` — outline-builder marker where the rule is there but the case illustration is missing.
-- `[CHECK CLASS NOTES — professor may have emphasized something here]` — outline-builder marker for areas where professor-specific emphasis matters and the skill can't know it.
-- `[EXCEPTION UNCLEAR — casebook mentions an exception, find the rule]` — outline-builder marker for a known exception with unresolved detail.
-- `[UNCERTAIN — framing]` — exam-forecast marker noting that a forecast is a weighting for study time, not a prediction.
+Se você atua em **Núcleo de Prática Jurídica (NPJ)**, **escritório-escola**, **Defensoria estagiando** ou **clínica de prática jurídica**, este plugin **não é o lugar para atendimento real**. Use o `legal-clinic` (quando adaptado para BR) ou trabalhe sob supervisão direta do advogado/professor responsável — o trabalho real exige sigilo profissional, registro em sistema institucional e responsabilidade ética que este plugin de estudo não cobre.
 
-Trust the flags more than the absence of flags — an unflagged rule is something the skill is confident on, but exam prep still demands source-checking.
+**Regra do caso real (vale para todos):** se uma pergunta migra de hipótese de estudo para fato real com cliente identificável, o plugin pausa e redireciona — alunos de NPJ/clínica para o fluxo institucional aprovado; indivíduos com problema jurídico próprio para a OAB Seccional, Defensoria Pública do estado, ou serviço de assistência judiciária. Não cole fato real de cliente em ferramenta de estudo.
 
-## Connectors and citation verification
+## Marcas de confiança
 
-**Connect a research tool first — the citation guardrails depend on it.** Without one, every cite is tagged `[verify]` and the reviewer note above each deliverable records that sources weren't verified. The plugin works either way; it just does more of the verification for you when a research tool is connected.
+Skills que geram conteúdo sinalizam sua confiança inline. Uma regra ou cartão sem marca é algo em que a skill está confiante (mas ainda não substitui sua checagem na fonte antes da prova). Marcas usadas no plugin:
 
-The legal research connectors in this plugin aren't just data sources — they're the difference between a verified citation and a citation you have to check. A citation retrieved through **CourtListener** (U.S. court opinions, PACER dockets, citation verification) or **Descrybe** (primary-law search, citation treatment, quoted-language verification) is tagged with its source and can be traced back. A citation from the model's knowledge or from web search is tagged `[verify]` or `[verify-pinpoint]` and should be checked against a primary source before anyone relies on it. The plugin tiers its citations so your verification time goes where it matters.
+- `[VERIFICAR: alegação — checar fonte]` — afirmado como provavelmente correto, mas você deveria confirmar contra seu resumo, manual doutrinário, cursinho ou a fonte primária antes de confiar. Usado liberalmente em bar-prep-questions, case-brief, flashcards, legal-writing, irac-practice.
+- `[INCERTO: razão específica]` — a skill não está confiante neste ponto (regra minoritária, questão controvertida, jurisdição/área que a skill não domina). Faça seu próprio juízo; cheque a fonte.
+- `[LACUNA — preencher da aula]` — marca do outline-builder para tópico em que a skill não tem fonte confiável e não inventa regra. Você preenche do seu material.
+- `[FALTA JURISPRUDÊNCIA — regra posta sem caso ilustrativo]` — marca onde a regra existe, mas falta julgado paradigmático.
+- `[CHECAR AULA — professor pode ter enfatizado algo aqui]` — marca para áreas onde ênfase específica do professor importa e a skill não pode saber.
+- `[EXCEÇÃO POUCO CLARA — manual menciona exceção, achar a regra]` — marca para exceção conhecida com detalhe não resolvido.
+- `[INCERTO — enquadramento]` — marca da exam-forecast notando que previsão é peso para tempo de estudo, não predição.
 
-## Storage
+Confie nas marcas mais do que na ausência delas — uma regra sem marca é algo em que a skill está confiante, mas a prova ainda exige checagem na fonte.
 
-Your practice profile is stored at `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` and survives plugin updates. Everything else is in your working directory:
+## Conectores e verificação de citações
+
+**Conecte uma ferramenta de pesquisa primeiro — os guardrails de citação dependem dela.** Sem ela, cada citação é marcada `[verificar]` e a nota do revisor (você) acima de cada entregável registra que as fontes não foram verificadas. O plugin funciona sem; ele só faz mais da verificação por você quando há ferramenta conectada.
+
+Os conectores neste plugin não são só fontes de dados — fazem diferença entre citação verificada e citação para checar. Uma citação via **JusRatio** (jurisprudência brasileira — STF, STJ, tribunais estaduais; níveis de autoridade A/B/C/D/E) é marcada com a fonte e rastreável. Uma citação do conhecimento do modelo ou de busca web é marcada `[verificar]` e deve ser checada contra fonte primária (manual doutrinário atualizado, vade mecum, sítio oficial do tribunal) antes que você confie. O plugin estratifica para seu tempo de verificação ir onde importa.
+
+**Para questões da 1ª fase OAB**, JusRatio é especialmente útil para confirmar súmulas vigentes e teses repetitivas — vários gabaritos da FGV testam exatamente o conhecimento de Súmula Vinculante e Tema Repetitivo.
+
+## Armazenamento
+
+Seu perfil de estudo fica em `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` e sobrevive às atualizações do plugin. Todo o resto fica no diretório de trabalho:
 
 ```
 law-student/
 ├── flashcards/
-│   └── [subject]/cards.md             # per-subject flashcard decks
+│   └── [matéria]/cards.md             # Decks de flashcards por matéria
 ├── irac-sessions/
-│   └── [student]/
-│       ├── [date]-[topic].md          # individual session feedback
-│       └── tracker.md                 # cross-session pattern tracking
+│   └── [aluno]/
+│       ├── [data]-[tópico].md         # Feedback de sessão individual
+│       └── tracker.md                 # Rastreamento de padrões entre sessões
 ├── writing-feedback/
-│   └── [student]/
-│       ├── [date]-[assignment].md     # individual session feedback
-│       └── tracker.md                 # cross-session pattern tracking
+│   └── [aluno]/
+│       ├── [data]-[trabalho].md       # Feedback de sessão individual
+│       └── tracker.md                 # Rastreamento de padrões entre sessões
 └── exam-forecasts/
-    └── [class]/
-        └── forecast-[YYYY-MM-DD].md   # versioned forecasts
+    └── [matéria]/
+        └── forecast-[YYYY-MM-DD].md   # Previsões versionadas
 ```
 
+## Como o plugin aprende
+
+Seu perfil de estudo em `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` não é estático — melhora conforme você usa. As skills te avisam quando um output usou um default que você deveria afinar. Você pode re-rodar o setup, editar o arquivo direto ou pedir para uma skill registrar uma nova posição.
+
+## Notas
+
+- Me-sabate vs. me-explique é definido no cold-start; troque por sessão se quiser.
+- Fichamentos e resumos usam SEU formato. Se você tem resumos existentes, aponte o cold-start para eles.
+- Bar-prep mira suas matérias fracas a partir de `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`. Vai voltar nelas.
+- Toda skill que gera conteúdo marca quando está incerta. Confie nas marcas mais que na ausência delas — regra sem marca é algo em que estou confiante; cheque a fonte mesmo assim antes da prova.
+
 ## Testing & QA
-
-
-## How it learns
-
-Your study profile at `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` isn't static — it improves as you use the plugin. Skills tell you when an output used a default you should tune. You can re-run setup, edit the file directly, or tell a skill to record a new position.
-
-## Notes
-
-- Drill-me vs. explain-to-me is set at cold-start; switch per session.
-- Case briefs and outlines use YOUR format. If you have existing outlines, point cold-start at them.
-- Bar prep targets your weak subjects from ~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md. It will keep coming back to them.
-- Every content-generating skill flags when it's uncertain. Trust the flags more than the absence of flags — an unflagged rule is something I'm confident on; check your source anyway before an exam.

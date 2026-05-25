@@ -71,18 +71,18 @@
     },
     {
       "name": "litigation-legal",
-      "displayName": "Litigation Legal",
+      "displayName": "Contencioso (Brasil)",
       "source": "./litigation-legal",
-      "description": "Manages the litigation portfolio — matters, deadlines, holds, demands, outside counsel — and does the work: claim charts (patent and civil), chronologies, depo prep, privilege logs, brief drafting. Adapts to how you work litigation: in-house, firm, or solo.",
+      "description": "Gerencia o portfólio contencioso — casos, prazos processuais, dever de guarda documental, notificações extrajudiciais, escritórios externos — e executa o trabalho: matrizes de elementos (cível e de propriedade industrial), cronologias, preparação de oitivas, rol de documentos sigilosos, redação de peças. Adapta-se ao seu modo de litigar: departamento jurídico interno, sociedade de advogados ou advogado autônomo. Calibrado para o ordenamento brasileiro (CF/88, CPC 2015, CLT, CDC, LPI, LGPD, EAOAB).",
       "author": {
         "name": "Anthropic"
       }
     },
     {
       "name": "law-student",
-      "displayName": "Law Student",
+      "displayName": "Estudante de Direito (Brasil)",
       "source": "./law-student",
-      "description": "Drills Socratically, briefs cases, builds outlines, runs bar prep sessions tuned to your jurisdiction, grades IRAC practice, and plans the study schedule — without ever writing it for you.",
+      "description": "Treina pelo método socrático, faz fichamento de julgados, monta resumos, roda preparação para OAB sintonizada com a fase do exame (1ª fase FGV objetiva ou 2ª fase prático-profissional), corrige prática de IRAC e estrutura de peças brasileiras, prepara você para arguição oral (sustentação oral / sabatina / chamada de classe) e planeja seu cronograma — sem nunca escrever por você. Calibrado para a graduação brasileira (1º ao 5º ano), Exame de Ordem e doutrina nacional de referência.",
       "author": {
         "name": "Anthropic"
       }
