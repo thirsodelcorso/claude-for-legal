@@ -1,32 +1,39 @@
-# Company Profile
+# Perfil da Unidade / Pessoa Jurídica / Pessoa Física
 
-*Shared by all Claude for Legal plugins. The first plugin you set up writes this; the rest read it.
-Edit directly or re-run any plugin's `/cold-start-interview` to update.*
+*Compartilhado por todos os plugins Claude for Legal. O primeiro plugin que
+você configura escreve este arquivo; os demais leem. Edite diretamente ou
+rode `/cold-start-interview` de qualquer plugin para atualizar.*
 
-**Practice setting:** [Solo/small firm | Midsize/large firm | In-house | Government/legal aid/clinic]
-**Name:** [Company or firm name]
-**Industry:** [What the company does / the firm's primary practice areas]
-**What we sell / deliver:** [Products, services, who to — or "N/A, law firm"]
-**Size:** [Employee count / lawyers / relevant headcount]
+**Tipo de atuação:** [Defensoria Pública (unidade) | Núcleo de Prática Jurídica (NPJ) | Solo / pequeno escritório | Médio / grande escritório | In-house (departamento jurídico) | Governo / fazenda pública | Outro]
+**Nome:** [Nome da unidade da Defensoria, do NPJ, do escritório, da empresa, ou seu nome se solo]
+**Atividade ou área de atuação principal:** [O que faz a unidade / NPJ / escritório / empresa. Para Defensoria: áreas atendidas pela unidade — Família, Consumidor, Saúde, BPC, etc.]
+**O que vende / entrega:** [Produtos, serviços, para quem — ou "N/A, atuação institucional gratuita (DP/NPJ)" / "N/A, escritório de advocacia"]
+**Porte:** [Quantidade de membros (DP), de estagiários(as), de advogados(as), de empregados(as) — o que for relevante]
 
-## Geographic and regulatory footprint
+## Footprint geográfico e regulatório
 
-**Jurisdictions we operate in:** [e.g., US (CA, NY, TX), UK, EU (DE, FR), AU, SG]
-**Primary jurisdiction:** [Where the bulk of work happens]
-**Regulators we're subject to:** [SEC, FTC, ICO, EDPB, ASIC, OAIC, etc. — only what applies]
-**Open regulatory matters:** [or none]
+**Jurisdições em que atuamos:** [ex.: AM (Capital de Manaus, Itacoatiara, Parintins), PA, todos os estados via DPU, etc.]
+**Comarca / circunscrição primária:** [Onde fica o grosso do trabalho]
+**Varas atendidas (se Defensor / vara específica):** [ex.: 1ª e 12ª Varas dos JECs Cíveis + 19ª e 20ª Varas Cíveis Comuns, todas da Capital de Manaus]
+**Resolução de criação / atribuição (se Defensor):** [ex.: Resolução 004/2019 DPEAM]
+**Reguladores / órgãos de fiscalização aos quais nos submetemos:** [Corregedoria-Geral da DP, Conselho Superior, CNJ, OAB Seccional, ANS, ANPD, RFB, CVM, Bacen — só o que se aplica]
+**Matérias regulatórias em curso:** [ou "nenhuma"]
 
-## Risk posture
+## Postura de risco / atuação
 
-**Overall risk appetite:** [Conservative / middle / aggressive]
-**What keeps us up at night:** [The thing that would be a very bad day]
-**The question leadership always asks:** [or not known yet]
+**Apetite geral ao risco:** [Conservador / médio / agressivo. Para Defensoria: prioridade humanitária / efetividade do direito do assistido / construção de tese repetitiva]
+**O que tira o sono da equipe:** [A coisa que seria um dia muito ruim]
+**A pergunta que a coordenação / chefia sempre faz:** [ou "ainda não sabemos"]
 
-## Key people
+## Pessoas-chave
 
-**GC / Head of Legal:** [Name]
-**Escalation chain:** [Name → Name → Name, or "set per plugin"]
+**Defensor(a) Público(a)-Geral / Coordenador(a) / Diretor(a) Jurídico(a) / Sócio(a) Coordenador(a):** [Nome]
+**Cadeia de escalonamento:** [Nome → Nome → Nome, ou "definida por plugin"]
+**Contato com o(a) Defensor(a)-Supervisor(a) / Coordenador(a) da unidade:** [Quando aplicável]
 
 ---
 
-*Per-plugin practice profiles (playbooks, review frameworks, house style, matter workspaces) live alongside this file in each plugin's folder. This file holds the facts that are true regardless of which plugin you're using.*
+*Os perfis específicos de cada plugin (playbooks, frameworks de revisão,
+estilo da casa, workspaces de caso) vivem junto deste arquivo na pasta de
+cada plugin. Este arquivo guarda os fatos que são verdadeiros
+independentemente de qual plugin você está usando.*

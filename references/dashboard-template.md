@@ -1,19 +1,19 @@
-# Dashboard Template
+# Template de Dashboard
 
-*Referenced by the Dashboard offer guardrail. Keep dashboards simple and consistent — the value is speed of comprehension, not visual polish.*
+*Referenciado pelo guardrail de Oferta de Dashboard. Mantenha dashboards simples e consistentes — o valor é velocidade de compreensão, não polidez visual.*
 
-## Structure (top to bottom)
+## Estrutura (topo a base)
 
-1. **Title and metadata.** What this is, when it was generated, what it covers. One line.
-2. **Summary stats.** The counts that matter, color-coded. "40 findings: 🔴 3 blocking · 🟠 8 high · 🟡 15 medium · 🟢 14 low — 6 due this week." This is the most valuable line. Make it scannable.
-3. **The reviewer note.** Same one-block format as any output. Sources, scope, flags, before-relying. Dashboards don't skip the safety metadata.
-4. **Chart(s).** One or two max. Pick the one that shows the shape:
-   - **Risk distribution** (bar): counts by severity. Use for findings, issues, flags.
-   - **Category breakdown** (pie or stacked bar): counts by type. Use for OSS licenses, contract types, matter categories.
-   - **Timeline** (Gantt-lite or sorted table): dates in order. Use for renewal registers, deadline trackers, closing checklists.
-   - Never more than two. A dashboard with five charts is a report, and reports are harder to read than the table.
-5. **The table.** Sortable, filterable, color-coded by severity/status. Columns: the ones that were in the original output, trimmed to what fits on a screen. Put a "details" or "notes" column last — it's the one that gets truncated.
-6. **The decision tree.** Same options as the text output. "What next?"
+1. **Título e metadados.** O que é, quando foi gerado, o que cobre. Uma linha.
+2. **Estatísticas-sumário.** As contagens que importam, color-coded. "40 achados: 🔴 3 bloqueantes · 🟠 8 altos · 🟡 15 médios · 🟢 14 baixos — 6 com prazo nesta semana." É a linha mais valiosa. Faça-a escaneável.
+3. **A nota do revisor.** Mesmo formato de um bloco como qualquer output. Fontes, escopo, flags, antes-de-confiar. Dashboards não pulam a metadata de segurança.
+4. **Gráfico(s).** Um ou dois no máximo. Escolha o que mostra o formato:
+   - **Distribuição de risco** (barra): contagens por severidade. Use para achados, issues, flags.
+   - **Breakdown por categoria** (pizza ou barra empilhada): contagens por tipo. Use para licenças OSS, tipos de contrato, áreas de atuação, varas atendidas.
+   - **Timeline** (Gantt-lite ou tabela ordenada): datas em ordem. Use para controle de prazos do CPC, registros de renovação, checklist de fechamento, agenda de audiências.
+   - Nunca mais de dois. Um dashboard com cinco gráficos é um relatório, e relatórios são mais difíceis de ler que a tabela.
+5. **A tabela.** Ordenável, filtrável, color-coded por severidade/status. Colunas: as que estavam no output original, recortadas para o que cabe em uma tela. Coloque "detalhes" ou "notas" como última coluna — é a que é truncada.
+6. **A árvore de decisão.** Mesmas opções do output em texto. "Próximo passo?"
 
 ## Rendering by surface
 

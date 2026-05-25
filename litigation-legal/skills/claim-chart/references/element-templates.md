@@ -1,447 +1,455 @@
-# Cause-of-Action Element Templates
+# Matriz de Teses e Elementos — Direito Brasileiro
 
-Baseline element lists for common civil causes of action and affirmative defenses. **These are a baseline, not the controlling law.** The elements in the user's jurisdiction — as stated in the pattern jury instruction (CACI in California, NYPJI in New York, the federal circuit's pattern charge, or a state-specific pattern) or the governing statute — control. Always confirm before mapping.
+Lista-base de elementos para causas de pedir e defesas recorrentes no
+contencioso cível brasileiro, com ênfase na atuação da Defensoria Pública
+estadual (varas cíveis comuns + JECs pela Lei 9.099/95) e na advocacia
+de pequenas causas em geral.
 
-Every template here says which source the baseline came from. The `_elements` sheet in the chart should record which template was used and the jurisdiction-specific source the user confirmed.
+**Estes elementos são baseline, não a lei controlante.** A redação do
+dispositivo legal vigente no momento, a súmula ou repetitivo aplicável, e a
+jurisprudência consolidada do STF/STJ/tribunal local **controlam** sobre
+qualquer enunciado aqui. Sempre confirme antes de mapear.
 
----
-
-## How to use
-
-1. Pick the template that matches the pleaded count.
-2. Confirm with the user: "Does your jurisdiction's pattern instruction add, drop, or reword any of these?"
-3. If yes, edit the list before mapping.
-4. Record on the `_elements` sheet: template used, pattern instruction or statute consulted, any jurisdiction-specific modifications.
-
-A count that isn't in this library — map from the jury instruction, statute, or complaint allegations directly. This library is not exhaustive; it covers the recurring ones.
-
----
-
-## Contract
-
-### Breach of contract
-
-**Elements (baseline — Restatement (Second) of Contracts; CACI 303):**
-1. Existence of a contract
-2. Plaintiff's performance or excuse for nonperformance
-3. Defendant's breach
-4. Causation (the breach caused harm)
-5. Damages
-
-*Jurisdiction caveat: Some jurisdictions separate contract formation into sub-elements (offer, acceptance, consideration, mutual assent) and require them to be pleaded separately. Statute of frauds may add a writing requirement for certain contract types — not an element of the prima facie case but a defense.*
-
-### Breach of the implied covenant of good faith and fair dealing
-
-**Elements (baseline — Restatement (Second) of Contracts § 205; CACI 325):**
-1. Existence of a contract
-2. Plaintiff did all or substantially all of the things the contract required
-3. All conditions required for defendant's performance occurred
-4. Defendant unfairly interfered with plaintiff's right to receive the benefits of the contract
-5. Plaintiff was harmed by defendant's conduct
-
-*Jurisdiction caveat: Recognized in most states but not an independent tort in New York (limited to insurance context); in California requires a contract and is a separate cause of action distinct from breach of contract itself.*
-
-### Promissory estoppel
-
-**Elements (baseline — Restatement (Second) of Contracts § 90):**
-1. A clear and unambiguous promise
-2. Reasonable and foreseeable reliance by the promisee
-3. Actual reliance to the promisee's detriment
-4. Injustice avoidable only by enforcement of the promise
-
-### Unjust enrichment / quantum meruit
-
-**Elements (baseline — Restatement (Third) of Restitution and Unjust Enrichment):**
-1. A benefit conferred upon the defendant by the plaintiff
-2. Defendant's knowledge of the benefit (some jurisdictions)
-3. Defendant's acceptance and retention of the benefit under circumstances making it inequitable to retain without payment
-
-*Jurisdiction caveat: The elements and availability vary significantly — some jurisdictions require the absence of an adequate legal remedy; some do not recognize unjust enrichment as a standalone claim when a valid contract governs the same subject matter.*
+Cada template indica a base legal (artigo, súmula, tema repetitivo) e a
+vara típica para o caso na realidade brasileira. A planilha `_elements` do
+chart deve registrar qual template foi usado e qualquer modificação
+jurisdicional confirmada.
 
 ---
 
-## Tort — negligence and related
+## Como usar
 
-### Negligence
+1. Identifique a causa de pedir (ou tese de defesa) com o(a) assistido(a).
+2. Pegue o template que casa.
+3. Confirme: "Há súmula nova ou Tema Repetitivo posterior que altere algum
+   elemento? Há posicionamento divergente do TJAM (ou tribunal local) em
+   relação ao STJ?" — use os MCPs (BNP, CJF, TJAM, JusRatio).
+4. Se sim, edite a lista antes de mapear.
+5. Registre na planilha `_elements`: template usado, súmula/repetitivo
+   conferido, modificações jurisdicionais.
 
-**Elements (baseline — Restatement (Second) of Torts §§ 281, 328A; CACI 400):**
-1. Duty of care
-2. Breach of duty
-3. Actual cause (cause in fact)
-4. Proximate cause (legal cause)
-5. Damages
-
-*Jurisdiction caveat: Contributory vs. comparative negligence regimes affect how the chart works as a defense. Some jurisdictions require physical injury for recovery of emotional distress damages.*
-
-### Negligence per se
-
-**Elements (baseline):**
-1. Defendant violated a statute, ordinance, or regulation
-2. The violation proximately caused the plaintiff's injury
-3. The plaintiff is in the class of persons the statute was designed to protect
-4. The harm is of the type the statute was designed to prevent
-
-### Gross negligence / recklessness
-
-**Elements (baseline):**
-1. Duty of care
-2. An extreme departure from the standard of care
-3. Actual and proximate cause
-4. Damages
-
-*Jurisdiction caveat: Often relevant to defeat contractual limitations of liability and to support punitive damages. Definitions vary meaningfully by jurisdiction.*
+Uma causa de pedir que não está na biblioteca — mapeie diretamente do CC,
+CDC, lei especial ou súmula relevante. Esta biblioteca não é exaustiva;
+cobre as recorrentes na atuação cível da Defensoria.
 
 ---
 
-## Tort — intentional
+## Família e Sucessões
 
-### Fraud / intentional misrepresentation
+### Alimentos (ação de fixação ou revisão)
 
-**Elements (baseline — Restatement (Second) of Torts § 525; CACI 1900):**
-1. Misrepresentation of material fact (or actionable omission)
-2. Knowledge of falsity (scienter)
-3. Intent to induce reliance
-4. Justifiable (or reasonable) reliance
-5. Damages proximately caused by the reliance
+**Elementos:**
+1. Parentesco ou vínculo conjugal/união estável (CC arts. 1.694 e 1.566 IV)
+2. Necessidade do(a) alimentando(a) — provada por documentos socioeconômicos
+3. Possibilidade do(a) alimentante — provada por holerite, IRPF, declaração
+4. Proporcionalidade entre necessidade e possibilidade (binômio CC 1.694 §1º)
 
-*Jurisdiction caveat: Must be pleaded with particularity under Fed. R. Civ. P. 9(b) and most state equivalents. Some jurisdictions distinguish affirmative misrepresentation from omission (actionable only with a duty to disclose).*
+**Base legal:**
+- CC arts. 1.694 a 1.710 (alimentos em geral)
+- Lei 5.478/68 (Lei de Alimentos — rito especial)
+- CPC arts. 528 (cumprimento de sentença alimentar) e 911-913
 
-### Negligent misrepresentation
+**Súmulas/Repetitivos:**
+- Súmula 358 STJ — necessidade de contraditório para exoneração de
+  alimentos quando atingida a maioridade do alimentando.
+- Súmula 277 STJ — alimentos provisórios podem ser fixados de ofício no
+  rito especial.
 
-**Elements (baseline — Restatement (Second) of Torts § 552):**
-1. Misrepresentation of material fact
-2. No reasonable grounds for believing it to be true
-3. Intent to induce reliance (or made in the course of business for guidance of others)
-4. Justifiable reliance
-5. Damages proximately caused
+**Hipossuficiência presumida (assistido pela DP):** sim, Súmula 481 STJ.
 
-*Jurisdiction caveat: Some jurisdictions require a fiduciary or special relationship; others do not. Economic loss rule may bar recovery where loss is purely economic.*
-
-### Fraudulent concealment
-
-**Elements (baseline):**
-1. Concealment or suppression of a material fact
-2. Defendant had a duty to disclose
-3. Intent to defraud (concealing with purpose of inducing reliance)
-4. Plaintiff was unaware and would not have acted as it did with knowledge
-5. Damages
-
-### Tortious interference with contract
-
-**Elements (baseline — Restatement (Second) of Torts § 766; CACI 2201):**
-1. Existence of a valid contract between plaintiff and a third party
-2. Defendant's knowledge of the contract
-3. Defendant's intentional acts designed to induce breach or disruption
-4. Actual breach or disruption
-5. Damages
-
-### Tortious interference with prospective economic advantage
-
-**Elements (baseline — Restatement (Second) of Torts § 766B):**
-1. Existence of an economic relationship with probability of future economic benefit
-2. Defendant's knowledge of the relationship
-3. Intentional, wrongful (independently tortious or unlawful) acts designed to disrupt
-4. Actual disruption
-5. Damages
-
-*Jurisdiction caveat: California and several other states require that the interfering conduct be "independently wrongful" — a separate wrongful act beyond the interference itself.*
-
-### Defamation (libel / slander)
-
-**Elements (baseline — Restatement (Second) of Torts § 558; CACI 1700 series):**
-1. False statement of fact (not opinion)
-2. Publication to a third party
-3. Fault — negligence (private plaintiff, matter of public concern) or actual malice (public figure / public official — *New York Times Co. v. Sullivan*, 376 U.S. 254 (1964))
-4. Damages (per se categories may obviate special damages)
-
-*Jurisdiction caveat: Per se / per quod distinctions vary. Some states require retraction demand as a precondition. Anti-SLAPP statutes in many states change the burden at an early stage.*
-
-### Conversion
-
-**Elements (baseline — Restatement (Second) of Torts § 222A):**
-1. Plaintiff's ownership or right to possession of the property at the time of conversion
-2. Defendant's wrongful act (exercise of dominion inconsistent with plaintiff's rights)
-3. Damages
-
-### Trespass to chattels
-
-**Elements (baseline — Restatement (Second) of Torts §§ 217, 218):**
-1. Plaintiff's possessory interest in the chattel
-2. Defendant's intentional interference with plaintiff's use or possession
-3. Actual damage (dispossession, impairment of condition, deprivation of use)
-
-### Intentional infliction of emotional distress
-
-**Elements (baseline — Restatement (Second) of Torts § 46):**
-1. Extreme and outrageous conduct
-2. Intent to cause, or reckless disregard of the probability of causing, severe emotional distress
-3. Severe emotional distress
-4. Actual and proximate causation
+**Vara típica:** Vara da Família. (No JEC quando a pretensão é só
+revisional de alimentos pequenos e o procedimento simplificado se aplica.)
 
 ---
 
-## Fiduciary / corporate
+### Divórcio (consensual ou litigioso)
 
-### Breach of fiduciary duty
+**Elementos (consensual):**
+1. Casamento válido
+2. Mútuo consentimento (instrumento ou declaração em audiência)
+3. Acordo sobre filhos menores e guarda (se houver) — ou homologação por
+   sentença
+4. Acordo sobre partilha (ou postergação para ação autônoma)
 
-**Elements (baseline):**
-1. Existence of a fiduciary relationship
-2. Breach of a fiduciary duty (duty of care, duty of loyalty, or duty of good faith)
-3. Causation
-4. Damages (or, in equity, unjust enrichment / disgorgement)
+**Elementos (litigioso):**
+1. Casamento válido
+2. Vontade unilateral da parte autora (EC 66/2010 dispensou prazo de
+   separação prévia)
+3. Citação ou homologação de transação
 
-*Jurisdiction caveat: Delaware's framework distinguishes duty of care, duty of loyalty (including good faith), and applies the business judgment rule as a presumption. Entire fairness review applies in conflict transactions. Demand futility / derivative standing rules add significant procedural elements for derivative claims.*
+**Base legal:**
+- CC arts. 1.571 a 1.582 (extinção do casamento)
+- Lei 11.441/07 + CPC arts. 731-734 (divórcio extrajudicial via Tabelionato)
+- EC 66/2010 (dispensa de prazo)
 
-### Aiding and abetting breach of fiduciary duty
+**Hipossuficiência presumida:** sim, Súmula 481 STJ.
 
-**Elements (baseline):**
-1. Existence of a fiduciary duty
-2. Breach of that duty by the fiduciary
-3. Knowing participation in the breach by the defendant
-4. Damages proximately caused
-
----
-
-## Securities
-
-### §10(b) / Rule 10b-5 securities fraud
-
-**Elements (baseline — *Dura Pharmaceuticals, Inc. v. Broudo*, 544 U.S. 336 (2005); *Stoneridge Inv. Partners v. Scientific-Atlanta*, 552 U.S. 148 (2008)):**
-1. Material misrepresentation or omission (omission actionable when there is a duty to disclose)
-2. Scienter (intent to deceive, manipulate, or defraud — or at minimum recklessness)
-3. Connection with the purchase or sale of a security
-4. Reliance (presumed under fraud-on-the-market per *Basic Inc. v. Levinson*, 485 U.S. 224 (1988))
-5. Economic loss
-6. Loss causation (the misrepresentation caused the loss)
-
-*Jurisdiction caveat: PSLRA heightened pleading standards apply in federal court — scienter must be pleaded with particularity giving rise to a strong inference. Class certification requires additional *Halliburton* / *Amgen* analysis.*
-
-### §11 Securities Act
-
-**Elements (baseline):**
-1. Acquisition of a security issued pursuant to a registration statement
-2. Material misrepresentation or omission in the registration statement
-3. Tracing (plaintiff's shares traceable to the allegedly defective registration statement)
-
-*Jurisdiction caveat: Strict liability on the issuer; due diligence defenses for underwriters and directors. Damages are statutorily defined.*
+**Vara típica:** Vara da Família. Extrajudicial via Tabelionato quando há
+consenso e ausência de filhos menores ou incapazes.
 
 ---
 
-## Antitrust
+### Reconhecimento e dissolução de união estável
 
-### Sherman Act § 1 (agreement in restraint of trade)
+**Elementos:**
+1. Convivência pública (CC 1.723)
+2. Convivência contínua e duradoura
+3. Objetivo de constituir família (animus familiae)
+4. Ausência de impedimentos matrimoniais (CC 1.521)
 
-**Elements (baseline):**
-1. Existence of a contract, combination, or conspiracy (concerted action between two or more independent economic actors)
-2. Unreasonable restraint of trade (per se illegal categories or rule-of-reason analysis)
-3. Effect on interstate commerce
-4. Antitrust injury
-5. Damages
+**Base legal:**
+- CC arts. 1.723 a 1.727
+- Lei 9.278/96 (regulamentação da união estável)
+- ADI 4.277 / ADPF 132 (STF reconheceu união estável homoafetiva — vinculante)
+- RE 646.721 e RE 878.694 (STF — direitos sucessórios entre companheiros)
 
-### Sherman Act § 2 (monopolization)
+**Hipossuficiência presumida:** sim.
 
-**Elements (baseline):**
-1. Possession of monopoly power in the relevant market
-2. Willful acquisition or maintenance of that power (as distinct from growth or development as a consequence of a superior product, business acumen, or historic accident)
-3. Antitrust injury
-4. Damages
-
----
-
-## Employment
-
-### Title VII disparate treatment (McDonnell Douglas burden-shifting)
-
-**Prima facie elements (baseline — *McDonnell Douglas Corp. v. Green*, 411 U.S. 792 (1973)):**
-1. Membership in a protected class
-2. Qualification for the position
-3. Adverse employment action
-4. Circumstances giving rise to an inference of discrimination (often: similarly situated employees outside the protected class treated more favorably, or the position filled by someone outside the class)
-
-*Then: burden shifts to defendant to articulate a legitimate nondiscriminatory reason, then back to plaintiff to show pretext. The chart should separate prima facie evidence from pretext evidence.*
-
-### Title VII hostile work environment
-
-**Elements (baseline — *Harris v. Forklift Systems, Inc.*, 510 U.S. 17 (1993)):**
-1. Membership in a protected class
-2. Unwelcome harassment
-3. Harassment based on a protected characteristic
-4. Harassment sufficiently severe or pervasive to alter the conditions of employment and create an abusive working environment
-5. Employer liability (depending on who the harasser was — supervisor under *Faragher/Ellerth*; coworker under *Vance v. Ball State University*, 570 U.S. 421 (2013))
-
-### Title VII retaliation
-
-**Prima facie elements (baseline — *Burlington N. & S. F. R. Co. v. White*, 548 U.S. 53 (2006); *University of Texas Southwestern Med. Ctr. v. Nassar*, 570 U.S. 338 (2013)):**
-1. Protected activity (opposing discrimination or participating in a proceeding)
-2. Materially adverse action (one that would dissuade a reasonable employee from engaging in protected activity)
-3. But-for causal connection between the protected activity and the adverse action
-
-### ADEA disparate treatment
-
-**Elements (baseline — *Gross v. FBL Fin. Servs., Inc.*, 557 U.S. 167 (2009)):**
-1. Plaintiff is 40 or older
-2. Qualified for the position
-3. Adverse employment action
-4. But-for causation — age was the but-for cause of the adverse action (not merely a motivating factor)
-
-### FLSA overtime claim
-
-**Elements (baseline):**
-1. Employer-employee relationship covered by the FLSA (enterprise or individual coverage)
-2. Employee worked more than 40 hours in a workweek
-3. Employer failed to pay time-and-a-half for overtime hours
-4. The employee is non-exempt (exemptions are affirmative defenses)
-
-### Wrongful termination in violation of public policy
-
-**Elements (baseline — varies by state; California *Tameny* formulation representative):**
-1. Employer-employee relationship
-2. Termination (or constructive discharge)
-3. Violation of a fundamental public policy tethered to a statute or constitutional provision
-4. Damages
+**Vara típica:** Vara da Família.
 
 ---
 
-## Trade secret / IP (civil)
+### Guarda de menor (modificação ou regulamentação)
 
-### Trade secret misappropriation (DTSA / UTSA)
+**Elementos:**
+1. Vínculo parental ou parental de fato (avós, tios em casos específicos)
+2. Melhor interesse da criança/adolescente (CF 227 + ECA art. 100 parágrafo
+   único)
+3. Aptidão da parte requerente
+4. Análise psicossocial (quando necessária)
 
-**Elements (baseline — 18 U.S.C. § 1836; UTSA § 1):**
-1. The information qualifies as a trade secret (not generally known; derives economic value from not being generally known)
-2. The owner took reasonable measures to maintain secrecy
-3. Misappropriation — acquisition by improper means, or disclosure / use in breach of a duty to maintain secrecy
+**Base legal:**
+- CC arts. 1.583 a 1.590
+- ECA arts. 33 a 35
+- Lei 13.058/14 (guarda compartilhada como regra)
 
-*Jurisdiction caveat: DTSA requires interstate nexus. UTSA adopted in most states but not New York (which follows common-law Restatement of Torts § 757 approach) or Massachusetts (MUTSA). Preemption of related common-law tort claims varies.*
+**Súmulas:** orientação STJ para guarda compartilhada salvo se contrária
+ao melhor interesse.
 
-### Copyright infringement
-
-**Elements (baseline — 17 U.S.C. § 501):**
-1. Ownership of a valid copyright
-2. Copying of constituent elements of the work that are original
-
-*Jurisdiction caveat: Registration (or preregistration) required before filing infringement suit — *Fourth Estate Public Benefit Corp. v. Wall-Street.com, LLC*, 586 U.S. 296 (2019). Substantial similarity analysis varies by circuit.*
-
-### Trademark infringement (Lanham Act § 32 / § 43(a))
-
-**Elements (baseline — 15 U.S.C. §§ 1114, 1125(a)):**
-1. Plaintiff owns a valid, protectable mark (registration aids; not required for § 43(a))
-2. Defendant's use in commerce of a similar mark
-3. Likelihood of confusion among relevant consumers
-
-*Jurisdiction caveat: Multi-factor likelihood-of-confusion test varies by circuit (Sleekcraft, Polaroid, du Pont, etc.). For patent infringement, route to the patent mode of this skill.*
+**Vara típica:** Vara da Família. Em situação de risco, Vara da Infância.
 
 ---
 
-## Property
+## Saúde Pública (CF art. 196)
 
-### Trespass to land
+### Fornecimento de medicamento pelo SUS
 
-**Elements (baseline — Restatement (Second) of Torts § 158):**
-1. Plaintiff's possession of the land
-2. Defendant's intentional entry (or causing entry of a thing)
-3. Without consent or privilege
+**Elementos:**
+1. Prescrição médica fundamentada (preferencialmente do SUS, mas não
+   exclusivamente)
+2. Hipossuficiência financeira para custear privadamente (declarada;
+   presumida para assistido(a) pela DP)
+3. Imprescindibilidade do medicamento ou tratamento (laudo)
+4. Inexistência de tratamento substituto na RENAME/CEAF (ou demonstração
+   da inadequação do substituto)
 
-### Nuisance (private)
+**Base legal:**
+- CF art. 196 (direito à saúde)
+- Lei 8.080/90 (SUS)
+- Lei 12.401/11 (incorporação de tecnologias pela CONITEC)
 
-**Elements (baseline — Restatement (Second) of Torts § 821D):**
-1. Plaintiff's interest in the use and enjoyment of land
-2. Substantial and unreasonable interference with that use and enjoyment
-3. Caused by the defendant's conduct (intentional or negligent)
-4. Damages
+**Súmulas/Repetitivos vinculantes:**
+- **Tema 793 STF (RE 855.178 RG):** responsabilidade solidária dos entes
+  federados (União, Estado, Município).
+- **Tema 106 STJ (REsp 1.657.156):** requisitos para concessão de
+  medicamento não incorporado ao SUS (laudo, comprovação da inadequação
+  dos medicamentos disponíveis, registro na ANVISA — salvo exceções da Lei
+  14.313/22).
+- **Tema 6 STF (RE 566.471):** medicamento de alto custo — repercussão
+  geral, decisão modulada.
 
----
+**Hipossuficiência presumida:** sim.
 
-## Affirmative defenses (selected)
-
-Defenses have their own elements that the party raising the defense generally must prove. Map them the same way as causes of action — elements, evidence, gap list.
-
-### Statute of limitations
-
-**Elements (baseline):**
-1. The applicable limitations period for the claim
-2. The claim accrued on a specific date (with any discovery-rule or tolling analysis)
-3. The complaint was filed after the period ran
-
-### Laches (equitable defense)
-
-**Elements (baseline):**
-1. Unreasonable delay by the plaintiff in asserting the claim
-2. Prejudice to the defendant caused by the delay
-
-### Equitable estoppel
-
-**Elements (baseline):**
-1. Defendant's conduct or representation
-2. Plaintiff's reliance on it
-3. Detrimental change in plaintiff's position
-4. Injustice if estoppel is not applied
-
-### Waiver
-
-**Elements (baseline):**
-1. Existence of a known right
-2. Voluntary relinquishment of that right (intentional and with knowledge)
-
-### Unclean hands (equitable defense)
-
-**Elements (baseline):**
-1. Inequitable or wrongful conduct by the plaintiff
-2. Conduct directly related to the subject of the claim
-3. Prejudice to the defendant
-
-### Release
-
-**Elements (baseline):**
-1. A valid release agreement
-2. Covering the claims at issue
-3. Supported by consideration (generally)
-4. Executed by a party with authority
-
-### Accord and satisfaction
-
-**Elements (baseline — UCC § 3-311 for negotiable instruments; common law otherwise):**
-1. A bona fide dispute over an unliquidated or disputed claim
-2. Agreement to settle the dispute
-3. Tender of performance in full satisfaction
-4. Acceptance of the tender
-
-### Failure to mitigate damages
-
-**Elements (baseline):**
-1. The plaintiff could have reduced damages by reasonable effort
-2. The plaintiff failed to make that effort
-3. The amount by which damages could have been reduced
-
-### Comparative fault / contributory negligence
-
-**Elements (baseline — jurisdiction-dependent):**
-1. Plaintiff's own negligent conduct
-2. Proximate cause of plaintiff's own injury
-3. (Comparative regimes) apportionment of fault
-
-*Jurisdiction caveat: Pure comparative vs. modified comparative (50% or 51% bar) vs. pure contributory (Alabama, Maryland, North Carolina, Virginia, D.C. — complete bar) — the jurisdiction's regime determines the effect.*
-
-### Assumption of risk
-
-**Elements (baseline):**
-1. Plaintiff's actual knowledge of the risk
-2. Plaintiff's voluntary acceptance of the risk
-3. The injury resulted from that risk
-
-### Failure to exhaust administrative remedies
-
-**Elements (baseline):**
-1. Statute or regulation requires administrative exhaustion
-2. Plaintiff did not complete the required administrative process
-3. No recognized exception (futility, irreparable harm, etc.) applies
+**Vara típica:** Cível comum (não-JEC, pelo valor); ou Justiça Federal se a
+União é única ré.
 
 ---
 
-## Adding a template
+### Fornecimento de leito (UTI, internação)
 
-This library is not exhaustive. When a new cause of action or defense comes up:
-1. Map the elements from the controlling pattern instruction, statute, or Restatement.
-2. If the template is likely to recur across matters, add it here with a citation.
-3. Note the jurisdiction caveat — where the elements vary, say so and give one representative alternative formulation.
+**Elementos:**
+1. Necessidade clínica demonstrada (laudo médico)
+2. Inexistência de leito disponível na rede SUS local
+3. Risco à vida ou agravamento (urgência caracterizada)
+4. Solidariedade entre entes (Tema 793 STF)
 
-Templates are a baseline, not an authority. The controlling pattern instruction or statute always controls.
+**Base legal:** CF 196 + Lei 8.080/90 + Tema 793 STF + Súmula 65 TJAM (se
+houver — verificar súmulas locais).
+
+**Vara típica:** Cível comum, em regra com pedido liminar (CPC 300).
+
+---
+
+### Plano de saúde — recusa de cobertura
+
+**Elementos:**
+1. Existência do contrato vigente
+2. Cobertura contratada (e não excluída em cláusula clara — vide CDC arts.
+   46-47)
+3. Prescrição médica para o tratamento/medicamento
+4. Recusa da operadora (escrita ou ato omissivo equivalente)
+5. Dano moral (frequentemente in re ipsa para recusa abusiva — Súmula 469 STJ)
+
+**Base legal:**
+- Lei 9.656/98 (planos de saúde)
+- CDC (consumidor) — Súmula 469 STJ ("aplica-se o CDC aos contratos de
+  plano de saúde")
+- Súmula 302 STJ (limite temporal de internação é abusivo)
+- Resoluções da ANS
+
+**Súmulas/Repetitivos:**
+- Súmula 469 STJ — CDC se aplica
+- Súmula 302 STJ — vedação a limite temporal
+- Súmula 95 TJAM ou similares locais — verificar
+
+**Hipossuficiência presumida:** sim (na DP, ou hipossuficiência técnica do
+consumidor pelo CDC).
+
+**Vara típica:** JEC se valor até 40 SM; Cível comum acima.
+
+---
+
+## Previdenciário — Benefícios assistenciais e securitários
+
+### BPC/LOAS (Benefício de Prestação Continuada — Lei 8.742/93 art. 20)
+
+**Elementos (pessoa com deficiência ou idoso ≥ 65 anos):**
+1. Idade ≥ 65 anos OU deficiência (impedimento de longo prazo)
+2. Miserabilidade — renda per capita familiar inferior a 1/4 do
+   salário-mínimo (com modulações jurisprudenciais — vide Tema 27 STF)
+3. Não enquadramento em outros benefícios securitários
+4. Cadastro no CadÚnico atualizado
+
+**Base legal:**
+- Lei 8.742/93 (LOAS) art. 20
+- Decreto 6.214/07 (regulamento)
+- Lei 13.146/15 (Estatuto da Pessoa com Deficiência)
+- Lei 14.176/21 (alterações)
+
+**Súmulas/Repetitivos:**
+- **RE 567.985 STF (Tema 27):** miserabilidade pode ser comprovada por
+  outros meios além do critério legal estrito de 1/4 do SM.
+- **REsp 1.355.052 STJ (Tema 640):** termo inicial.
+- Súmula 80 TNU — laudo médico em ação de BPC.
+
+**Hipossuficiência presumida:** sim.
+
+**Vara típica:** Justiça Federal (INSS é réu); JEF se cabível pelo valor.
+Defensoria atua quando há convênio ou ausência de DPU local; senão,
+encaminhar à DPU.
+
+---
+
+### Aposentadoria por invalidez / Auxílio-doença / BPC indeferido
+
+**Elementos:**
+1. Qualidade de segurado (CTPS + CNIS) ou requisitos de BPC
+2. Incapacidade laboral total ou parcial, temporária ou permanente (laudo
+   do INSS + perícia judicial)
+3. Carência cumprida (quando exigida)
+4. Indeferimento administrativo (decisão do INSS) — exigência de
+   prévio requerimento administrativo conforme Tema 350 STF (RE 631.240)
+
+**Base legal:**
+- Lei 8.213/91 + Decreto 3.048/99
+- Tema 350 STF — prévio requerimento administrativo é condição da ação
+
+**Vara típica:** Justiça Federal. JEF se valor ≤ 60 SM.
+
+---
+
+## Consumidor (CDC) — Causas mais comuns no JEC
+
+### Vício do produto ou serviço
+
+**Elementos (vício do produto — CDC art. 18):**
+1. Existência da relação de consumo (consumidor + fornecedor — CDC arts.
+   2º e 3º)
+2. Vício de qualidade ou quantidade do produto
+3. Reclamação ao fornecedor no prazo de garantia (CDC art. 50)
+4. Não solução em 30 dias (regra geral) — pode ser ampliado ou reduzido por
+   acordo respeitado o limite mínimo
+5. Pretensão à substituição / restituição / abatimento (CDC art. 18 §1º)
+
+**Elementos (fato do produto / acidente de consumo — CDC art. 12):**
+1. Defeito do produto (não vício; gera dano além do produto)
+2. Dano (material, moral, à integridade)
+3. Nexo causal entre defeito e dano
+4. Inversão do ônus da prova quando consumidor é hipossuficiente (CDC art.
+   6º VIII)
+
+**Base legal:**
+- CDC arts. 12 a 27
+- Súmula 297 STJ — CDC aplica-se a instituições financeiras
+- Súmula 130 STJ — responsabilidade do estabelecimento por furto em
+  estacionamento
+
+**Hipossuficiência presumida (DP):** sim. Hipossuficiência técnica do
+consumidor (CDC art. 6º VIII) — sim, independente da DP.
+
+**Vara típica:** **JEC** se até 40 SM (valor de alçada da Lei 9.099/95
+art. 3º I). Ius postulandi até 20 SM (Lei 9.099/95 art. 9º).
+
+---
+
+### Cobrança indevida + dano moral (CDC art. 42)
+
+**Elementos:**
+1. Cobrança de quantia indevida (valor a maior, valor já pago, dívida
+   prescrita, etc.)
+2. Repetição em dobro do indevido (CDC art. 42 parágrafo único, com
+   modulação do Tema 929 STJ — Repetitivo 622)
+3. Inscrição em cadastro de inadimplentes sem fundamento (se houver)
+4. Dano moral, frequentemente in re ipsa em caso de inscrição indevida
+   (Súmula 385 STJ — desde que não haja outra inscrição legítima)
+
+**Base legal:**
+- CDC art. 42 (cobrança vexatória)
+- Súmula 385 STJ — inscrição indevida em cadastro
+- Súmula 359 STJ — comunicação prévia obrigatória
+
+**Vara típica:** JEC ou Cível comum.
+
+---
+
+### Recusa de seguro / negativa de pagamento de indenização securitária
+
+**Elementos:**
+1. Existência do contrato vigente
+2. Sinistro coberto (ocorrência, comunicação no prazo, documentação)
+3. Recusa imotivada ou fundada em cláusula abusiva (CDC arts. 46, 51)
+4. Dano (valor da indenização + eventual dano moral pela recusa)
+
+**Base legal:** CC arts. 757 a 802 + CDC + Súmulas STJ específicas
+(Súmula 465, Súmula 632, etc.).
+
+**Vara típica:** JEC se ≤ 40 SM; Cível comum acima.
+
+---
+
+## Locação e Possessória
+
+### Despejo por falta de pagamento (Lei 8.245/91)
+
+**Elementos:**
+1. Existência do contrato de locação
+2. Inadimplência (atraso de aluguel ou encargos)
+3. Falta de purgação da mora (Lei 8.245/91 art. 62 II — prazo de 15 dias
+   após citação)
+
+**Base legal:**
+- Lei 8.245/91 (Lei do Inquilinato) arts. 9º a 14 + 59 a 66
+- CPC subsidiariamente
+
+**Defesa na Defensoria (locatário hipossuficiente):**
+- Pedido de purgação da mora (Lei 8.245 art. 62 II) com depósito do valor
+  + multa + custas + honorários (CPC 85)
+- Discussão de cobrança abusiva (juros, multa, taxa)
+- Decadência do direito de retomada
+- Vício do imóvel (CDC se aplicável + Lei 8.245)
+
+**Vara típica:** Vara Cível com competência específica de locação onde
+houver; Cível comum em geral.
+
+---
+
+### Ação possessória (reintegração / manutenção / interdito proibitório)
+
+**Elementos:**
+1. Posse anterior do(a) autor(a) — provada por documento, testemunha,
+   contas, residência
+2. Esbulho (perda total — reintegração), turbação (perturbação parcial —
+   manutenção), ou ameaça (interdito proibitório)
+3. Data do esbulho/turbação (relevante para procedimento — força nova vs.
+   força velha, CPC 558)
+
+**Base legal:**
+- CPC arts. 554 a 568 (procedimento)
+- CC arts. 1.196 a 1.224 (posse e proteção possessória)
+
+**Defesa em possessória:**
+- Negativa do esbulho/turbação (não houve)
+- Posse anterior melhor do(a) réu(ré) (princípio da melhor posse)
+- Direito do(a) réu(ré) a indenização por benfeitorias (CC art. 1.219)
+- Hipóteses do CC art. 1.210 §2º (legítima defesa, desforço imediato)
+
+**Vara típica:** Cível comum.
+
+---
+
+## Defesas comuns em ação de cobrança
+
+### Defesa em ação monitória
+
+**Elementos da defesa (embargos monitórios — CPC art. 702):**
+1. Prazo de 15 dias úteis a contar da citação (CPC 219 + 702)
+2. Discussão da prova escrita (autenticidade, suficiência)
+3. Discussão do crédito (existência, exigibilidade, valor)
+4. Eventual reconvenção (CPC 702 §6º)
+
+**Base legal:**
+- CPC arts. 700 a 702
+- Súmula 247 STJ — monitória pode embasar-se em cheque prescrito
+
+**Vara típica:** Cível comum.
+
+---
+
+### Defesa em execução fiscal / por título extrajudicial
+
+**Elementos da defesa (embargos à execução — CPC art. 914 a 920):**
+1. Prazo de 15 dias úteis (CPC 915) a contar da juntada da garantia (LEF
+   art. 16 — exige garantia prévia para embargar)
+2. Tese de defesa: nulidade do título, prescrição, pagamento, novação,
+   compensação, excesso de execução
+3. Para hipossuficiente: gratuidade de justiça (CPC 98) — suspende
+   exigibilidade
+
+**Base legal:**
+- CPC arts. 914 a 920 (embargos em geral)
+- Lei 6.830/80 (Lei de Execução Fiscal — para execuções fazendárias)
+
+**Tema sensível para defensor:** prescrição intercorrente em execução
+fiscal (Tema 566 STJ — REsp 1.340.553).
+
+**Vara típica:** Cível comum (execução por título extrajudicial); Justiça
+Federal ou Vara da Fazenda Pública (execução fiscal).
+
+---
+
+## Notas gerais sobre atuação da Defensoria Pública
+
+1. **Hipossuficiência presumida (Súmula 481 STJ).** O(a) assistido(a) pela
+   DP tem hipossuficiência presumida para fins de gratuidade da justiça
+   (CPC art. 98). A presunção é juris tantum; pode ser elidida por prova
+   em contrário, mas o ônus é da contraparte.
+
+2. **Prazo em dobro (CPC art. 186).** Defensor Público tem prazo em dobro
+   para TODAS as manifestações processuais. Aplicável também a estagiário(a)
+   inscrito(a) na OAB e atuando sob direção do(a) Defensor(a).
+
+3. **Sucumbência em causa do(a) assistido(a) (CPC art. 98 §3º).** Os ônus
+   de sucumbência ficam **suspensos** enquanto perdurar a situação de
+   hipossuficiência, podendo ser cobrados se ela alterar-se nos 5 anos
+   seguintes ao trânsito em julgado. Não há renúncia automática.
+
+4. **Honorário sucumbencial em favor da DP.** Quando há sucumbência contra
+   a contraparte, os honorários revertem ao **Fundo da Defensoria**, não
+   ao membro pessoalmente (LC 80/94 + entendimento STJ). Esse argumento
+   deve constar em peças.
+
+5. **Tutela de urgência (CPC 300).** Em casos de saúde, BPC negado a quem
+   tem laudo válido, despejo iminente, alimentos vencidos — pedido de
+   tutela é regra, não exceção. Requisitos: probabilidade do direito +
+   perigo de dano ou risco ao resultado útil.
+
+6. **Audiência de conciliação no CPC (art. 334).** Obrigatória, salvo
+   pedido expresso do(a) autor(a) E do(a) réu(ré). Para o(a) assistido(a)
+   da DP, considerar caso-a-caso se cabe pedido de dispensa.
+
+7. **Provimento OAB 205/2021 + Resolução CNJ 332/2020.** Uso de IA na
+   advocacia (e na DP por simetria) exige revisão crítica obrigatória,
+   responsabilidade ético-disciplinar integral do(a) membro, e
+   transparência com o(a) assistido(a) quando a IA influenciar
+   materialmente o produto. Toda matriz construída por este chart é
+   minuta sujeita à revisão.
