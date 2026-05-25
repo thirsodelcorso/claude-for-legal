@@ -2,7 +2,7 @@
 
 Apoio ao advogado de contencioso para gerenciar um portfólio de casos. O cold-start captura sua calibração de risco, panorama de litigiosidade e estilo da casa — o frame contra o qual cada caso é triado. O intake padronizado transforma novos casos em entradas estruturadas no log e arquivos de histórico por caso. Os rollups de status e briefings aprofundados leem do log.
 
-Construído para advogados que controlam vários casos simultaneamente, a maioria conduzida por escritórios externos (ou por você mesmo, na advocacia autônoma). Este plugin é um parceiro de raciocínio, não um sistema de gestão de processos. Se você usa LegalDesk, Themis, Projuris, Astrea, ADVBOX, LawDesk ou Tikal Tech — isto não substitui. Fica ao lado, como sua camada estruturada de raciocínio.
+Construído para quem controla vários casos simultaneamente: **Defensor(a) Público(a) responsável por unidade com múltiplas varas**, **advogado(a) de DJ corporativo** coordenando escritórios externos, **sócio(a) de banca** ou **advogado(a) autônomo(a)**. Este plugin é um parceiro de raciocínio, não um sistema de gestão de processos. Se você usa Sapiens-DPGU, LegalDesk, Themis, Projuris, Astrea, ADVBOX, LawDesk ou Tikal Tech — isto não substitui. Fica ao lado, como sua camada estruturada de raciocínio.
 
 **Cada saída é uma minuta para revisão do advogado responsável — citada, sinalizada e com travas — não é parecer jurídico.** O plugin executa o trabalho: lê os documentos, aplica seu playbook, identifica os pontos, redige o memorando. Um advogado habilitado revisa, verifica e decide. As citações vêm marcadas por fonte para você saber quais vieram de ferramenta de pesquisa e quais precisam ser checadas. Marcas de sigilo são aplicadas de forma conservadora para nada vazar por acidente. Ações consequenciais — protocolar, enviar, executar — exigem confirmação explícita.
 
@@ -19,7 +19,9 @@ O plugin funciona ponta a ponta sem qualquer integração — elas são aditivas
 
 | Papel | Uso principal |
 |---|---|
-| **Advogado de DJ (contencioso interno)** | Tudo — intake, triagem, status, histórico, briefings |
+| **Defensor(a) Público(a) (membro de unidade)** | Portfólio por vara da atribuição (JEC e/ou Vara Comum), intake do(a) assistido(a), teses repetitivas, prazos do CPC em dias úteis, comunicação ao Defensor Público-Geral em casos específicos |
+| **Defensor(a)-Supervisor(a) de estágio** | Tudo do anterior + supervisão de estagiários(as) (ver também o plugin `legal-clinic`) |
+| **Advogado(a) de DJ (contencioso interno)** | Tudo — intake, triagem, status, histórico, briefings |
 | **Coordenador / Head Jurídico** | Visão de portfólio, rollups para diretoria/conselho |
 | **Diretor Jurídico** | Status rápido do portfólio, deep dive em qualquer caso |
 | **Sócio / advogado em sociedade** | Carteira de casos por cliente, status para sócio sênior |
@@ -29,9 +31,9 @@ O plugin funciona ponta a ponta sem qualquer integração — elas são aditivas
 
 A entrevista de cold-start escreve o perfil-casa de atuação — persistente em todos os casos. Três pilares:
 
-- **Calibração de risco** — apetite, limiares de materialidade, gatilhos de provisão CPC 25 (in-house) / valoração de causa (autônomo), alçada de transação, perfil de seguros, matriz de severidade × probabilidade
-- **Panorama** — empresa/cliente típico, áreas geográficas, status regulatório, padrões de demandas, contrapartes frequentes, bancas externas de referência, stakeholders internos
-- **Estilo da casa** — formato de memo para diretoria/conselho, formato de memo de provisão, estilo de instrução para escritório externo, convenções de sigilo, normas de escalonamento
+- **Calibração de risco** — apetite, limiares de materialidade, gatilhos de provisão CPC 25 (in-house) / valoração de causa (autônomo) / priorização de urgência humanitária e risco de prescrição (Defensor), alçada de transação, perfil de seguros (quando aplicável), matriz de severidade × probabilidade
+- **Panorama** — unidade/empresa/cliente típico, áreas geográficas, varas atendidas (Defensor), status regulatório, padrões de demandas, contrapartes frequentes, bancas externas / núcleos especializados / DPs colaboradoras de referência, stakeholders internos
+- **Estilo da casa** — formato de memo para diretoria/conselho / comunicação ao Defensor Público-Geral, formato de memo de provisão, estilo de instrução para escritório externo / DP colaboradora, convenções de sigilo, normas de escalonamento
 
 Oferece padrões sensatos em cada passo (ex.: matriz 3×3 de severidade-probabilidade) e mantém tudo editável livremente. Se você não tem um framework escrito ainda, esta é a etapa que força a articulação.
 

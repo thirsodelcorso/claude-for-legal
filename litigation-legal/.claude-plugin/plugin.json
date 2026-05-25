@@ -1,7 +1,7 @@
 {
   "name": "litigation-legal",
   "version": "1.0.2",
-  "description": "Gerencia o portf\u00f3lio contencioso \u2014 casos, prazos processuais, dever de guarda documental, notifica\u00e7\u00f5es extrajudiciais, escrit\u00f3rios externos \u2014 e executa o trabalho: matrizes de elementos (c\u00edvel e de propriedade industrial), cronologias, prepara\u00e7\u00e3o de oitivas, rol de documentos sigilosos, reda\u00e7\u00e3o de pe\u00e7as. Adapta-se ao seu modo de litigar: departamento jur\u00eddico interno, sociedade de advogados ou advogado aut\u00f4nomo. Calibrado para o ordenamento brasileiro (CF/88, CPC 2015, CLT, CDC, LPI, LGPD, EAOAB).",
+  "description": "Gerencia o portf\u00f3lio contencioso \u2014 casos, prazos processuais (CPC 2015 art. 219 em dias \u00fateis), dever de guarda documental, notifica\u00e7\u00f5es extrajudiciais e of\u00edcios, escrit\u00f3rios externos ou DPs colaboradoras \u2014 e executa o trabalho: matrizes de teses repetit\u00edvas (BPC/LOAS, sa\u00fade p\u00fablica, consumidor, alimentos, posse, despejo), cronologias, prepara\u00e7\u00e3o de audi\u00eancias de instru\u00e7\u00e3o, rol de documentos sigilosos, reda\u00e7\u00e3o de pe\u00e7as (peti\u00e7\u00e3o inicial JEC pela Lei 9.099/95, peti\u00e7\u00e3o comum CPC 319, contesta\u00e7\u00e3o, recurso inominado, agravo, apela\u00e7\u00e3o). Adapta-se ao seu modo de litigar: Defensor P\u00fablico, departamento jur\u00eddico interno, sociedade de advogados ou advogado aut\u00f4nomo. Calibrado para o ordenamento brasileiro (CF/88, LC 80/94, CPC 2015, Lei 9.099/95, CLT, CDC, CC, LPI, LGPD, EAOAB).",
   "author": {
     "name": "Anthropic"
   }

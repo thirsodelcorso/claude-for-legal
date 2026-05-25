@@ -1,7 +1,7 @@
 {
   "name": "law-student",
   "version": "1.0.2",
-  "description": "Treina pelo m\u00e9todo socr\u00e1tico, faz fichamento de julgados, monta resumos, roda prepara\u00e7\u00e3o para OAB sintonizada com a fase do exame (1\u00aa fase FGV objetiva ou 2\u00aa fase pr\u00e1tico-profissional), corrige pr\u00e1tica de IRAC e estrutura de pe\u00e7as brasileiras, prepara voc\u00ea para argui\u00e7\u00e3o oral (sustenta\u00e7\u00e3o oral / sabatina / chamada de classe) e planeja seu cronograma \u2014 sem nunca escrever por voc\u00ea. Calibrado para a gradua\u00e7\u00e3o brasileira (1\u00ba ao 5\u00ba ano), Exame de Ordem e doutrina nacional de refer\u00eancia.",
+  "description": "Treina pelo m\u00e9todo socr\u00e1tico, faz fichamento de julgados em FIRAC (Fatos / Issue / Regra / An\u00e1lise / Conclus\u00e3o) ou estrutura nativa de ementa/relat\u00f3rio/voto/dispositivo, monta resumos por mat\u00e9ria, roda prepara\u00e7\u00e3o para OAB sintonizada com a fase do exame (1\u00aa fase FGV objetiva com 17 disciplinas ou 2\u00aa fase pr\u00e1tico-profissional por \u00e1rea), prepara voc\u00ea para argui\u00e7\u00e3o oral (sustenta\u00e7\u00e3o oral, sabatina, chamada de classe), corrige estrutura de pe\u00e7as brasileiras e planeja seu cronograma \u2014 sem nunca escrever por voc\u00ea. Calibrado para a gradua\u00e7\u00e3o brasileira (1\u00ba ao 5\u00ba ano), Exame de Ordem, est\u00e1gio em Defensoria P\u00fablica, Minist\u00e9rio P\u00fablico ou Tribunais (sob supervis\u00e3o), e doutrina nacional de refer\u00eancia.",
   "author": {
     "name": "Anthropic"
   }

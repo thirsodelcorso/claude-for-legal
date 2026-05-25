@@ -73,7 +73,7 @@
       "name": "litigation-legal",
       "displayName": "Contencioso (Brasil)",
       "source": "./litigation-legal",
-      "description": "Gerencia o portfólio contencioso — casos, prazos processuais, dever de guarda documental, notificações extrajudiciais, escritórios externos — e executa o trabalho: matrizes de elementos (cível e de propriedade industrial), cronologias, preparação de oitivas, rol de documentos sigilosos, redação de peças. Adapta-se ao seu modo de litigar: departamento jurídico interno, sociedade de advogados ou advogado autônomo. Calibrado para o ordenamento brasileiro (CF/88, CPC 2015, CLT, CDC, LPI, LGPD, EAOAB).",
+      "description": "Gerencia o portfólio contencioso — casos, prazos processuais (CPC 2015 art. 219 em dias úteis), dever de guarda documental, notificações extrajudiciais e ofícios, escritórios externos ou DPs colaboradoras — e executa o trabalho: matrizes de teses repetitívas (BPC/LOAS, saúde pública, consumidor, alimentos, posse, despejo), cronologias, preparação de audiências de instrução, rol de documentos sigilosos, redação de peças (petição inicial JEC pela Lei 9.099/95, petição comum CPC 319, contestação, recurso inominado, agravo, apelação). Adapta-se ao seu modo de litigar: Defensor Público, departamento jurídico interno, sociedade de advogados ou advogado autônomo. Calibrado para o ordenamento brasileiro (CF/88, LC 80/94, CPC 2015, Lei 9.099/95, CLT, CDC, CC, LPI, LGPD, EAOAB).",
       "author": {
         "name": "Anthropic"
       }
@@ -82,16 +82,16 @@
       "name": "law-student",
       "displayName": "Estudante de Direito (Brasil)",
       "source": "./law-student",
-      "description": "Treina pelo método socrático, faz fichamento de julgados, monta resumos, roda preparação para OAB sintonizada com a fase do exame (1ª fase FGV objetiva ou 2ª fase prático-profissional), corrige prática de IRAC e estrutura de peças brasileiras, prepara você para arguição oral (sustentação oral / sabatina / chamada de classe) e planeja seu cronograma — sem nunca escrever por você. Calibrado para a graduação brasileira (1º ao 5º ano), Exame de Ordem e doutrina nacional de referência.",
+      "description": "Treina pelo método socrático, faz fichamento de julgados em FIRAC (Fatos / Issue / Regra / Análise / Conclusão) ou estrutura nativa de ementa/relatório/voto/dispositivo, monta resumos por matéria, roda preparação para OAB sintonizada com a fase do exame (1ª fase FGV objetiva com 17 disciplinas ou 2ª fase prático-profissional por área), prepara você para arguição oral (sustentação oral, sabatina, chamada de classe), corrige estrutura de peças brasileiras e planeja seu cronograma — sem nunca escrever por você. Calibrado para a graduação brasileira (1º ao 5º ano), Exame de Ordem, estágio em Defensoria Pública, Ministério Público ou Tribunais (sob supervisão), e doutrina nacional de referência.",
       "author": {
         "name": "Anthropic"
       }
     },
     {
       "name": "legal-clinic",
-      "displayName": "Legal Clinic",
+      "displayName": "Estágio Supervisionado (Brasil)",
       "source": "./legal-clinic",
-      "description": "Sets up the clinic, onboards students, runs structured intake, tracks deadlines with malpractice-aware caution, and hands off cases at semester end — built within ABA Formal Op. 512.",
+      "description": "Apoia a supervisão de estagiários(as) em campo — Defensoria Pública, núcleos de prática jurídica (NPJ) de faculdade, clínicas de prática real — com intake do(a) assistido(a), redação assistida de peças, FIRAC com lacunas explícitas para o(a) estagiário(a) preencher, fila de revisão do(a) supervisor(a), pedagogia configurável (assist/guide/teach), controle de prazos do CPC 2015 e handoff de turno/semestre. Calibrado para o ordenamento brasileiro (Provimento OAB 205/2021, Código de Ética OAB, LC 80/94 art. 4º §6º, Resolução CSDPGE de estágio).",
       "author": {
         "name": "Anthropic"
       }

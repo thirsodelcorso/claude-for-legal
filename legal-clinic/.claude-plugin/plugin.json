@@ -1,7 +1,7 @@
 {
   "name": "legal-clinic",
-  "version": "1.0.2",
-  "description": "Sets up the clinic, onboards students, runs structured intake, tracks deadlines with malpractice-aware caution, and hands off cases at semester end \u2014 built within ABA Formal Op. 512.",
+  "version": "1.0.3",
+  "description": "Apoia a supervisão de estagiários(as) em campo — Defensoria Pública, núcleos de prática jurídica (NPJ) de faculdade, clínicas de prática real — com intake do(a) assistido(a), redação assistida de peças, FIRAC com lacunas explícitas para o(a) estagiário(a) preencher, fila de revisão do(a) supervisor(a), pedagogia configurável (assist/guide/teach), controle de prazos do CPC 2015 e handoff de turno/semestre. Calibrado para o ordenamento brasileiro (Provimento OAB 205/2021, Código de Ética OAB, LC 80/94 art. 4º §6º, Resolução CSDPGE de estágio).",
   "author": {
     "name": "Anthropic"
   }
