@@ -1,363 +1,363 @@
 ---
 name: cold-start-interview
 description: >
-  Professor's one-time clinic setup — practice areas, jurisdiction, supervision
-  style (formal review queue / configurable flags / lighter-touch), and
-  handbook/rules upload. Writes CLAUDE.md so every other skill and every
-  student who runs /ramp reads from the same clinic context. Use on fresh
-  install, when CLAUDE.md has placeholders, when re-doing setup with --redo,
-  or when re-checking integrations with --check-integrations.
+  Setup único do(a) supervisor(a) — áreas de atuação, vara/comarca, modelo
+  de supervisão (fila formal / flags configuráveis / toque mais leve), e
+  upload de regimento/resoluções/regras locais. Escreve CLAUDE.md para toda
+  outra skill e todo(a) estagiário(a) que rode /ramp ler do mesmo contexto.
+  Use em instalação fresca, quando CLAUDE.md tem placeholders, ao refazer
+  setup com --redo, ou re-checar integrações com --check-integrations.
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
 # /cold-start-interview
 
-1. Check `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`. If populated and no `--redo`, confirm before overwriting.
-2. Run the professor interview below, starting with Part 0 (supervising-attorney role check → ethical preconditions → integration availability). If the user isn't the supervising attorney, stop and redirect.
-3. Seed docs: clinic handbook, filing guides, local court rules, intake form(s), one scrubbed example file.
-4. Key decision: supervision style (formal queue / flags / lighter-touch).
-5. Migration: if a populated CLAUDE.md (no `[PLACEHOLDER]` markers) exists at `~/.claude/plugins/cache/claude-for-legal/legal-clinic/*/CLAUDE.md` but not at the config path, copy it to the config path and show the user what was migrated.
-6. Write `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` including `## Who's using this` and `## Available integrations`. Show supervision choice and practice-area templates for confirmation.
-7. Offer `/legal-clinic:ramp` preview.
+1. Cheque `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`. Se populado e sem `--redo`, confirme antes de sobrescrever.
+2. Rode a entrevista voltada ao(à) supervisor(a) abaixo, começando com Parte 0 (checagem do papel de Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a) → pré-condições éticas → disponibilidade de integração). Se a pessoa não é supervisor(a), pare e redirecione.
+3. Docs-semente: regimento da unidade ou NPJ, resoluções CSDPGE (DP) ou CNE/CES + IES (NPJ), regras locais do TJAM (ou tribunal local), formulário(s) de intake, um exemplo de pasta de caso anonimizada.
+4. Decisão-chave: modelo de supervisão (fila formal / flags / toque mais leve).
+5. Migração: se um CLAUDE.md populado (sem marcadores `[PLACEHOLDER]`) existe em `~/.claude/plugins/cache/claude-for-legal/legal-clinic/*/CLAUDE.md` mas não no caminho config, copie e mostre o que foi migrado.
+6. Escreva `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` incluindo `## Quem está usando` e `## Integrações disponíveis`. Mostre escolha de supervisão e templates por área para confirmação.
+7. Ofereça preview de `/legal-clinic:ramp`.
 
 ```
 /legal-clinic:cold-start-interview
 ```
 
-**`--check-integrations`:** Re-run only the Part 0 integration-availability check (Clio, document storage). Updates `## Available integrations` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` without touching the role, ethical preconditions, supervision style, or practice-area templates. Use after adding or removing an MCP connector.
+**`--check-integrations`:** Re-roda apenas a checagem de disponibilidade de integração da Parte 0 (sistema interno Sapiens-DPGU ou próprio, armazenamento documental, DataJud, MCPs de pesquisa). Atualiza `## Integrações disponíveis` em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` sem tocar no papel, pré-condições éticas, modelo de supervisão ou templates. Use depois de adicionar/remover conector MCP.
 
-When probing: only report ✓ if an MCP tool call actually succeeded. Configured-but-untested connectors should be marked ⚪ with a one-line how-to for confirming. Never report ✓ based on `.mcp.json` declarations alone — that misleads users into thinking something is wired up when it isn't.
+Quando sondando: só reporte ✓ se uma tool MCP efetivamente respondeu com sucesso. Conectores configurados-mas-não-testados devem ser marcados ⚪ com uma linha de "como confirmar". Nunca reporte ✓ baseado só em declarações no `.mcp.json`.
 
 ---
 
-# Cold-Start Interview: Law School Clinic
+# Entrevista Cold-Start: Estágio Supervisionado (DP / NPJ)
 
-## Purpose
+## Propósito
 
-Clinics are structurally capacity-constrained. A supervising professor manages 5–10 students, each carrying a handful of cases while juggling classes, and the whole workforce turns over every semester. The waitlist grows. People give up waiting.
+Unidades de Defensoria Pública e Núcleos de Prática Jurídica (NPJ) são estruturalmente limitados em capacidade. Um(a) Defensor(a)-Supervisor(a) na DP supervisiona alguns(mas) estagiários(as) inscritos(as) na OAB sob LC 80/94 art. 4º §6º; um(a) Professor(a)-Orientador(a) em NPJ supervisiona 5-10 alunos(as) sob Resolução CNE/CES 5/2018 + convênio + regimento da IES. Cada estagiário(a) carrega alguns casos enquanto cumpre disciplinas, e a turma rotaciona a cada termo / semestre. A fila no acolhimento cresce. Pessoas desistem de esperar.
 
-This plugin's job is to cut the time cost of everything *around* the lawyering — intake write-up, first drafts, research starting points, status updates — so the same students and professor serve more clients, and students spend more time on the analysis and strategy that make clinical education worthwhile.
+A função deste plugin é reduzir o custo de tempo de tudo *em volta* da advocacia — intake do(a) assistido(a), primeiras minutas, ponto de partida de pesquisa, atualizações de status — para que a mesma equipe atenda significativamente mais assistidos(as), e para que os(as) estagiários(as) gastem mais tempo na análise e na estratégia que fazem o estágio supervisionado valer a pena.
 
-This interview sets up the clinic context once, so every student who onboards via `/ramp` and every skill that runs afterward is working from the same understanding of how *this* clinic operates.
+Esta entrevista monta o contexto da unidade ou NPJ uma vez, para que cada estagiário(a) que faz onboarding via `/ramp` e cada skill que roda depois trabalhe do mesmo entendimento de como *esta* unidade opera.
 
-**Audience: the supervising professor.** Students don't run this — they run `/ramp`.
+**Audiência: o(a) Defensor(a)-Supervisor(a) (na DP) ou Professor(a)-Orientador(a) (no NPJ).** Estagiários(as) não rodam este setup — rodam `/ramp`.
 
-## Cold-start check
+## Checagem cold-start
 
-Read `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`:
-- **Does not exist** → start the interview.
-- **Contains `<!-- SETUP PAUSED AT: -->`** → greet the user and offer to resume from that section.
-- **Contains `[PLACEHOLDER]` markers but no pause comment** → the template was never completed; offer to start fresh or resume from wherever the placeholders begin.
-- **Populated (no placeholders, no pause comment)** → already configured; skip unless `--redo`.
+Leia `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`:
+- **Não existe** → comece a entrevista.
+- **Contém `<!-- SETUP PAUSED AT: -->`** → cumprimente e ofereça retomar.
+- **Contém `[PLACEHOLDER]` mas sem comentário de pausa** → template nunca completado; ofereça começar do zero ou retomar.
+- **Populado (sem placeholders, sem pausa)** → já configurado; pule salvo `--redo`.
 
-## Check for the shared company profile
+## Checagem do perfil compartilhado da unidade
 
-Look for `~/.claude/plugins/config/claude-for-legal/company-profile.md`.
+Procure `~/.claude/plugins/config/claude-for-legal/company-profile.md`.
 
-- **If it exists:** Read it. Show a one-line confirmation: "You're [name], [practice setting], at [company], [industry], operating in [jurisdictions]. Right? (Or say 'update' to change the shared profile.)" If confirmed, skip the company questions — go straight to the plugin-specific ones.
-- **If it doesn't exist:** You'll be the first plugin this user set up. After the orientation and fork, ask the company questions and write them to the shared profile (per the template at `references/company-profile-template.md` in the plugin root), then continue with the plugin-specific questions. Tell the user: "I've saved your company profile — the other legal plugins will read it and skip these questions."
+- **Se existe:** Leia. Confirme em uma linha: "Você é [nome], [tipo de atuação: Defensoria / NPJ / etc.], em [unidade / IES], atuando em [áreas], comarca [X]. Certo?" Se confirmado, pule perguntas de unidade — vá direto às específicas do plugin.
+- **Se não existe:** Você é o primeiro plugin que esta pessoa configura. Depois da orientação e bifurcação, faça as perguntas de unidade e escreva no perfil compartilhado (per template em `references/company-profile-template.md` na raiz do plugin), depois continue com as perguntas específicas. Diga: "Salvei o perfil — os outros plugins jurídicos vão ler e pular estas perguntas."
 
-The company questions that belong in the shared profile (and should NOT be re-asked if it exists): practice setting, company name, industry, what-you-sell, size, jurisdictions, regulators, risk appetite, escalation names. The plugin-specific questions (playbook positions, review framework, house style, supervision model, etc.) stay per-plugin.
+## Checagem de escopo de instalação
 
-## Install scope check
+Antes da orientação, se o diretório de trabalho está dentro de um projeto (não home), sinalize uma vez:
 
-Before the orientation, if you notice the working directory is inside a project (not the user's home directory), flag it. Say once:
+> **Atenção — parece que este plugin pode estar em escopo de projeto. Só posso ler arquivos em [diretório atual]. Se quiser que eu leia documentos de outros lugares (Downloads, Documentos, Drive), instale em escopo de usuário — vide QUICKSTART.md. Pode continuar com escopo de projeto, mas vai precisar mover arquivos para esta pasta.**
 
-> **Heads up — it looks like this plugin may be project-scoped, which means I can only read files in [current directory]. If you'll want me to read documents from elsewhere (Downloads, Documents, Dropbox), install user-scoped instead — see QUICKSTART.md. You can continue with project scope, but you'll need to move files into this folder.**
+Confirme antes de prosseguir. Se diretório de trabalho *é* o home, pule silenciosamente.
 
-Ask the user to confirm before proceeding: continue with project scope, or pause to reinstall user-scoped. If the working directory *is* the user's home directory, skip this check silently.
+## Antes de começar a entrevista
 
-## Before the interview starts
+Preâmbulo primeiro (3-4 linhas curtas, nada mais):
 
-Show this preamble first (3-4 short lines, nothing more):
-
-> **`legal-clinic` is for supervising attorneys setting up a law school clinic and onboarding students.** Not your area? `/legal-builder-hub:related-skills-surfacer`.
+> **`legal-clinic` é para Defensor(a)-Supervisor(a) de estágio na Defensoria Pública ou Professor(a)-Orientador(a) em Núcleo de Prática Jurídica (NPJ), configurando e fazendo onboarding de estagiários(as).** Não é sua área? `/legal-builder-hub:related-skills-surfacer`.
 >
-> **2 minutes** gets you practice area(s), jurisdiction, and supervision model basics — plus working defaults for client-letter format, IRAC scaffolding, and deadline cadence. **15 minutes** adds your ethical-preconditions record, supervision flag triggers, per-practice-area document templates from your filings, handbook content feeding `/ramp`, local court rules feeding `/draft`, and semester dates.
+> **2 minutos** te dá área(s) de atuação, vara/comarca, e fundamentos do modelo de supervisão — mais defaults razoáveis para formato de carta ao(à) assistido(a), scaffold FIRAC, e cadência de prazos. **15 minutos** adiciona registro das pré-condições éticas, gatilhos de flag de supervisão, templates de documento por área a partir das suas peças, conteúdo do regimento alimentando `/ramp`, regras locais do TJAM (ou tribunal local) alimentando `/draft`, e datas do termo de estágio.
 >
-> Quick or full? (Upgrade any time with `/cold-start-interview --full`.)
+> Rápido ou completo? (Atualize a qualquer momento com `/cold-start-interview --full`.)
 
-## After the user picks quick or full
+## Depois de escolher rápido ou completo
 
-Once the supervising attorney has picked, orient them. Cover, in your own voice:
+Oriente. Cubra, na sua voz:
 
-- **What this plugin maintains:** your clinic profile (practice areas, supervision model, house templates), per-case files (intake, deadlines, comms log, handoff memos), and a supervisor review queue.
-- **What this setup does:** supports a law school legal clinic — intake, case memos, client letters, status updates, deadlines — across your practice areas, with supervision built in. Learns the clinic's practice areas, jurisdiction, and supervision model, and writes them into a plain-text file every skill reads from and every student's `/ramp` onboarding reads from. Everything can be changed later. Once it's done, the commands will work the way the clinic actually operates, not the way a generic template does.
-- **Data sources:** setup builds a fresh clinic profile from the attorney's answers and from documents uploaded during the interview (handbook, filing guides, local rules, intake forms, example case files). It does not read personal Claude history, other conversations, or the home-directory CLAUDE.md. If something relevant came up earlier in this conversation (e.g., school or practice area), ask before folding it in. Nothing gets added to configuration unless the attorney types or approves it.
-- **Next up:** Part 0 — who's running the setup and the ethical preconditions.
+- **O que este plugin mantém:** seu perfil de unidade/NPJ (áreas de atuação, modelo de supervisão, templates da casa), arquivos por caso (intake, prazos, log de comunicação, memos de handoff), e fila de revisão do(a) supervisor(a).
+- **O que este setup faz:** suporta a unidade ou NPJ — intake do(a) assistido(a), memos FIRAC, cartas ao(à) assistido(a), atualizações de status, prazos — nas suas áreas, com supervisão embutida. Aprende áreas, vara/comarca, modelo de supervisão, e escreve em arquivo texto que toda skill lê e que o `/ramp` do(a) estagiário(a) lê. Tudo mudável depois. Uma vez feito, comandos funcionam como a unidade opera, não como template genérico.
+- **Fontes de dado:** setup constrói perfil fresco das respostas do(a) supervisor(a) e dos documentos subidos (regimento, regras locais, formulários de intake, exemplos de caso). Não lê histórico pessoal do Claude, outras conversas, ou CLAUDE.md do home. Se algo relevante apareceu antes na conversa (ex.: unidade ou área), pergunto antes de incorporar.
+- **Próximo:** Parte 0 — quem está rodando o setup e as pré-condições éticas.
 
-**Why this matters.** Every `/ramp` onboarding, every `/client-intake`, every `/draft`, every `/client-letter`, every `/status` reads from the configuration this interview writes. A generic configuration gives students generic output — a default supervision model, default filing conventions, generic client-letter tone — and the first week of a semester is spent correcting what the tool assumed about the clinic. Telling the plugin the practice areas, supervision style, and local formatting is what makes the difference between "a clinic AI tool" and "a tool that runs the way the clinic runs." The more specific the answers, the less a new student has to unlearn.
+**Por que isso importa.** Todo `/ramp` de estagiário(a), todo `/client-intake`, todo `/draft`, todo `/client-letter`, todo `/status` lê da configuração que esta entrevista escreve. Configuração genérica dá output genérico — modelo de supervisão default, formatos default, tom default. A primeira semana de termo é gasta corrigindo o que a ferramenta assumiu sobre a unidade. Dizer ao plugin as áreas, o modelo, e as regras locais é o que faz a diferença entre "ferramenta de IA para clínica" e "ferramenta que roda como esta unidade roda".
 
-### Quick start or full setup — branching
+### Quick start ou full setup — bifurcação
 
-The attorney picked quick or full in the preamble. Branch:
+A pessoa escolheu rápido ou completo. Bifurcação:
 
-**Quick start path:** ask only the basics (practice area, jurisdiction, supervision style). Write the config with `[DEFAULT]` markers on everything else. Close with: "Done. You can start using the commands now. I've used sensible defaults for client-letter format, IRAC scaffolding, and deadline cadence. When a skill's output feels off, that's usually a default you should tune — it'll tell you which. Run `/legal-clinic:cold-start-interview --full` anytime to do the whole interview, or `/legal-clinic:cold-start-interview --redo <section>` to re-do one part."
+**Quick start:** pergunte só o básico (área, vara/comarca, modelo de supervisão). Escreva config com marcadores `[DEFAULT]` em tudo o resto. Feche com: "Pronto. Use os comandos já. Usei defaults razoáveis para formato de carta, scaffold FIRAC, e cadência de prazos. Quando output parecer estranho, normalmente é default a afinar — vai te dizer qual. Rode `/legal-clinic:cold-start-interview --full` para entrevista completa, ou `--redo <seção>` para refazer uma parte."
 
-**Full setup path:** the existing interview flow below.
+**Full setup:** fluxo abaixo.
 
-## Interview pacing
+## Cadência da entrevista
 
-- **Assume the answer exists somewhere.** When a question asks for information that's probably written down somewhere — company description, playbook, escalation matrix, style guide, handbook, jurisdiction list, matter portfolio — prompt for a link or a paste before asking the user to type it from memory. "Paste a link or a doc, or give me the short version" is the default ask for anything that's more than a sentence. An interviewer who makes people re-type what they've already written has failed the first job of an interviewer.
+- **Assuma que a resposta existe em algum lugar.** Quando uma pergunta pede info que provavelmente está escrita em algum lugar — regimento, lista de áreas, lista de varas, resolução do CSDPGE, formulário de intake — peça link ou paste antes de pedir digitação de memória.
 
-**Pause for real answers.** Part 0 has tap-through role and integration checks. The ethical preconditions, Parts 1–5, and especially Part 4 (seed documents) need the supervising attorney to type out answers or upload files. When a question needs more than a quick tap:
+**Pause para respostas reais.** Parte 0 tem tap-through de papel e integração. Pré-condições éticas, Partes 1-5, especialmente Parte 4 (docs-semente) precisam de resposta digitada ou upload. Quando uma pergunta precisa de mais que tap:
 
-- **Ask the question and wait.** Say explicitly: "This one needs a typed answer — I'll wait." Do not move to the next question until the attorney responds.
-- **For uploads (handbook, filing guides, local rules, intake forms, example case files, sample motions, sample client letters):** "Paste the contents, share a file path, or say 'skip for now.' If you skip, I'll flag the gap in the practice profile so you can fill it later — and I'll note what that means for `/ramp`, `/draft`, and `/client-letter` (they'll be thinner or fall back to defaults)." Then actually wait. Don't silently move on.
-- **Before writing the practice profile:** review the interview. List every question that was skipped or answered with a placeholder — ethical preconditions still open, practice areas without templates, supervision-flag triggers not set, handbook promised but not uploaded. Say: "Before I write your practice profile, here's what's still open: [list]. Want to fill any of these now, or leave them as placeholders?" Then wait.
-- **Never** write a practice profile with silent gaps. Every placeholder should be a deliberate choice the supervising attorney made to skip — not a question that scrolled past.
-- **Batch size — count subparts.** "Never ask more than 2-3 questions in one turn" means 2-3 *answerable prompts*, counting subparts. One question with 5 subparts is 5 questions. The test: can the user answer without scrolling? If the questions don't fit on one screen, it's too many. Prefer structured tap-through questions where possible — they don't require scrolling or typing.
-- **Pause and resume.** Tell the supervising attorney up front: "If you need to stop, say 'pause' (or 'stop', or 'let me come back to this') and I'll save your progress. Run `/legal-clinic:cold-start-interview` again later and I'll pick up where you left off." When the attorney pauses, write a partial configuration to `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` with a `<!-- SETUP PAUSED AT: [section name] — run /legal-clinic:cold-start-interview to resume -->` comment at the top and `[PENDING]` markers (distinct from `[PLACEHOLDER]`) on unanswered fields. When setup re-runs and finds a paused config, greet the attorney: "Welcome back. You paused at [section]. Your earlier answers are saved. Pick up where we left off, or start over?" Do not re-ask questions already answered.
+- **Faça e espere.** Diga explicitamente: "Esta precisa de resposta digitada — vou esperar." Não vá para a próxima até a pessoa responder.
+- **Para uploads (regimento, regras locais, formulários, exemplo de caso, peças exemplares, cartas exemplares):** "Cole o conteúdo, compartilhe caminho de arquivo, ou diga 'pular por ora.' Se pular, flag a lacuna no perfil para preencher depois — e nota o que isso significa para `/ramp`, `/draft` e `/client-letter` (vão ficar mais finos ou fall back para defaults)." Depois efetivamente espere.
+- **Antes de escrever o perfil:** revise. Liste pergunta pulada ou respondida com placeholder. Diga: "Antes de escrever, eis o que está aberto: [lista]. Preencher agora, ou deixar?" Espere.
+- **Nunca** escreva perfil com lacuna silenciosa. Todo placeholder é escolha deliberada de pular — não pergunta que rolou para fora da tela.
+- **Tamanho do batch — conte sub-partes.** 2-3 prompts respondíveis, contando sub-partes. Teste: a pessoa responde sem rolar?
+- **Pause e retome.** "Se precisar parar, diga 'pause' (ou 'pare', ou 'deixa pra depois') e eu salvo. Rode `/legal-clinic:cold-start-interview` de novo e eu pego de onde paramos." Quando pausar, escreva configuração parcial com `<!-- SETUP PAUSED AT: [seção] — rode /legal-clinic:cold-start-interview para retomar -->` e `[PENDING]` em campos não respondidos.
 
-**Verify user-stated legal facts as they come up in setup.** When the user answers an interview question with a specific rule citation, statute number, case name, deadline, threshold, jurisdiction, or registration number — and it's something you can sanity-check — do the check before writing it into the configuration. If what they said conflicts with your understanding or with something they've pasted, surface it: "You said the threshold is X; my understanding is Y — can you confirm which goes in the profile? `[premise flagged — verify]`" A wrong fact written into CLAUDE.md propagates into every future output; catching it here is one of the highest-leverage moments in the product.
+**Verifique fatos jurídicos declarados.** Quando a pessoa responde com citação específica de regra, dispositivo, súmula, prazo ou jurisdição que você pode sanity-check, faça antes de escrever. Se conflita, surface: "Você disse [X]; meu entendimento é [Y] — pode confirmar? `[premissa marcada — verificar]`"
 
-## The interview
+## A entrevista
 
-### Part 0: Who's running this setup, ethical preconditions, and what's connected (before anything else)
+### Parte 0: Quem está rodando este setup, pré-condições éticas, e o que está conectado (antes de tudo)
 
-#### Who's running this setup?
+#### Quem está rodando este setup?
 
-> Are you the supervising attorney for this clinic? You need to be licensed and supervising students under your jurisdiction's student practice rule for this setup to be valid. (This feeds Part 0's role gate — setup can only be run by the supervising attorney, and the answer writes supervising-attorney name and bar details into the profile that every skill references.)
+> Você é o(a) Defensor(a)-Supervisor(a) (na DPEAM ou outra DP) ou Professor(a)-Orientador(a) do NPJ? Você precisa ter inscrição na OAB ativa (ou ser membro da DP) e estar supervisionando estagiários(as) sob LC 80/94 art. 4º §6º (DP) ou Resolução CNE/CES 5/2018 + convênio (NPJ). Setup escreve o contexto governante da unidade — modelo de supervisão, regras de dados do(a) assistido(a), pré-condições éticas — e deve ser feito por quem será responsável pelo trabalho.
 >
-> 1. **Yes, I'm the supervising attorney.** Continue.
-> 2. **No, I'm a student / staff / administrator.** Stop. This setup writes the clinic's governing context — supervision model, client-data rules, ethical preconditions — and must be done by the supervising attorney who will be accountable for the work. Ask them to run `/legal-clinic:cold-start-interview`. Students run `/legal-clinic:ramp` to onboard each semester.
+> 1. **Sim, sou o(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a).** Continuar.
+> 2. **Não, sou estagiário(a) / servidor(a) / administrador(a).** Pare. Setup só pode ser rodado por quem supervisiona. Peça para o(a) responsável rodar `/legal-clinic:cold-start-interview`. Estagiários(as) rodam `/legal-clinic:ramp` para onboarding a cada termo.
 
-If the answer is 2, stop the interview and surface the above. Do not proceed.
+Se a resposta é 2, pare e surface. Não prossiga.
 
-If the answer is 1, record it in the plugin config under `## Who's using this` (Role: Supervising attorney; name and jurisdiction captured) and continue.
+Se a resposta é 1, registre na config do plugin sob `## Quem está usando` (Papel: Defensor-Supervisor ou Professor-Orientador; nome e seccional capturados) e continue.
 
-*Why this matters:* the clinic runs on a student practice rule that requires supervision by a licensed attorney, solicitor, barrister, or other authorised legal professional in the clinic's jurisdiction. Cold-start decisions — supervision model, consequential-action gating, ethics preconditions — are the supervising attorney's call. The role question gates those decisions to the right person.
+*Por que isso importa:* a unidade roda em norma de regência que exige supervisão por profissional habilitado(a) (Defensor(a) integrante da DP, ou advogado(a) inscrito(a) na OAB para NPJ). Decisões de cold-start — modelo de supervisão, gating de ação consequente, pré-condições éticas — são chamada do(a) supervisor(a). A pergunta de papel gateia essas decisões à pessoa certa.
 
-#### Ethical & confidentiality preconditions
+#### Pré-condições éticas e de confidencialidade
 
-Before the professor interview starts — and before any student uses this plugin on a real client matter — confirm the following with the clinic's supervising attorney and the school's IT / ethics office. Do not skip this step.
+Antes da entrevista do(a) supervisor(a) começar — e antes de qualquer estagiário(a) usar este plugin em caso real — confirme o seguinte com a Coordenação da unidade (ou direção do NPJ), TI / Corregedoria. Não pule.
 
-1. **Account tier and data-handling terms.** Your Claude account tier and its data retention and training policies — Team, Enterprise, Work, Education, and individual accounts have different guarantees about retention, use for training, and subprocessor handling. Confirm which tier the clinic is on and what the applicable terms say about client data. Document the answer in the plugin config.
+1. **Tier da conta e termos de manejo de dados.** Sua conta Claude (Team, Enterprise, Work, Education, individual) tem garantias diferentes sobre retenção, uso para treinamento, e tratamento de subprocessadores. Confirme em qual a unidade está e o que os termos aplicáveis dizem sobre dados do(a) assistido(a). Documente na config.
 
-2. **Client consent and disclosure practices for AI-assisted work.** Review ABA Formal Opinion 512 (2024), your state bar's AI guidance (if any), and Model Rules of Professional Conduct 1.1 (competence), 1.4 (communication), 1.6 (confidentiality), and 5.3 (supervision of nonlawyer assistance). Decide whether and how the clinic discloses AI use to clients, and document the practice.
+2. **Práticas de consentimento e divulgação ao(à) assistido(a) sobre trabalho assistido por IA.** Reveja o **Provimento OAB 205/2021** (uso de IA na advocacia), a **Resolução CNJ 332/2020** (uso de IA no Judiciário), e o **Código de Ética e Disciplina da OAB** (dever de competência, sigilo, lealdade, vedação a captação de clientela). Para Defensor: LC 80/94 art. 4º-A V (sigilo do(a) assistido(a)) e LC 80/94 art. 4º §6º (estágio). Decida se e como a unidade ou NPJ divulga uso de IA ao(à) assistido(a), e documente.
 
-3. **How privileged and confidential material is handled.** What gets pasted into sessions, where outputs are stored, who has access, how long material is retained locally, how student turnover affects access. Document the data-handling rules the clinic expects students to follow.
+3. **Como material sigiloso e confidencial é manejado.** O que é colado em sessões, onde outputs são armazenados, quem tem acesso, por quanto tempo material é retido localmente, como a rotatividade do termo afeta acesso. Documente as regras de manejo que estagiários(as) devem seguir.
 
-4. **Practice-area heightened-confidentiality considerations.** Immigration, criminal defense, domestic violence, family, and some civil rights matters carry heightened confidentiality and security expectations that go beyond the baseline — adversary exposure risk, subpoena risk, safety risk for survivors. Confirm whether any clinic practice area requires additional safeguards (e.g., limiting what facts are put into sessions, additional redaction, not using the plugin for a given case type at all).
+4. **Considerações de sigilo reforçado por área.** Casos envolvendo Lei Maria da Penha (violência doméstica), criança/adolescente (ECA), idoso (Estatuto), refugiado(a), saúde mental, identidade de gênero carregam expectativas reforçadas de sigilo e segurança que vão além do baseline — risco de exposição da contraparte, risco de requisição, risco à segurança de vítimas. Confirme se alguma área da unidade requer salvaguardas adicionais (limitar fatos colados em sessões, redação adicional, não usar o plugin para certo tipo de caso).
 
-Capture the professor's answers. If any precondition is unresolved, flag that in the plugin config and note that students should not use the plugin on real client matters until resolved.
+Capture as respostas. Se alguma pré-condição está não-resolvida, flag na config e nota que estagiários(as) não devem usar o plugin em caso real até resolução.
 
-#### What's connected?
+#### O que está conectado?
 
-> This plugin can work with a case management system (Clio) and document storage (Google Drive, SharePoint, Box). Let me check which connectors are configured — features that need them will work, and features that don't have them will fall back to manual gracefully instead of failing silently.
+> Este plugin trabalha com sistema interno da unidade (Sapiens-DPGU para DPU, sistema próprio AM para DPEAM, software acadêmico para NPJ), armazenamento documental (Google Drive, SharePoint, Box), Gmail, MCPs de pesquisa jurídica brasileira (JusRatio proprietário com níveis A-E; e os 4 open-source do consulta-jurisprudencia-mcp — BNP/STF-STJ vinculantes, CJF/STF-STJ-TRFs, TJAM/e-SAJ, DataJud/CNJ 61 tribunais com cascata e-SAJ TJAM). Vou checar quais conectores estão configurados — features que precisam vão funcionar, e que não, fall back para manual graciosamente em vez de falhar silenciosamente.
 
-**Check what's actually connected, not what's configured.** A connector listed in `.mcp.json` is *available*. A connector that's actually responding is *connected*. These are different, and confusing them destroys trust. For each connector this plugin uses:
+**Cheque o efetivamente conectado, não o configurado.** Para cada conector:
 
-- If you can test the connection (call a simple MCP tool like a list or search), report ✓ only on a successful response.
-- If you can't test (no way to probe from here), report ⚪ "configured but not verified — open your MCP settings to confirm" with a one-line how-to.
-- Never report ✓ based on configuration alone.
+- Se você pode testar (chamar tool MCP simples), reporte ✓ só em resposta com sucesso.
+- Se não pode testar, reporte ⚪ "configurado mas não verificado — abra configurações MCP para confirmar".
+- Nunca reporte ✓ baseado só em configuração.
 
-For connectors that show as not connected, tell the user how to connect. Example phrasing: "Box isn't connected. In Claude Cowork: Settings → Connectors → Add → Box → sign in. In Claude Code: add the Box MCP to your config or via `/mcp`. This plugin works without it — you'll paste documents instead of pulling them — but connecting it makes document pulls automatic."
+Para conectores não conectados, diga como conectar. Para os 4 MCPs do consulta-jurisprudencia-mcp: "(1) Clone https://github.com/eamamtd/consulta-jurisprudencia-mcp localmente, (2) `pip install -r requirements.txt`, (3) obtenha chave gratuita do DataJud em https://datajud-wiki.cnj.jus.br/api-publica/acesso/, (4) exporte `CONSULTA_JURISPRUDENCIA_MCP_DIR=<path>` e `DATAJUD_API_KEY=<chave>`. Plugin funciona sem — acompanhamento processual cai para manual no e-SAJ — mas com, o `docket-watcher` agent puxa as movimentações automaticamente."
 
-Then report findings in this form:
+Depois reporte achados nesta forma:
 
-> - ✓ [Integration] — connected (tested)
-> - ⚪ [Integration] — configured but not verified. Open your MCP settings to confirm.
-> - ✗ [Integration] — not found. [Feature] will fall back to [manual alternative]. [How to connect.]
+> - ✓ [Integração] — conectada (testada)
+> - ⚪ [Integração] — configurada mas não verificada. Abra configurações MCP para confirmar.
+> - ✗ [Integração] — não encontrada. [Feature] vai cair em [alternativa manual]. [Como conectar.]
 
-You don't need all of these. Core features — intake, draft, client letter, research-start, deadlines, semester handoff, supervisor review — work with local file access alone.
+Você não precisa de todas. Features core — intake, draft, carta ao(à) assistido(a), research-start, prazos, handoff de termo, revisão de supervisor — funcionam só com acesso a arquivo.
 
-Write Part 0 answers to the plugin config under `## Who's using this` and `## Available integrations`. If a populated CLAUDE.md exists at the old cache path `~/.claude/plugins/cache/claude-for-legal/legal-clinic/*/CLAUDE.md` but not here, copy it forward first.
+Escreva respostas da Parte 0 na config sob `## Quem está usando` e `## Integrações disponíveis`. Se um CLAUDE.md populado existe no caminho cache antigo `~/.claude/plugins/cache/claude-for-legal/legal-clinic/*/CLAUDE.md` mas não aqui, copie primeiro.
 
-### Opening
+### Abertura
 
-> This is the one-time setup for your clinic. Ten to fifteen minutes. I'll ask about your practice areas, your jurisdiction, how you supervise, and then I'll ask you to point me at your clinic handbook and any filing guides or local court rules you give students. Everything I learn here feeds the `/ramp` onboarding your students will run at the start of each semester, and every other command in this plugin.
+> Este é o setup único da unidade ou NPJ. 10-15 minutos. Vou perguntar sobre áreas, vara/comarca, como você supervisiona, e depois vou pedir que aponte para regimento e regras locais do TJAM (ou tribunal). Tudo que aprendo aqui alimenta o `/ramp` que seus(suas) estagiários(as) vão rodar no início de cada termo, e todo outro comando.
 >
-> None of this replaces your judgment or your students' analysis. The goal is to cut the hours spent on formatting, structuring, and writing up — so more of your students' time goes to the lawyering, and more clients get served.
+> Nada disto substitui seu juízo ou a análise dos(as) estagiários(as). O objetivo é cortar horas gastas em formatação, estruturação, e escrita — para que mais tempo dos(as) estagiários(as) vá para a advocacia, e mais assistidos(as) sejam atendidos(as).
 >
-> I'll ask for materials along the way — handbook, filing guides, local rules, intake forms, example case files, sample motions you've filed, sample client letters. Ten to twenty documents across the interview is the target. More is better. If you share fewer than ten, I'll flag the practice profile as LIMITED DATA — the plugin still works, but `/ramp` is thinner (commands but not your clinic's specific procedures), `/draft` falls back to state defaults instead of your local formatting, and `/client-letter` uses generic templates instead of matching your voice. Templates-first: if you upload a document, I read it and match your format rather than asking you to describe it.
+> Vou pedir materiais ao longo — regimento, regras locais, formulários de intake, exemplo de pasta de caso, peças exemplares protocoladas, cartas exemplares ao(à) assistido(a). 10-20 documentos ao longo da entrevista é o alvo. Mais é melhor. Abaixo de dez, vou flagar o perfil como DADOS LIMITADOS — plugin funciona mas `/ramp` fica fino (cobre comandos mas não procedimentos específicos), `/draft` fall back para defaults estaduais em vez de formatação local, `/client-letter` usa templates genéricos em vez de casar com sua voz. Templates-primeiro: se você sobe doc, leio e caso seu formato em vez de pedir descrição.
 
-### Part 1: The clinic (2-3 min)
+### Parte 1: A unidade ou NPJ (2-3 min)
 
-**What kind of clinic?** (Practice area feeds /client-intake and /draft — each area has its own intake template and document templates, so this is the key that switches between an immigration-clinic workflow and a housing-clinic workflow.)
-- Clinic name and school
-- Practice area(s): immigration, housing, family law, consumer protection, criminal defense, civil rights, other? (Can be multiple — many clinics handle overlapping issues)
+**Que tipo?** (Área alimenta /client-intake e /draft — cada área tem template próprio.)
+- Tipo: Defensoria Pública estadual / DPU / NPJ acadêmico / clínica de prática real / escritório-escola
+- Nome da unidade (ex.: "4ª DP dos JECs + 17ª e 34ª DPs Cíveis — Capital de Manaus") ou nome do NPJ + IES
+- Áreas de atuação: **Família/Sucessões, Consumidor, Saúde Pública, Previdenciário (BPC/LOAS), Locação, Possessória, Defesa em ação de cobrança, outro** (pode ser múltiplas — DPs cíveis frequentemente acumulam)
 
-   **Practices that don't fit the boxes.** If the clinic's practice doesn't match the options (international human rights, tribal court, military justice, environmental justice, entrepreneurship/transactional clinics, appellate-only, mediation/restorative-justice, or anything else the standard categories assume away), offer: "It sounds like your clinic doesn't fit my usual categories. Tell me about it in your own words — what the clinic does, who it serves, what jurisdictions and forums, what the work looks like — and I'll build your clinic profile from that instead of forcing it into boxes that don't fit. I'll skip or adapt the questions that don't apply." Then build the profile from the free-form description, flagging which template fields were filled, adapted, or left empty because they don't apply. A profile built from a forced fit is worse than a sparse profile built from what's actually true.
-- How many students this semester? How many active cases at a time, roughly?
-- How many supervising professors/attorneys?
+   **Áreas que não cabem nas caixas.** Se a unidade tem práticas que não casam (refugiado(a), militar, ambiental, atendimento a comunidades indígenas/tradicionais, ou qualquer outra não-cível-padrão), ofereça: "Parece que sua unidade não cabe nas categorias usuais. Me conte na sua voz — o que a unidade faz, quem atende, em que jurisdições, como é o trabalho — e eu construo o perfil disto em vez de te forçar nas caixas. Vou pular ou adaptar perguntas que não se aplicam."
+- Quantos(as) estagiários(as) neste termo? Quantos casos ativos simultaneamente, aproximadamente?
+- Quantos(as) Defensores(as) ou Professores(as) supervisionando?
 
-**Who are the clients?**
-- Typical client situations — who walks in, what are they facing?
-- Languages spoken beyond English?
-- Common referral sources (legal aid, court self-help center, community orgs)?
+**Quem são os(as) assistidos(as)?**
+- Situações típicas — quem chega ao acolhimento, o que enfrenta?
+- Línguas além do português? (Atendimento a comunidades indígenas é relevante na DPEAM e em outras DPs do Norte/Nordeste — tradução pode ser necessária.)
+- Fontes de encaminhamento comuns (CRAS, CREAS, ONGs, 156, encaminhamento espontâneo)?
 
-### Part 2: Jurisdiction (1-2 min)
+### Parte 2: Jurisdição (1-2 min)
 
-(This feeds /draft, /research-start, /memo, and /deadlines — jurisdiction determines filing formats, research scope, and default deadline calculations.)
+(Alimenta /draft, /research-start, /memo, /deadlines — vara determina formato de peça, escopo de pesquisa, e cálculos default de prazo.)
 
-- State. This drives everything jurisdiction-aware — eviction timelines, protective order procedures, filing formats.
-- Primary court(s): which county/district court do cases land in most often?
-- Any local rules or standing orders that diverge from state defaults?
+- UF (ex.: AM). Direciona tudo jurisdição-aware — Lei 8.245/91 cálculos de despejo, procedimentos de medida protetiva da Lei 11.340/06, formatos de peça.
+- Vara(s) primária(s): quais varas a unidade atende mais? (Para DPEAM piloto: 1ª e 12ª Varas dos JECs Cíveis + 19ª e 20ª Varas Cíveis Comuns.)
+- Provimentos da Corregedoria local ou portarias específicas do juízo que divergem do padrão CNJ/CPC?
 
-### Part 3: Supervision style (2-3 min — this is the key design question)
+### Parte 3: Modelo de supervisão (2-3 min — pergunta-chave de design)
 
-> Clinics vary a lot in how tightly student work is reviewed before it goes out. Some want every draft in a formal review queue — student submits, professor approves, then it goes. Others are lighter-touch — students check in, professor signs off informally, the structure is more conversational. What's your model? (This feeds /supervisor-review-queue and the flag-triggering logic across /draft, /client-letter, and /status — formal queue turns the supervisor-review-queue skill on; configurable flags only surface triggers; lighter-touch suppresses the queue entirely.)
+> Unidades variam muito em quanto o trabalho do(a) estagiário(a) é revisado antes de sair. Algumas querem cada minuta em fila formal — estagiário(a) submete, supervisor(a) aprova, depois sai. Outras são toque-leve — estagiário(a) check in, supervisor(a) aprova informalmente, estrutura mais conversacional. Qual o seu? (Alimenta /supervisor-review-queue e a lógica de gatilho de flag em /draft, /client-letter, /status — fila formal liga a skill supervisor-review-queue; flags configuráveis só surface gatilhos; toque-leve suprime a fila.)
 
-Three options to offer:
+Três opções:
 
-**Formal review queue:** Student output that's client-facing or court-bound goes into a queue. Professor reviews, approves or edits, then it releases. Every approval logged. (I'll keep a review queue skill active — `supervisor-review-queue` turns on.)
+**Fila de revisão formal:** Output que vai ao(à) assistido(a) ou ao juízo entra em fila. Supervisor(a) revisa, aprova ou edita, libera. Toda aprovação logada. (Skill `supervisor-review-queue` ligada.)
 
-**Configurable flags, informal review:** Certain triggers (deadlines, sensitive topics, court filings) flag the output with "CHECK WITH [PROFESSOR] BEFORE SENDING" — but no formal queue mechanism. Student is responsible for checking in. (I won't add the queue; students flag directly when a trigger hits and loop you in.)
+**Flags configuráveis, revisão informal:** Gatilhos certos (prazos, temas sensíveis, peças a protocolar) flag o output com "CHECAR COM [SUPERVISOR(A)] ANTES DE ENVIAR" — sem fila mecânica. Estagiário(a) responsável por procurar. (Sem fila; estagiários(as) flag diretamente quando gatilho acontece e procuram você.)
 
-**Lighter-touch:** Outputs carry the standard AI-assisted label and verification prompts, but no additional review gates. Professor supervises through the clinic's existing structure (case rounds, one-on-ones), not through the plugin. (I won't add the queue or extra flags; I'll rely on your existing case rounds and check-ins.)
+**Toque mais leve:** Outputs carregam rótulo padrão de IA-assistida e pedidos de verificação, mas sem gates adicionais. Supervisor(a) supervisiona via estrutura existente da unidade (reunião de equipe, atendimento conjunto, conversa de orientação), não via plugin. (Sem fila ou flags adicionais; confio na estrutura existente.)
 
-> There's no right answer — it depends on your students' experience level, your caseload, and how you already run supervision. You can change this later by editing CLAUDE.md.
+> Não há resposta certa — depende do nível de experiência dos(as) estagiários(as), do caseload, e como você já roda a supervisão. Você muda depois editando CLAUDE.md.
 
-Capture the choice and, if formal queue or configurable flags: what should trigger a flag? (Court filings always? Any deadline mention? Topics like DV, immigration status, criminal exposure?)
+Capture a escolha e, se fila formal ou flags configuráveis: que deve disparar flag? (Peças a protocolar sempre? Qualquer menção de prazo? Temas como Lei Maria da Penha, ECA, saúde mental, criminal por escala?)
 
-**Pedagogy dial.** After the supervision choice is captured, ask:
+**Dial pedagógico.** Depois da escolha de supervisão, pergunte:
 
-> **How much should the skills do?** This is the most important setting. Three options:
+> **Quanto as skills devem fazer?** Esta é a configuração mais importante. Três opções:
 >
-> - **Guide (default):** The skill produces structure; students fill in substance; the skill gives feedback. Balanced — most clinics start here.
-> - **Assist:** The skill produces work product; students review, edit, and learn by seeing. Fastest, most productive, least pedagogical. Good for high-volume clinics.
-> - **Teach:** The skill doesn't produce work product — students draft, the skill asks Socratic questions and gives feedback, and only shows a model after two attempts. Slowest, most pedagogical. Good for clinics where learning is the primary goal.
+> - **Guide (default):** Skill produz estrutura; estagiários(as) preenchem substância; skill dá feedback. Balanceado — onde maioria das unidades começa.
+> - **Assist:** Skill produz produto; estagiários(as) revisam, editam, aprendem vendo. Mais rápido, mais produtivo, menos pedagógico. Bom para unidades de alto volume.
+> - **Teach:** Skill não produz produto — estagiários(as) redigem, skill faz perguntas socráticas e dá feedback, e só mostra modelo depois de duas tentativas. Mais lento, mais pedagógico. Bom para NPJs onde aprendizado é objetivo primário.
 >
-> You can set this per document type later with `/legal-clinic:build-guide`. For now, pick a default.
+> Você pode setar por tipo de documento depois com `/legal-clinic:build-guide`. Por ora, pegue um default.
 
-Write the answer to the practice profile as `pedagogy_default: assist | guide | teach` (default `guide` if the supervisor doesn't pick).
+Escreva no perfil como `pedagogy_default: assist | guide | teach` (default `guide` se não escolher).
 
-**Practice-area guide.** After the pedagogy default is captured, offer:
+**Guia por área de atuação.** Depois do pedagógico, ofereça:
 
-> Do you want to author a practice-area guide that tailors how the skills work for your clinic — intake questions, per-document pedagogy overrides, review gates? I can help you build one in 5-10 minutes with `/legal-clinic:build-guide`. You can also do it later. For now, the skills use sensible defaults: the pedagogy default you just picked, and everything client-facing flagged for your review.
+> Quer autorar um guia por área que afina como as skills funcionam para sua unidade — perguntas de intake, overrides de pedagogia por documento, gates de revisão? Posso te ajudar a construir em 5-10 min com `/legal-clinic:build-guide`. Pode fazer depois também. Por ora, skills usam defaults: o pedagógico que você escolheu, e tudo destinado ao(à) assistido(a) flagado para sua revisão.
 
-Note the answer in the setup state — if the supervisor wants to build a guide, surface that as a next step after the interview closes (under Step 3 of the "After writing" section). Do not interrupt this interview to run `/legal-clinic:build-guide` inline; finish the profile first, then offer the handoff.
+Note a resposta no estado de setup — se quer construir guia, surface como próximo passo depois que a entrevista fechar (sob Passo 3 da seção "Depois de escrever"). Não interrompa esta entrevista para rodar `/legal-clinic:build-guide` inline; termine o perfil primeiro, depois ofereça handoff.
 
-### Part 4: Seed documents (3-4 min)
+### Parte 4: Docs-semente (3-4 min)
 
-> Three things, as many as you have. (The handbook feeds /ramp onboarding; filing guides feed /draft formatting; the intake form becomes the backbone of /client-intake.)
+> Três coisas, o que tiver. (Regimento alimenta /ramp; regras locais alimentam /draft; formulário de intake vira espinha do /client-intake.)
 >
-> 1. **Your clinic handbook or procedures doc.** Whatever you give students on day one. I'll use it to build the `/ramp` onboarding so students get a guided walkthrough instead of a PDF they skim.
+> 1. **Seu regimento da unidade ou manual de procedimentos.** O que você dá ao(à) estagiário(a) no primeiro dia. Vou usar para construir o onboarding `/ramp` para estagiários(as) terem walkthrough guiado em vez de PDF que dão scroll.
 >
-> 2. **Filing guides and local court rules.** Anything that tells students how to format a caption, where to file, what the local judge wants. These feed `/draft` so first drafts are jurisdictionally correct from the start.
+> 2. **Regras locais e provimentos.** Qualquer coisa que diz como formatar endereçamento, onde protocolar, o que o juízo da vara quer. Para DPEAM piloto: provimentos da Corregedoria-Geral da DPEAM e regras locais do TJAM. Alimentam `/draft` para primeiras minutas serem jurisdição-corretas desde o início.
 >
-> 3. **Your intake form, and if you have one, a scrubbed example case file.** The intake form becomes the backbone of `/client-intake`. The example file shows me what a well-documented case looks like in your clinic.
+> 3. **Seu formulário de intake, e se tiver, exemplo de pasta de caso anonimizada.** Formulário de intake vira espinha do `/client-intake`. Exemplo de caso me mostra como é caso bem-documentado na sua unidade.
 
-**From the handbook:** Clinic procedures, case management conventions, student expectations, ethical reminders. This is what `/ramp` will teach.
+**Do regimento:** procedimentos da unidade, convenções de gestão de caso, expectativas do(a) estagiário(a), lembretes éticos. Isto é o que `/ramp` vai ensinar.
 
-**From filing guides/local rules:** Caption format, service requirements, local motion practice quirks. This is what `/draft` will apply.
+**De regras locais / provimentos:** formato de endereçamento (ex.: "JUÍZO DA 19ª VARA CÍVEL DA COMARCA DE MANAUS"), requisitos de protocolização eletrônica (Lei 11.419/06, e-SAJ TJAM), peculiaridades de prática local do juízo. Isto é o que `/draft` vai aplicar.
 
-**From the intake form:** Practice-area-specific fields. If the clinic has separate intake forms per practice area (immigration vs. housing), take all of them.
+**Do formulário de intake:** campos específicos por área. Se a unidade tem formulários separados por área (consumidor vs. saúde), pegue todos.
 
-### Part 5: Practice-area templates (1-2 min)
+### Parte 5: Templates por área de atuação (1-2 min)
 
-For each practice area the clinic handles: what are the 3-5 documents students draft most often? (This feeds /draft — each listed document becomes a template the skill can start from, and anything not listed falls back to a generic first pass.)
+Para cada área que a unidade trata: quais 3-5 documentos os(as) estagiários(as) minutam mais frequentemente? (Alimenta /draft — cada documento listado vira template que a skill pode começar, e qualquer um não listado fall back para primeira passada genérica.)
 
-| Practice area | Common documents |
+| Área de atuação | Documentos comuns |
 |---|---|
-| Immigration | Asylum application (I-589), motion to change venue, client declaration, FOIA request |
-| Housing | Eviction answer, demand letter, repair request, motion to stay |
-| Family | Protective order petition, custody motion, financial disclosure |
-| Consumer | Debt validation letter, FDCPA demand, answer to collection suit |
+| Família/Sucessões | Petição inicial de divórcio consensual / litigioso, alimentos, união estável, guarda; declaração de hipossuficiência |
+| Saúde Pública | Petição inicial de fornecimento de medicamento (Tema 793 STF), leito UTI, internação CAPS; pedido de tutela de urgência CPC 300 |
+| Consumidor (JEC) | Petição inicial Lei 9.099/95 (vício, cobrança indevida, dano moral) |
+| Previdenciário | Petição inicial BPC/LOAS (Justiça Federal); recurso administrativo INSS |
+| Locação | Defesa em ação de despejo (Lei 8.245/91 art. 62 II — purgação da mora) |
+| Possessória | Petição inicial de reintegração / manutenção / interdito proibitório (CPC 554-568); contestação |
 
-These become the template set for `/draft`. If the professor has existing templates, ingest them. If not, note which ones to build.
+Estes viram o conjunto de templates para `/draft`. Se você tem templates existentes, ingest. Se não, anote quais construir.
 
-**If the professor didn't upload a handbook or intake form:** at the end of this section, offer: "Want me to draft a starter clinic handbook and intake form from what you told me? Same content I just captured — supervision style, practice areas, jurisdiction — in a format you can edit and share with next semester's cohort."
+**Se não subiu regimento ou formulário de intake:** no final desta seção, ofereça: "Quer que eu redija regimento inicial e formulário de intake do que você me contou? Mesmo conteúdo que acabei de capturar — modelo de supervisão, áreas, vara — em formato que você edita e compartilha com a próxima turma."
 
-## Before writing — re-read
+## Antes de escrever — re-leia
 
-Before committing the practice profile to the plugin config, re-read every captured answer in order. Catches:
+Antes de comitar o perfil no plugin, re-leia toda resposta capturada em ordem. Pega:
 
-1. **Contradictions between answers** — e.g., "formal review queue" in supervision style but "lighter-touch, through case rounds" in describing how review actually happens. Surface both and ask which governs.
-2. **Drifted specifics** — names, court references, dates that changed between sections. Confirm final values.
-3. **Skipped gaps worth naming** — practice areas listed without templates, supervision style chosen without flag triggers populated, handbook promised but not uploaded. Offer to complete now rather than leaving for `--redo`.
+1. **Contradições entre respostas** — ex.: "fila formal" em modelo de supervisão mas "toque mais leve, via reunião" em descrição de como revisão efetivamente acontece. Surface ambas e pergunte qual governa.
+2. **Específicos que derivaram** — nomes, juízos, datas que mudaram entre seções. Confirme valores finais.
+3. **Lacunas puladas que merecem ser nomeadas** — áreas listadas sem templates, modelo escolhido sem gatilhos populados, regimento prometido mas não subido. Ofereça completar agora.
 
-## Writing the practice profile
+## Escrevendo o perfil
 
-Per the CLAUDE.md template. Key sections:
+Per o template CLAUDE.md. Seções-chave:
 
-- **Clinic profile** — name, school, practice areas, jurisdiction, student count
-- **Supervision style** — which of the three models, and flag triggers if applicable
-- **Practice-area templates** — intake templates and document templates per area
-- **Jurisdiction** — state, courts, local rules ingested
-- **Semester** — when do students turn over (so `/ramp` knows when it'll be needed, and `/semester-handoff` knows when it'll be triggered)
-- **Handbook path** — where the ingested handbook lives, for `/ramp` to read
+- **Perfil da unidade / NPJ** — nome, IES (se NPJ), áreas, vara/comarca, contagem de estagiários(as)
+- **Modelo de supervisão** — qual dos três, e gatilhos de flag se aplicável
+- **Templates por área de atuação** — templates de intake e de documento por área
+- **Jurisdição** — UF, vara/comarca, provimentos ingest
+- **Termo / semestre** — quando os(as) estagiários(as) rotacionam (para `/ramp` saber quando será necessária, e `/semester-handoff` saber quando será disparada)
+- **Caminho do regimento** — onde o regimento ingest vive, para `/ramp` ler
 
-**LIMITED DATA flag:** if fewer than 10 materials were shared across the interview, add a `> LIMITED DATA` note at the top of CLAUDE.md (under the written-on date), stating: "This practice profile was written from [N] materials. Downstream skills will operate but outputs will be thinner — `/ramp` covers commands but not clinic-specific procedures, `/draft` uses state defaults instead of local formatting, `/client-letter` uses generic templates. Re-run `/legal-clinic:cold-start-interview --redo` after collecting more exemplars to sharpen calibration."
+**Flag DADOS LIMITADOS:** se menos de 10 materiais foram compartilhados, adicione nota `> DADOS LIMITADOS` no topo do CLAUDE.md (sob data), declarando: "Este perfil foi escrito de [N] materiais. Skills downstream vão rodar mas outputs mais finos — `/ramp` cobre comandos mas não procedimentos específicos, `/draft` usa defaults estaduais em vez de formatação local, `/client-letter` usa templates genéricos. Re-rode `/legal-clinic:cold-start-interview --redo` depois de coletar mais exemplares para afiar."
 
-## Built-in safeguard framing
+## Framing de salvaguarda embutido
 
-Write into the plugin config the safeguard standards every skill will apply:
+Escreva no plugin os padrões de salvaguarda que toda skill vai aplicar:
 
 ```markdown
-## Output safeguards (applied by every skill)
+## Salvaguardas de output (aplicadas por toda skill)
 
-Every output includes:
-- **AI-assisted label:** "[AI-ASSISTED DRAFT — requires student analysis and attorney review]"
-- **Confidence indicators:** Where the skill is uncertain, it says so explicitly
-- **Verification prompts:** Specific things the student should fact-check before relying on the output
-- **Ethical reminders calibrated to task:** e.g., /draft outputs remind about ABA Formal Op. 512 supervision requirements
+Todo output inclui:
+- **Rótulo de IA-assistida:** "[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]"
+- **Indicadores de confiança:** Onde a skill está incerta, diz explicitamente
+- **Pedidos de verificação:** Coisas específicas a fact-checar antes de confiar no output
+- **Lembretes éticos calibrados à tarefa:** ex., outputs de /draft lembram requisitos do Provimento OAB 205/2021
 
-These are not optional and not configurable. They're the baseline.
+Não são opcionais nem configuráveis. São o baseline.
 ```
 
-## After writing
+## Depois de escrever
 
-**Show what this plugin can do.** Before closing, offer:
+**Mostre o que este plugin pode fazer.** Antes de fechar, ofereça:
 
-> **Want to see what I can help with?**
+> **Quer ver com o que eu posso ajudar?**
 
-If yes, show this tailored list (not a generic template — these are the concrete things this plugin does best):
+Se sim, mostre esta lista calibrada (não template genérico — coisas concretas que este plugin faz melhor):
 
-> **Here's what I'm good at in law school clinic practice:**
+> **No que eu sou bom em prática de estágio supervisionado:**
 >
-> - **Student intake on a new case** — e.g., "Walk a student through a practice-area-specific intake with red-flag spotting and conflict checks." Try: `/legal-clinic:client-intake`
-> - **Draft a client letter at 6th-grade reading level** — e.g., "Produce an appointment confirm or status update in plain language; student edits and you approve." Try: `/legal-clinic:client-letter`
-> - **Build an IRAC memo scaffold** — e.g., "Give a student the structure and research-gap list for a case memo — pedagogy default is guide." Try: `/legal-clinic:memo`
-> - **Track deadlines across the active docket** — e.g., "See what's due in the next 14 / 7 / 3 / 1 days with warnings per your cadence." Try: `/legal-clinic:deadlines`
-> - **Ramp up a new cohort** — e.g., "Onboard this semester's students to the clinic's procedures, tools, and case-handling norms." Try: `/legal-clinic:ramp`
-> - **Semester handoff** — e.g., "Build per-case transition memos for the incoming cohort." Try: `/legal-clinic:semester-handoff`
+> - **Intake de um(a) novo(a) assistido(a)** — ex.: "Caminhar um(a) estagiário(a) por intake específico de área com identificação de bandeira vermelha e checagem de impedimento." Try: `/legal-clinic:client-intake`
+> - **Redigir carta ao(à) assistido(a) em linguagem simples (LC 80/94 art. 4º-A III)** — ex.: "Produzir confirmação de audiência ou atualização breve em linguagem clara; estagiário(a) edita e você aprova." Try: `/legal-clinic:client-letter`
+> - **Construir scaffold de memo FIRAC** — ex.: "Dar ao(à) estagiário(a) a estrutura e lista de lacunas de pesquisa para memo de caso — pedagogia default é guide." Try: `/legal-clinic:memo`
+> - **Acompanhar prazos no caseload ativo** — ex.: "Ver o que está vencendo nos próximos 14/7/3/1 dias úteis com alertas (CPC 219, dobro Defensor CPC 186)." Try: `/legal-clinic:deadlines`
+> - **Ramp up de turma nova** — ex.: "Onboarding deste termo aos procedimentos da unidade, sistemas, e normas de manejo de caso." Try: `/legal-clinic:ramp`
+> - **Handoff de termo** — ex.: "Construir memos de transição por caso para a próxima turma." Try: `/legal-clinic:semester-handoff`
 >
-> **My suggestion for your first one:** Run `/ramp` yourself first so you see what your students will see at the start of the semester. Or tell me what's on your plate and I'll pick.
+> **Minha sugestão para sua primeira:** Rode `/ramp` você mesmo(a) primeiro para ver o que estagiários(as) vão ver no início do termo. Ou me diga o que está na sua mesa e eu escolho.
 
-This solves the cold-start problem (the supervisor doesn't know what to do first) and the value-prop problem (they don't know what the plugin can do) in one offer. Make the list specific. Skip this step if the supervisor already named a concrete first task during the interview.
+Isto resolve o problema cold-start (a pessoa não sabe o que fazer primeiro) e o problema de proposta-de-valor (não sabe o que o plugin pode fazer) em uma oferta. Faça a lista específica.
 
+1. **Mostre a escolha de modelo de supervisão.** "Você escolheu [fila formal / flags / toque mais leve]. Significa [o que significa na prática]. Chamada certa?"
 
-1. **Show the supervision style choice.** "You picked [formal queue / flags / lighter-touch]. That means [what it means in practice]. Right call?"
+2. **Mostre a tabela de templates por área.** "Estes são os documentos que `/draft` vai saber começar. Faltando algo?"
 
-2. **Show the practice-area templates table.** "These are the documents `/draft` will know how to start. Missing anything?"
+3. **Ofereça preview de `/ramp`.** "Quer ver como vai parecer o onboarding de estagiário(a)? Posso caminhar como se você fosse novo(a) estagiário(a)."
 
-3. **Offer a `/ramp` preview.** "Want to see what a student's onboarding will look like? I can walk you through it as if you were a new student."
+4. **Note o que não foi fornecido.** Se sem regimento: "`/ramp` vai ficar fino até subir um — vai cobrir comandos mas não procedimentos específicos." Se sem regras locais: "`/draft` vai usar defaults estaduais para formatação — suba provimentos da Corregedoria-Geral local quando tiver."
 
-4. **Note what wasn't provided.** If no handbook: "`/ramp` will be thin until you upload a handbook — it'll cover the commands but not your clinic's specific procedures." If no local rules: "`/draft` will use state defaults for formatting — upload local rules when you have them."
+5. **Se DADOS LIMITADOS flag:** "Perfil fino — skills downstream vão ser genéricas até mais materiais. Maior lacuna: [específico — ex.: sem regimento significa /ramp cobre só comandos]. Maior ganho fácil: [específico — ex.: suba 2-3 peças recentes que você protocolou, e /draft fica dramaticamente mais afiado nas suas convenções de formatação]."
 
-5. **If LIMITED DATA flagged:** "Practice Profile is thin — downstream skills will be generic until more materials are added. Biggest gap: [specific — e.g., no handbook means /ramp covers commands only]. Biggest easy win: [specific — e.g., upload two or three recent motions you've filed, and /draft gets dramatically sharper on your formatting conventions]."
+6. **Antes do primeiro caso, conecte MCP de pesquisa.** Diga: "Antes do primeiro caso ou memo: conecte JusRatio (proprietário) ou os 4 MCPs do consulta-jurisprudencia-mcp (BNP, CJF, TJAM, DataJud — open-source, instruções acima). Sem nenhum, vou flagar toda citação como não verificada — com, verifico contra base atual. Em Cowork: Settings → Connectors. Em Claude Code: autorize quando uma skill pedir."
 
-6. **Before your first case review, connect a research tool.** Say: "Before your first case review or memo: connect a research tool. Without one, I'll flag every citation as unverified — with one, I verify them against a current database. In Cowork: Settings → Connectors. In Claude Code: authorize when a skill prompts you."
+   <!-- COLLATERAL LINKS: quando colateral de onboarding existir, adicione:
+        "Quer walkthrough primeiro? [Assista intro de 3 min](URL) ou [leia getting-started](URL)." -->
 
-   <!-- COLLATERAL LINKS: when onboarding collateral exists, add here:
-        "Want a walkthrough first? [Watch the 3-minute intro](URL) or [read the getting-started guide](URL)." -->
+7. **Feche com nota "você pode mudar tudo depois":**
 
-7. **Close with the "you can change anything later" note:**
-
-> Done. Your clinic's configuration is at `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` — a plain text file you can read and edit directly. Anything you answered can be changed:
+> Pronto. A configuração da sua unidade está em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` — texto puro que você lê e edita diretamente. Tudo respondido pode ser mudado:
 >
-> - Edit the file directly for a quick change
-> - Run `/legal-clinic:cold-start-interview --redo` for a full re-interview
-> - Run `/legal-clinic:cold-start-interview --check-integrations` to re-check what's connected
+> - Edite diretamente para mudança rápida
+> - Rode `/legal-clinic:cold-start-interview --redo` para re-entrevista completa
+> - Rode `/legal-clinic:cold-start-interview --check-integrations` para re-checar conectado
 >
-> The things clinics most commonly tweak later: practice areas (when the clinic takes on a new one), supervision style (formal review queue vs. configurable flags vs. lighter-touch — many clinics start one way and shift after the first semester), and jurisdiction / local rules (when a matter lands in an unusual court). Your configuration will improve as students use the plugin — when `/ramp` misses something or `/draft` uses the wrong caption format, the fix is usually here.
+> Coisas que unidades mais ajustam: áreas (quando a unidade pega área nova), modelo de supervisão (fila formal vs. flags vs. toque mais leve — muitas unidades começam um jeito e mudam após primeiro termo), e jurisdição / regras locais (quando caso cai em juízo incomum). Sua config melhora à medida que estagiários(as) usam o plugin — quando `/ramp` perde algo ou `/draft` usa formato errado, a correção costuma estar aqui.
 
-## Your practice profile learns
+## Seu perfil aprende
 
-After writing the practice profile, close with this note:
+Depois de escrever o perfil, feche com esta nota:
 
-> **Your practice profile learns.** It gets better as you use the plugins:
+> **Seu perfil aprende.** Melhora à medida que você usa os plugins:
 >
-> - When a skill's output feels off, that's usually a position to tune. The output will tell you which one.
-> - You can always say "update my playbook to prefer X" or "change my escalation threshold to Y" and the relevant skill will write the change.
-> - Run `/cold-start-interview --redo <section>` to re-interview one part, or edit the config file directly.
+> - Quando output de skill parecer estranho, normalmente é posição a afinar. O output vai te dizer qual.
+> - Você sempre pode dizer "atualize meu playbook para preferir X" e a skill relevante escreve a mudança.
+> - Rode `/cold-start-interview --redo <seção>` para re-entrevista de uma parte, ou edite a config direto.
 >
-> Ten minutes of setup gets you a working profile. A month of use gets you one that reads like you wrote it yourself.
+> Dez minutos de setup te dá perfil funcional. Um mês de uso te dá um que lê como se você tivesse escrito.
 
-## What this does NOT do
+## O que esta skill NÃO faz
 
-- **Make supervision decisions.** The supervision style is the professor's call; this interview just asks and records.
-- **Replace the clinic's existing case management.** If the clinic uses Clio, this plugin works alongside it (Clio MCP is an open integration question — see `.mcp.json`).
-- **Onboard students.** That's `/ramp`. This is the professor's one-time setup.
+- **Decide o modelo de supervisão.** É chamada do(a) supervisor(a); esta entrevista só pergunta e registra.
+- **Substitui o sistema oficial da unidade.** Se a unidade usa Sapiens-DPGU, sistema próprio AM, ou outro, este plugin trabalha ao lado (vide `.mcp.json`).
+- **Faz onboarding de estagiários(as).** Isso é `/ramp`. Este é o setup único do(a) supervisor(a).

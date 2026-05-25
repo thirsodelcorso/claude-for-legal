@@ -1,20 +1,21 @@
 ---
 name: supervisor-review-queue
 description: >
-  Professor's review queue — student output waits here for professor approval
-  before going to clients or courts. Only active if "formal review queue"
-  supervision style was chosen at setup; otherwise dormant. Use when the
-  professor wants to see what's waiting for review, approve, edit-then-approve,
-  or return an item.
+  Fila de revisão do(a) supervisor(a) — output de estagiário(a) espera aqui
+  pela aprovação do(a) supervisor(a) antes de ir ao(à) assistido(a) ou ao
+  juízo. Só ativa se "fila de revisão formal" foi escolhida como estilo de
+  supervisão no setup; senão dormente. Use quando o(a) supervisor(a) quer ver
+  o que está aguardando revisão, aprovar, editar-e-aprovar, ou devolver um
+  item.
 argument-hint: "[--approve ID | --return ID 'note' | --edit ID]"
 ---
 
 # /supervisor-review-queue
 
-1. Check `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style. If NOT "formal review queue": explain the clinic is set up for [flags/lighter-touch], no formal queue exists, and how to switch.
-2. Use the workflow below.
-3. Default: show what's waiting, by urgency, by student.
-4. Actions: approve / edit-then-approve / return with note. All logged.
+1. Cheque `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → estilo de supervisão. Se NÃO "fila de revisão formal": explique que a unidade está setada para [flags/toque mais leve], sem fila formal, e como mudar.
+2. Use o workflow abaixo.
+3. Default: mostre o que está aguardando, por urgência, por estagiário(a).
+4. Ações: aprovar / editar-e-aprovar / devolver com nota. Tudo logado.
 
 ```
 /legal-clinic:supervisor-review-queue
@@ -25,84 +26,84 @@ argument-hint: "[--approve ID | --return ID 'note' | --edit ID]"
 ```
 
 ```
-/legal-clinic:supervisor-review-queue --return Q-004 "Check the service requirement — local rules changed"
+/legal-clinic:supervisor-review-queue --return Q-004 "Cheque o requisito de intimação — regimento local mudou"
 ```
 
 ---
 
-# Supervisor Review Queue (Optional)
+# Fila de Revisão do(a) Supervisor(a) (Opcional)
 
-## Purpose
+## Propósito
 
-Some clinics want a formal gate: student drafts, professor reviews, output releases. Others find that too prescriptive — they supervise through case rounds and one-on-ones, not through a queue.
+Algumas unidades querem gate formal: estagiário(a) redige, supervisor(a) revisa, output libera. Outras acham prescritivo demais — supervisionam via reunião de equipe e atendimentos conjuntos, não via fila.
 
-**This skill is only active if `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → Supervision style is "formal review queue."** Otherwise it's dormant — the cold-start interview asks the professor which model they want, and this is one of three options.
+**Esta skill só está ativa se `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → Estilo de supervisão é "fila de revisão formal."** Senão está dormente — a entrevista de cold-start pergunta ao(à) supervisor(a) qual modelo quer, e esta é uma de três opções.
 
-Whether to use a formal review workflow is genuinely an open question for clinic adoption. It depends on student experience level, caseload, and how the professor already runs supervision. The professor decides at setup and can change it later.
+Se usar workflow formal de revisão é genuinamente questão aberta para adoção da unidade. Depende do nível de experiência dos(as) estagiários(as), do caseload, e de como o(a) supervisor(a) já roda supervisão. Supervisor(a) decide no setup e pode mudar depois.
 
-## Load context
+## Carregue contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style. If NOT "formal review queue": respond with "The clinic is set up for [flags/lighter-touch] supervision — there's no formal queue. [Professor] reviews through [the clinic's existing structure]. To switch to a formal queue, edit CLAUDE.md → Supervision style."
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → estilo de supervisão. Se NÃO "fila de revisão formal": responda com "A unidade está setada para supervisão [flags/toque mais leve] — não há fila formal. [Supervisor(a)] revisa via [estrutura existente da unidade]. Para mudar para fila formal, edite CLAUDE.md → Estilo de supervisão."
 
-If formal queue IS enabled → read flag triggers and proceed.
+Se fila formal ESTÁ habilitada → leia gatilhos de flag e prossiga.
 
-## The queue
+## A fila
 
-Lives at `references/review-queue.yaml`. Each entry:
+Vive em `references/review-queue.yaml`. Cada entrada:
 
 ```yaml
 - id: Q-001
   type: "draft"  # intake | draft | memo | status | client-letter
-  client: "[name or ID]"
-  student: "[name]"
+  client: "[nome ou ID do(a) assistido(a)]"
+  student: "[nome do(a) estagiário(a)]"
   submitted: [timestamp]
   flags:
-    - rule: "Court filing"
-      detail: "Eviction answer — always queued"
-  content_path: "[path to the document]"
+    - rule: "Peça a protocolar"
+      detail: "Contestação em ação de despejo — sempre na fila"
+  content_path: "[caminho do documento]"
   status: "pending"  # pending | approved | edited-approved | returned
 ```
 
-## Modes
+## Modos
 
-### What's waiting
+### O que está aguardando
 
 ```markdown
-## Review Queue — [date]
+## Fila de Revisão — [data]
 
-**Pending:** [N] | **Oldest:** [N] hours
+**Pendentes:** [N] | **Mais antigo:** [N] horas
 
-### 🔴 Deadline-sensitive
-| ID | Type | Client | Student | Why flagged | Waiting |
+### 🔴 Sensível a prazo
+| ID | Tipo | Assistido(a) | Estagiário(a) | Por que sinalizado | Aguardando |
 |---|---|---|---|---|---|
 
-### Standard
-[same table]
+### Padrão
+[mesma tabela]
 
-### By student
-[Breakdown — spot patterns: who's queueing a lot, who might need a check-in]
+### Por estagiário(a)
+[Breakdown — spot padrões: quem está enfileirando muito, quem pode precisar de check-in]
 ```
 
-### Review an item
+### Revisar um item
 
-Show full content + why it was flagged + student notes.
+Mostre conteúdo completo + por que foi sinalizado + notas do(a) estagiário(a).
 
-### Approve / edit-then-approve / return
+### Aprovar / editar-e-aprovar / devolver
 
-- **Approve:** Status → approved, student notified, logged.
-- **Edit then approve:** Professor edits inline, approved version is the edited one, original preserved in log so student sees the diff (teaching moment).
-- **Return:** With a note. Student revises and resubmits.
+- **Aprovar:** Status → aprovado, estagiário(a) notificado(a), logado.
+- **Editar e aprovar:** Supervisor(a) edita inline, versão aprovada é a editada, original preservado no log para que o(a) estagiário(a) veja o diff (momento de ensino).
+- **Devolver:** Com uma nota. Estagiário(a) revisa e reapresenta.
 
 ## Logging
 
-Every action logged. Approval logs are clinic records — they document that a licensed attorney, solicitor, barrister, or other authorised legal professional in the clinic's jurisdiction reviewed student work before it went to a client or court. That matters for the clinic's own compliance and for student evaluation.
+Toda ação logada. Logs de aprovação são registros da unidade — documentam que um(a) Defensor(a) habilitado(a) (inscrito(a) na OAB ou regularmente investido(a) no cargo) ou advogado(a) orientador(a) regularmente inscrito(a) na OAB revisou trabalho de estagiário(a) antes de ir ao(à) assistido(a) ou juízo. Isso importa para a compliance da unidade (corregedoria DPE / coordenação NPJ) e para avaliação de estagiário(a).
 
-## Teaching signal
+## Sinal pedagógico
 
-The queue is also data. Pattern in returns ("Student X keeps missing the service requirement") is a coaching conversation. Pattern in edits ("Everyone's demand letters are too long") is a `/ramp` update for next semester.
+A fila é também dado. Padrão em devoluções ("Estagiário(a) X continua perdendo o requisito de intimação") é conversa de coaching. Padrão em edições ("Notificações extrajudiciais de todo mundo estão longas demais") é update de `/ramp` para o próximo termo.
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- **Run unless the professor chose it.** It's one of three supervision models, not the only one.
-- **Auto-approve.** The professor approves.
-- **Replace the clinic's existing supervision structure.** It's a gate for work product, not a substitute for case rounds, one-on-ones, or watching students in action.
+- **Rodar a não ser que o(a) supervisor(a) tenha escolhido.** É um de três modelos de supervisão, não o único.
+- **Auto-aprovar.** O(a) supervisor(a) aprova.
+- **Substituir a estrutura existente de supervisão da unidade.** É um gate para trabalho-produto, não substituto para reunião de equipe, atendimento conjunto, ou ver estagiários(as) em ação.

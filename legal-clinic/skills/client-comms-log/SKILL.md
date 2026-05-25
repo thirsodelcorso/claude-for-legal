@@ -1,116 +1,117 @@
 ---
 name: client-comms-log
 description: >
-  Log a client communication — call, email, text, letter, in-person, voicemail.
-  Append-only per-case record with dated entries, direction, medium, summary,
-  action items. Works alongside /client-letter and /status client. Use when
-  logging a call or client email, reviewing a communication log, or asking
-  "what did we tell [client] last time".
+  Loga uma comunicação com o(a) assistido(a) — ligação, e-mail, mensagem,
+  carta, atendimento presencial, recado. Registro por caso append-only, com
+  entradas datadas, direção, meio, sumário, itens de ação. Roda junto com
+  /client-letter e /status client. Use ao logar uma ligação ou e-mail do(a)
+  assistido(a), ao revisar o log de comunicações, ou ao perguntar "o que a
+  gente disse para [assistido(a)] da última vez".
 argument-hint: "[case-id] [--add (default) | --read | --summary | --patterns]"
 ---
 
 # /client-comms-log
 
-1. Use the workflow below.
-2. Require case-id (prompt if not provided).
-3. Route by flag:
-   - `--add` (default): capture direction, medium, student, summary, action items, follow-up due. Confirm with user. Append (prepend most-recent-first) to `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md`.
-   - `--read`: show the most recent N entries.
-   - `--summary`: one-paragraph condensed read.
-   - `--patterns`: scan for unanswered comms, missed follow-ups, language gaps, tone shifts, contact gaps. Supervision-oriented.
-4. Integration: offer `/legal-clinic:deadlines --add` if the log establishes a deadline; route to `/legal-clinic:semester-handoff` via `--summary` when relevant.
+1. Use o workflow abaixo.
+2. Exija case-id (peça se não fornecido).
+3. Rote por flag:
+   - `--add` (default): capture direção, meio, estagiário(a), sumário, itens de ação, follow-up devido. Confirme com o(a) usuário(a). Append (prepend mais-recente-primeiro) em `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md`.
+   - `--read`: mostre as N entradas mais recentes.
+   - `--summary`: leitura condensada de um parágrafo.
+   - `--patterns`: varra por comms não-respondidas, follow-ups perdidos, lacunas de idioma, mudanças de tom, lacunas de contato. Voltado à supervisão.
+4. Integração: ofereça `/legal-clinic:deadlines --add` se o log estabelecer prazo; rote para `/legal-clinic:semester-handoff` via `--summary` quando relevante.
 
 ---
 
-# Client Communications Log
+# Log de Comunicações com o(a) Assistido(a)
 
-## Purpose
+## Propósito
 
-Four reasons to keep this log:
+Quatro razões para manter este log:
 
-1. **Malpractice defense.** If a client claims "no one ever told me [X]," a dated entry showing otherwise is the answer. Clinical professors carry professional liability on student work; contemporaneous records protect them.
-2. **Continuity at handoff.** The next semester's student takes over and reads the log; they don't re-ask the client questions already answered.
-3. **Supervision visibility.** Five unreturned voicemails over six weeks is a pattern. The log makes patterns visible that individual students might not flag on their own.
-4. **File retention.** Law school clinics have obligations to maintain complete client files. Communication history is part of that.
+1. **Defesa contra responsabilização.** Se o(a) assistido(a) alega "ninguém nunca me disse [X]," uma entrada datada mostrando o contrário é a resposta. Defensores(as)-Supervisores(as) e Professores(as)-Orientadores(as) carregam responsabilidade institucional pelo trabalho do(a) estagiário(a); registros contemporâneos protegem.
+2. **Continuidade no handoff.** O(a) estagiário(a) do termo seguinte assume e lê o log; não re-pergunta ao(à) assistido(a) coisas já respondidas.
+3. **Visibilidade de supervisão.** Cinco recados não-retornados em seis semanas é padrão. O log torna visíveis padrões que estagiários(as) individuais talvez não sinalizassem por conta própria.
+4. **Retenção de arquivo.** Defensorias e NPJs têm obrigações de manter pastas de caso completas (LC 80/94 + regulamento institucional). Histórico de comunicação é parte disso.
 
-Light. Append-only. The student's job is to write a two-sentence entry after every contact; the skill formats it and appends.
+Leve. Append-only. Trabalho do(a) estagiário(a) é escrever entrada de duas frases depois de cada contato; a skill formata e faz append.
 
-## Load context
+## Carregue contexto
 
-- `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md` (if exists) — append target
-- `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → not heavily read; this skill is case-scoped
+- `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md` (se existir) — alvo do append
+- `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → não lido em profundidade; esta skill é case-scoped
 
-## Modes
+## Modos
 
 Flag: `--add | --read | --summary | --patterns` (default: add)
 
-### `--add` (default) — log a new entry
+### `--add` (default) — logar nova entrada
 
 **Inputs:**
-- Case ID (required — which case)
-- Date + time (default: now)
-- Direction: `in` (client → clinic) | `out` (clinic → client)
-- Medium: `call | email | text | letter | in-person | video | voicemail-left | voicemail-received`
-- Who (student): name
-- Who (client side): client name, or "third-party: [description]" if from opposing counsel, family member, etc.
-- Duration / length (e.g., "10 min call", "3-paragraph email", "45 min in-person meeting")
-- Summary: 2-4 sentences. What happened, what was substantive.
-- Action items:
-  - What the student owes the client (with deadline)
-  - What the client owes the student (with expected timing)
-- Follow-up due: date if applicable
-- Notes: anything that matters but doesn't fit above — language used, emotional tone, family dynamic observed
+- Case ID (obrigatório — qual caso)
+- Data + hora (default: agora)
+- Direção: `in` (assistido[a] → unidade) | `out` (unidade → assistido[a])
+- Meio: `ligação | email | mensagem | carta | presencial | vídeo | recado-deixado | recado-recebido`
+- Quem (estagiário[a]): nome
+- Quem (lado do[a] assistido[a]): nome do(a) assistido(a), ou "terceiro: [descrição]" se for de advogado(a) contrário(a), familiar, etc.
+- Duração / tamanho (ex.: "ligação de 10 min", "e-mail de 3 parágrafos", "atendimento presencial de 45 min")
+- Sumário: 2-4 frases. O que aconteceu, o que foi substantivo.
+- Itens de ação:
+  - O que o(a) estagiário(a) deve ao(à) assistido(a) (com prazo)
+  - O que o(a) assistido(a) deve ao(à) estagiário(a) (com timing esperado)
+- Follow-up devido: data se aplicável
+- Notas: qualquer coisa que importa mas não cabe acima — idioma usado, tom emocional, dinâmica familiar observada
 
-**Before writing:** show the user the formatted entry and ask for confirmation. Clinic records should be reviewed before they're written, not after.
+**Antes de escrever:** mostre ao(à) usuário(a) a entrada formatada e peça confirmação. Registros da unidade devem ser revisados antes de escritos, não depois.
 
-**Append** to `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md`. If the log doesn't exist, create it with a header:
+**Append** em `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md`. Se o log não existir, crie com cabeçalho:
 
 ```markdown
-# Communications Log — [case name]
+# Log de Comunicações — [nome do caso]
 
 **Case ID:** [case-id]
-**Client:** [name]
-**Opened:** [YYYY-MM-DD]
+**Assistido(a):** [nome]
+**Aberto em:** [AAAA-MM-DD]
 
-Append-only. Most recent at top.
+Append-only. Mais recente no topo.
 
 ---
 ```
 
-Then prepend new entries at the top (most recent first).
+Então faça prepend de novas entradas no topo (mais recente primeiro).
 
-### `--read` — show recent entries
+### `--read` — mostre entradas recentes
 
-Print the most recent N entries (default 5). Useful when picking up a case mid-semester or before a client call.
+Imprima as N entradas mais recentes (default 5). Útil ao pegar um caso no meio do termo ou antes de uma ligação ao(à) assistido(a).
 
-### `--summary` — condensed read
+### `--summary` — leitura condensada
 
-Produce a one-paragraph summary of the log — most recent contact, total entries, common medium, any open action items from the student side, any unanswered communications. Feeds `/semester-handoff` and `/status`.
+Produza sumário de um parágrafo do log — contato mais recente, total de entradas, meio comum, qualquer item de ação aberto do lado do(a) estagiário(a), qualquer comunicação não-respondida. Alimenta `/semester-handoff` e `/status`.
 
-### `--patterns` — flag concerns across the log
+### `--patterns` — sinalize preocupações ao longo do log
 
-Scan for:
+Varra por:
 
-- **Unanswered communications from client.** Client called or emailed N times without a response entry.
-- **Missed follow-up.** Action item with follow-up due date, and no later entry resolving it.
-- **Language / accommodation issues.** Client language noted as non-English; check whether outgoing communications have been in that language.
-- **Escalation patterns.** Client tone shifting (frustrated / distressed) across entries.
-- **Gaps.** Long stretches with no contact on an active case.
+- **Comunicações não-respondidas do(a) assistido(a).** Assistido(a) ligou ou e-mailou N vezes sem entrada de resposta.
+- **Follow-up perdido.** Item de ação com data de follow-up, e nenhuma entrada posterior resolvendo.
+- **Questões de idioma / acessibilidade.** Idioma do(a) assistido(a) anotado como não-português (ex.: língua indígena nativa); cheque se comunicações de saída foram nesse idioma ou via tradução.
+- **Padrões de escalonamento.** Tom do(a) assistido(a) mudando (frustrado / angustiado) ao longo das entradas.
+- **Lacunas.** Trechos longos sem contato em caso ativo.
 
-This is a supervision tool. Clinical professors running `--patterns` across their cases see which students might need support.
+Isto é ferramenta de supervisão. Defensores(as)-Supervisores(as) e Professores(as)-Orientadores(as) rodando `--patterns` em seus casos veem quais estagiários(as) podem precisar de apoio.
 
-## Integration
+## Integração
 
-- **`/client-letter`:** after generating and sending a letter, offer to log it as an outgoing comm.
-- **`/status client`:** when producing a client-facing status summary, offer to log it (often these summaries go to clients).
-- **`/client-intake`:** first entry in every new case's log is the intake contact.
-- **`/semester-handoff`:** handoff memos read `--summary` for each case to populate the communications-history section.
-- **`/deadlines`:** if a communication established a deadline ("client said they need to respond by Friday"), offer to `/deadlines --add`.
+- **`/client-letter`:** depois de gerar e enviar carta, ofereça logar como comm de saída.
+- **`/status client`:** ao produzir sumário de status voltado ao(à) assistido(a), ofereça logar (esses sumários frequentemente vão para o(a) assistido(a)).
+- **`/client-intake`:** primeira entrada no log de todo caso novo é o contato de intake.
+- **`/semester-handoff`:** memos de handoff leem `--summary` por caso para popular a seção de histórico de comunicações.
+- **`/deadlines`:** se uma comunicação estabeleceu prazo ("assistido(a) disse que precisa responder até sexta"), ofereça `/deadlines --add`.
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Store substantive legal analysis.** That lives in intake, memo, and status files. The log is communication record — facts of contact, not legal strategy.
-- **Auto-log from outside systems.** If the clinic uses a case management system (Clio), an integration could pull call logs and emails automatically. That's a future add; not v1.
-- **Edit past entries.** Append-only. If an entry is wrong, write a new entry referencing and correcting it. The integrity of the log depends on not rewriting history.
-- **Enforce log discipline.** If a student doesn't log a call, the skill can't know. Log hygiene is a clinic-culture problem; the skill just makes logging easy.
-- **Handle privileged or attorney-only notes.** If the student needs to record strategic thinking, that goes in the case's internal analysis file, not the comms log.
+- **Armazenar análise jurídica substantiva.** Isso vive em intake, memo e arquivos de status. O log é registro de comunicação — fatos de contato, não estratégia jurídica.
+- **Auto-logar de sistemas externos.** Se a unidade usa sistema interno (Sapiens-DPGU / sistema próprio AM), uma integração futura poderia puxar logs de ligação e e-mail automaticamente. Isso é roadmap; não v1.
+- **Editar entradas passadas.** Append-only. Se uma entrada está errada, escreva nova entrada referenciando e corrigindo. A integridade do log depende de não reescrever história.
+- **Forçar disciplina de log.** Se um(a) estagiário(a) não loga uma ligação, a skill não tem como saber. Higiene de log é problema de cultura da unidade; a skill só torna logar fácil.
+- **Lidar com notas reservadas ou só-para-Defensor(a).** Se o(a) estagiário(a) precisa registrar pensamento estratégico, isso vai no arquivo de análise interna do caso, não no log de comms.

@@ -1,21 +1,21 @@
 ---
 name: memo
 description: >
-  IRAC-scaffolded case analysis memo with research gaps flagged — the
-  scaffold, not the analysis. Rule blocks are RESEARCH NEEDED, Application
-  is STUDENT ANALYSIS prompts, Conclusion is blank. Use when a student needs
-  to scaffold a case analysis memo, write up their analysis, or build an
-  IRAC memo for a case.
+  Memo de análise de caso com scaffold FIRAC e lacunas de pesquisa sinalizadas
+  — o scaffold, não a análise. Blocos de Regra são PESQUISA NECESSÁRIA,
+  Aplicação é prompt de ANÁLISE DO(A) ESTAGIÁRIO(A), Conclusão fica em branco.
+  Use quando estagiário(a) precisa escafoldar memo de análise de caso, escrever
+  sua análise, ou construir memo FIRAC para um caso.
 argument-hint: "[optional: specific issue to focus]"
 ---
 
 # /memo
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice areas, jurisdiction.
-2. Use the workflow below. Read intake summary / case notes.
-3. Frame issues as questions. Scaffold IRAC for each — Rule blocks are RESEARCH NEEDED, Application is STUDENT ANALYSIS prompts, Conclusion is blank.
-4. Strengths/weaknesses/open questions. Research gaps summary.
-5. Output with prominent "the analysis is yours" label.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → áreas de atuação, jurisdição.
+2. Use o workflow abaixo. Leia sumário de intake / notas do caso.
+3. Enquadre questões como perguntas. Escafolde FIRAC para cada — blocos de Regra são PESQUISA NECESSÁRIA, Aplicação é prompt de ANÁLISE DO(A) ESTAGIÁRIO(A), Conclusão fica em branco.
+4. Pontos fortes/fracos/questões abertas. Sumário de lacunas de pesquisa.
+5. Output com rótulo proeminente "a análise é sua".
 
 ```
 /legal-clinic:memo
@@ -23,188 +23,199 @@ argument-hint: "[optional: specific issue to focus]"
 
 ---
 
-# Memo: Internal Case Analysis
+# Memo: Análise Interna de Caso
 
-## Purpose
+## Propósito
 
-The case analysis memo is where the student's thinking lives. This skill provides the IRAC scaffolding and flags the research gaps — the student fills in the analysis.
+O memo de análise de caso é onde mora o pensamento do(a) estagiário(a). Esta skill fornece o scaffolding FIRAC e sinaliza as lacunas de pesquisa — o(a) estagiário(a) preenche a análise.
 
-**The analysis is the student's.** This skill structures; it doesn't conclude.
+**A análise é do(a) estagiário(a).** Esta skill estrutura; não conclui.
 
-## Load context
+## Carregue contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice areas, jurisdiction, supervision style.
-Intake summary and case notes for facts.
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → áreas de atuação, jurisdição, estilo de supervisão.
+Sumário de intake e notas do caso para fatos.
 
-## Pedagogy check
+## Checagem pedagógica
 
-Read the supervisor guide for this practice area at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Check the `pedagogy_posture` setting:
+Leia o guia do(a) supervisor(a) para esta área de atuação em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area-de-atuacao>.md`. Cheque o setting `pedagogy_posture`:
 
-- **`guide` (default):** Produce the IRAC structure and the research-gap list. Ask the student to draft each rule statement themselves from research, rather than giving them a framework. Give feedback on what they wrote. Offer to fill the framework rule for a section only when the student has tried once.
-- **`assist`:** Produce the memo scaffold and fill what can be filled. Flag items for student review. The student edits and learns by reviewing. (Note: this memo skill always leaves the `[STUDENT ANALYSIS]` and `[STUDENT CONCLUSION]` blocks blank by design — `assist` means the skill produces the IRAC scaffold and framework rule statement; it does not produce the application or the conclusion.)
-- **`teach`:** Don't produce the framework or the scaffold content. Ask the student to frame the issues, state the rules from their research, and do the application. Give feedback. Ask leading questions when they're stuck. Only show a model rule statement or a model application paragraph after two attempts, and only for the section they're stuck on. Track what they got right and wrong so the supervisor can see progress.
+- **`guide` (default):** Produza a estrutura FIRAC e a lista de lacunas de pesquisa. Peça ao(à) estagiário(a) para redigir cada enunciado de regra a partir de pesquisa, em vez de dar framework. Dê feedback no que escreveu. Ofereça preencher a regra-framework de uma seção só depois que o(a) estagiário(a) tentou uma vez.
+- **`assist`:** Produza o scaffold do memo e preencha o que pode ser preenchido. Sinalize itens para revisão do(a) estagiário(a). Estagiário(a) edita e aprende revisando. (Nota: esta skill de memo sempre deixa os blocos `[ANÁLISE DO(A) ESTAGIÁRIO(A)]` e `[CONCLUSÃO DO(A) ESTAGIÁRIO(A)]` em branco por design — `assist` significa que a skill produz o scaffold FIRAC e o enunciado-framework da regra; não produz a aplicação nem a conclusão.)
+- **`teach`:** Não produza o framework nem o conteúdo do scaffold. Peça ao(à) estagiário(a) para enquadrar as questões, enunciar as regras a partir da pesquisa dele(a), e fazer a aplicação. Dê feedback. Faça perguntas leading quando travam. Só mostre um enunciado-modelo de regra ou um parágrafo-modelo de aplicação depois de duas tentativas, e só para a seção em que está travado(a). Acompanhe o que acertou e errou para que o(a) supervisor(a) veja progresso.
 
-If no guide exists, use `guide`. If the guide exists but doesn't set a posture, use `guide`.
+Se nenhum guia existe, use `guide`. Se o guia existe mas não seta postura, use `guide`.
 
-Whatever the posture, the output always includes: "**Pedagogy mode: [assist/guide/teach]** — set by your supervisor's guide. This means I [description of what the student did vs what the skill did]."
+Qualquer que seja a postura, o output sempre inclui: "**Modo pedagógico: [assist/guide/teach]** — setado pelo guia do(a) seu(sua) supervisor(a). Isso significa que eu [descrição do que o(a) estagiário(a) fez vs. o que a skill fez]."
 
 ## Workflow
 
-### Step 1: Frame the issues
+### Passo 1: Enquadre as questões
 
-From the intake summary and case notes: what are the legal questions this case presents?
+Do sumário de intake e das notas do caso: quais são as questões jurídicas que este caso apresenta?
 
-State each as a question. Not "habitability" — "Can the client assert a habitability defense to the eviction based on the broken heater, and if so, does it offset the rent owed?"
+Enuncie cada uma como pergunta. Não "habitabilidade do imóvel locado" — "O(a) assistido(a) pode opor exceção de habitabilidade prejudicada à ação de despejo por falta de pagamento, com base na falha estrutural não reparada pelo(a) locador(a), e isso compensa o aluguel devido?"
 
-If there are multiple issues, each gets its own IRAC block.
+Se há múltiplas questões, cada uma ganha seu próprio bloco FIRAC.
 
-### Step 2: Scaffold the IRAC
+### Passo 2: Escafolde o FIRAC
 
-For each issue:
+Para cada questão:
 
-**Issue:** Stated as a question (from Step 1).
+**Fatos:** Os fatos relevantes do caso (do intake), enxutos para o necessário à análise dessa questão.
 
-**Rule:** This is a research gap, not a conclusion. State what the student needs to find:
+**Issue:** Enunciada como pergunta (do Passo 1).
 
-> `[RESEARCH NEEDED: [State] habitability doctrine — warranty of habitability
-> elements, what conditions qualify, remedies available including rent offset.
-> Start with: [State] landlord-tenant statute, then case law on heater/heat
-> specifically. See /research-start for a roadmap.]`
+**Regra:** Esta é lacuna de pesquisa, não conclusão. Enuncie o que o(a) estagiário(a) precisa achar:
 
-If the skill has high confidence in the general rule framework (e.g., "most states recognize an implied warranty of habitability"), state that as a framework starting point — **but explicitly mark it as unverified**:
+> `[PESQUISA NECESSÁRIA: doutrina e jurisprudência sobre exceção de
+> habitabilidade prejudicada em ação de despejo na Lei 8.245/91 — fundamentos
+> nos arts. 22 e 23 (obrigações do(a) locador(a)), elementos, remédios
+> incluindo compensação de aluguel. Comece em: Lei 8.245/91 arts. 22-23,
+> depois jurisprudência STJ sobre exceção de contrato não cumprido em
+> locação (CC art. 476). Veja /research-start para roadmap.]`
 
-> *Framework (unverified — confirm for [State]):* Most jurisdictions recognize
-> an implied warranty of habitability requiring landlords to maintain
-> conditions fit for human occupation. Breach may give rise to rent withholding,
-> repair-and-deduct, or rent abatement.
-> `[VERIFY: [State]'s specific elements and remedies]`
+Se a skill tem confiança alta no framework geral da regra (ex.: "a maioria das relações locatícias civis admite exceção de contrato não cumprido"), enuncie como ponto de partida framework — **mas explicitamente marque como não-verificada**:
 
-**Application:** This is where the student's analysis goes. Scaffold the structure, don't fill it:
+> *Framework (não-verificado — confirmar para [jurisdição]):* O Código Civil
+> reconhece a exceptio non adimpleti contractus (CC art. 476), aplicável a
+> relações sinalagmáticas, incluindo locação (Lei 8.245/91 que disciplina
+> deveres do(a) locador(a) nos arts. 22-23). A jurisprudência admite
+> compensação ou redução proporcional do aluguel quando a falha do(a)
+> locador(a) afeta o uso pacífico do imóvel.
+> `[VERIFICAR: elementos específicos e remédios admitidos pelo STJ e TJAM]`
 
-> `[STUDENT ANALYSIS: Apply the rule to the facts. Key facts to address:
-> - Heater broken since November — how long is "unreasonable"?
-> - Client notified landlord [when? how? documented?]
-> - Landlord's response or lack thereof
-> - [State]-specific: does client need to have given written notice?
->   deposited rent in escrow? other procedural prerequisites?]`
+**Análise (Aplicação):** Aqui é onde vai a análise do(a) estagiário(a). Escafolde a estrutura, não preencha:
 
-List the facts that matter. Let the student do the applying.
+> `[ANÁLISE DO(A) ESTAGIÁRIO(A): Aplique a regra aos fatos. Fatos-chave a
+> endereçar:
+> - Sistema hidráulico com vazamento desde novembro — "quanto tempo é
+>   irrazoável"?
+> - Assistido(a) notificou o(a) locador(a) [quando? como? documentado?]
+> - Resposta do(a) locador(a) ou falta dela
+> - Específico de Lei 8.245/91 / TJAM: assistido(a) precisava de
+>   notificação extrajudicial prévia? consignar aluguel em juízo? outros
+>   pré-requisitos procedimentais?]`
 
-**Conclusion:** Explicitly blank:
+Liste os fatos que importam. Deixe o(a) estagiário(a) fazer a aplicação.
 
-> `[STUDENT CONCLUSION: Based on your research and analysis above, what's the
-> likely outcome? How strong is this defense? What are the weaknesses?]`
+**Conclusão:** Explicitamente em branco:
 
-### Step 3: Identify strengths, weaknesses, open questions
+> `[CONCLUSÃO DO(A) ESTAGIÁRIO(A): Com base na sua pesquisa e análise acima,
+> qual o resultado provável? Quão forte é esta defesa? Quais as fraquezas?]`
 
-Separate section, after the IRAC blocks:
+### Passo 3: Identifique pontos fortes, fracos, questões abertas
 
-**Strengths (apparent from facts — student should test these):**
-- [Fact that seems helpful and why]
+Seção separada, depois dos blocos FIRAC:
 
-**Weaknesses (apparent from facts — student should assess how serious):**
-- [Fact that seems harmful and why]
-- `[UNCERTAIN: whether [X] is actually a weakness — depends on [State] rule on [Y]]`
+**Pontos fortes (aparentes dos fatos — estagiário(a) deve testar):**
+- [Fato que parece útil e por quê]
 
-**Open questions (things the memo can't answer without more info):**
-- Factual: [what we don't know from the client]
-- Legal: [what needs research]
-- Strategic: [judgment calls for the student/professor]
+**Pontos fracos (aparentes dos fatos — estagiário(a) deve avaliar quão sérios):**
+- [Fato que parece danoso e por quê]
+- `[INCERTO: se [X] é de fato ponto fraco — depende da regra de [jurisdição] sobre [Y]]`
+
+**Questões abertas (coisas que o memo não responde sem mais informação):**
+- Fatuais: [o que não sabemos do(a) assistido(a)]
+- Jurídicas: [o que precisa de pesquisa]
+- Estratégicas: [juízos para o(a) estagiário(a)/supervisor(a)]
 
 ## Output
 
 ```markdown
 ═══════════════════════════════════════════════════════════════════════
-  AI-ASSISTED SCAFFOLD — THE ANALYSIS IS YOURS TO WRITE
-  Every [RESEARCH NEEDED] and [STUDENT ANALYSIS] block is a prompt, not
-  a placeholder to delete. The thinking happens when you fill them in.
+  SCAFFOLD ASSISTIDO POR IA — A ANÁLISE É SUA PARA ESCREVER
+  Todo bloco [PESQUISA NECESSÁRIA] e [ANÁLISE DO(A) ESTAGIÁRIO(A)] é
+  prompt, não placeholder para deletar. O pensamento acontece quando
+  você preenche.
 ═══════════════════════════════════════════════════════════════════════
 
-# Case Analysis Memo: [Client] — [Matter]
+# Memo de Análise de Caso: [Assistido(a)] — [Matéria]
 
-**Date:** [date] | **By:** [student] | **For:** [Professor]
+**Data:** [data] | **Por:** [estagiário(a)] | **Para:** [Supervisor(a)]
 
 ---
 
 ## Bottom line
 
-[Take the case / Decline because X / Need more info on Y — next step is Z]
+[Pegar o caso / Declinar porque X / Precisa de mais informação sobre Y — próximo passo é Z]
 
 ---
 
-## Issues Presented
+## Questões Apresentadas
 
-1. [Issue as question]
-2. [Issue as question]
-
----
-
-## Issue 1: [Issue]
-
-### Rule
-
-[Framework starting point with VERIFY flags, and RESEARCH NEEDED blocks]
-
-### Application
-
-[STUDENT ANALYSIS scaffold with the facts that matter]
-
-### Conclusion
-
-[STUDENT CONCLUSION — blank]
+1. [Issue como pergunta]
+2. [Issue como pergunta]
 
 ---
 
-[repeat for each issue]
+## Questão 1: [Issue]
+
+### Regra
+
+[Framework inicial com flags VERIFICAR, e blocos PESQUISA NECESSÁRIA]
+
+### Aplicação
+
+[Scaffold de ANÁLISE DO(A) ESTAGIÁRIO(A) com os fatos que importam]
+
+### Conclusão
+
+[CONCLUSÃO DO(A) ESTAGIÁRIO(A) — em branco]
 
 ---
 
-## Strengths
-
-[list with caveats]
-
-## Weaknesses
-
-[list with UNCERTAIN flags where applicable]
-
-## Open Questions
-
-**Factual:** [list]
-**Legal:** [list — these feed /research-start]
-**Strategic:** [list — these are for discussion with Professor]
+[repita para cada questão]
 
 ---
 
-## Research gaps summary
+## Pontos Fortes
 
-[Every RESEARCH NEEDED block pulled out into one list, so the student can
-work through them systematically — and can run /research-start on each]
+[lista com ressalvas]
+
+## Pontos Fracos
+
+[lista com flags INCERTO onde aplicável]
+
+## Questões Abertas
+
+**Fatuais:** [lista]
+**Jurídicas:** [lista — essas alimentam /research-start]
+**Estratégicas:** [lista — essas são para discussão com Supervisor(a)]
+
+---
+
+## Sumário de lacunas de pesquisa
+
+[Todo bloco PESQUISA NECESSÁRIA puxado para uma lista, para que o(a)
+estagiário(a) trabalhe sistematicamente — e possa rodar /research-start em
+cada]
 
 ═══════════════════════════════════════════════════════════════════════
 
-## What this memo is NOT
+## O que este memo NÃO é
 
-This is a scaffold, not an analysis. The [STUDENT ANALYSIS] blocks are where
-the educational value lives — filling them in is the work. A memo where those
-blocks are still empty is a memo that hasn't been written yet.
+Isto é scaffold, não análise. Os blocos [ANÁLISE DO(A) ESTAGIÁRIO(A)] são onde
+vive o valor educacional — preenchê-los é o trabalho. Memo com esses blocos
+ainda em branco é memo que ainda não foi escrito.
 
 ---
 
-**Cite verification — required before use.** Any framework rules, cases, or statutes suggested above were generated by an AI model and have not been verified. Before relying on any citation — or including it in client work — run it through Westlaw, Fastcase, CourtListener, or your clinic's research platform for accuracy and current good-law status. Flag unverified citations to your supervisor.
+**Verificação de citação — exigida antes de uso.** Quaisquer regras-framework, julgados ou dispositivos sugeridos acima foram gerados por modelo de IA e não foram verificados. Antes de confiar em qualquer citação — ou de incluir em trabalho voltado ao(à) assistido(a) — rode pelos MCPs do plugin (JusRatio, BNP, CJF, TJAM, DataJud) ou pelo sítio oficial (planalto.gov.br, sítios dos tribunais) para acurácia e status atual de vigência/overruling. Sinalize citações não-verificadas ao(à) seu(sua) supervisor(a).
 
-**Source attribution.** Tag every suggested citation in the scaffold with where it came from: `[Westlaw]`, `[CourtListener]`, `[Fastcase]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations the supervising attorney or case file supplied. Citations tagged `verify` carry higher fabrication risk than tool-retrieved citations and should be checked first. Never strip or collapse the tags — they are the supervisor's fastest signal about which citations to verify.
+**Atribuição de fonte.** Tagueie toda citação sugerida no scaffold com de onde veio: `[JusRatio]`, `[BNP]`, `[CJF]`, `[TJAM]`, `[DataJud]` para citações recuperadas de MCP de pesquisa jurídica nesta sessão; `[lei / planalto.gov.br]` ou `[CNJ]` ou `[CSDPGE]` para texto puxado de sítio oficial nesta sessão; `[busca web — verificar]` para citações de busca web; `[conhecimento do modelo — verificar]` para citações recordadas de dados de treino; `[usuário forneceu]` para citações que supervisor(a) ou pasta do caso forneceram. Citações tagueadas `verificar` carregam risco maior de fabricação que citações ferramentaorecuperadas e devem ser checadas primeiro. Nunca retire ou colapse as tags — elas são o sinal mais rápido para o(a) supervisor(a) sobre quais citações verificar.
 
-**No silent supplement.** If a query to a configured research tool returns few or no results for a rule the memo needs, say so and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [rule / issue]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) leave `[RULE TO VERIFY]` and stop. Which would you like?" The supervising attorney decides whether to accept lower-confidence sources.
+**Sem suplementação silenciosa.** Se uma consulta ao MCP de pesquisa configurado retorna poucos ou nenhum resultado para regra que o memo precisa, diga e pare. NÃO preencha a lacuna a partir de busca web ou conhecimento do modelo sem perguntar. Diga: "A busca retornou [N] resultados de [ferramenta]. Cobertura aparenta fina para [regra / questão]. Opções: (1) ampliar a query, (2) tentar outra ferramenta de pesquisa, (3) buscar na web — resultados serão tagueados `[busca web — verificar]` e devem ser checados contra fonte primária antes de confiar, ou (4) deixar `[REGRA A VERIFICAR]` e parar. Qual você prefere?" O(a) Defensor(a)-Supervisor(a) decide se aceita fontes de menor confiança.
 ```
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- **Write the analysis.** It scaffolds the IRAC and flags the gaps. The student reasons through the application.
-- **Provide verified rules.** Every rule statement is explicitly unverified until the student researches it.
-- **Reach conclusions.** The C in IRAC is blank on purpose.
-- **Replace the conversation with the professor.** The Open Questions / Strategic section is the agenda for that conversation, not a substitute.
+- **Escrever a análise.** Ela escafolda o FIRAC e sinaliza as lacunas. O(a) estagiário(a) raciocina sobre a aplicação.
+- **Fornecer regras verificadas.** Todo enunciado de regra é explicitamente não-verificado até o(a) estagiário(a) pesquisar.
+- **Chegar a conclusões.** O C em FIRAC fica em branco de propósito.
+- **Substituir a conversa com o(a) supervisor(a).** A seção Questões Abertas / Estratégicas é a pauta dessa conversa, não substituto.
 
-## Close with the next-steps decision tree
+## Encerre com a árvore de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Encerre com a árvore de próximos passos conforme CLAUDE.md `## Outputs`. Customize as opções para o que esta skill acabou de produzir — os cinco branches default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não lock-in. A árvore é o output; o(a) supervisor(a) escolhe.
 

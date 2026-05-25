@@ -1,22 +1,24 @@
 ---
 name: status
 description: >
-  Case status summary by audience — client-facing (plain language), internal
-  (for the professor), or court-ready (formal caption format per local rules).
-  Same facts, different framing and depth. Use when a student needs to update
-  the client, brief the professor, or prepare a court status report.
+  Sumário de status do caso por audiência — voltado ao(à) assistido(a)
+  (linguagem simples), interno (para o(a) supervisor(a)), ou court-ready (em
+  formato de petição com cabeçalho próprio conforme regimento local). Mesmos
+  fatos, enquadramento e profundidade diferentes. Use quando estagiário(a)
+  precisa atualizar assistido(a), informar supervisor(a), ou preparar petição
+  de informação de andamento ao juízo.
 argument-hint: "[client | internal | court]"
 ---
 
 # /status
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style, plain-language standards, jurisdiction.
-2. Use the workflow below. Read case notes.
-3. Generate for the specified audience:
-   - `client` — plain language, what happened/next/you do/reach us
-   - `internal` — procedural posture, done since last check-in, upcoming, needs professor input, student's assessment
-   - `court` — formal status report in caption format per local rules
-4. Supervision routing per audience (client-facing and court-ready usually flag).
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → estilo de supervisão, padrões de linguagem simples, jurisdição.
+2. Use o workflow abaixo. Leia notas do caso.
+3. Gere para a audiência especificada:
+   - `client` — linguagem simples, o que aconteceu/próximos passos/o que você faz/como contatar
+   - `internal` — posição processual, feito desde último check-in, próximos passos, precisa de input do(a) supervisor(a), avaliação do(a) estagiário(a)
+   - `court` — peça formal de informação ao juízo em formato com cabeçalho próprio conforme regimento local
+4. Roteamento de supervisão por audiência (voltado ao(à) assistido(a) e ao juízo geralmente sinalizam).
 
 ```
 /legal-clinic:status client
@@ -32,163 +34,170 @@ argument-hint: "[client | internal | court]"
 
 ---
 
-# Status: Audience-Aware Case Summaries
+# Status: Sumários de Caso por Audiência
 
-## Purpose
+## Propósito
 
-Clinics generate enormous numbers of status updates — to clients, to professors, to co-counsel, to courts. Same case, same facts, completely different documents. This skill takes the case notes and produces the right summary for the right reader.
+Unidades de DP e NPJs geram quantidades enormes de atualizações de status — ao(à) assistido(a), ao(à) supervisor(a), ao(à) co-advogado(a), ao juízo. Mesmo caso, mesmos fatos, documentos completamente diferentes. Esta skill pega as notas do caso e produz o sumário certo para o(a) leitor(a) certo(a).
 
-## Load context
+## Carregue contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style, plain-language standards (for client-facing), jurisdiction.
-Case notes for facts.
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → estilo de supervisão, padrões de linguagem simples (para voltado ao(à) assistido(a)), jurisdição.
+Notas do caso para fatos.
 
-## Audience modes
+## Modos de audiência
 
-### Client-facing
+### Voltado ao(à) assistido(a)
 
-**Reader:** The client. Probably stressed. Possibly unfamiliar with legal process. Reading level per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` plain-language standards (default 6th grade).
+**Leitor(a):** O(a) assistido(a). Provavelmente estressado(a). Possivelmente não-familiarizado(a) com processo judicial. Nível de leitura conforme padrões de linguagem simples em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` (default ensino fundamental II — 6º-9º ano), em cumprimento ao dever de informar com clareza (LC 80/94 art. 4º-A III).
 
-**Include:**
-- What's happened since they last heard from the clinic
-- What's happening next and when
-- What (if anything) they need to do
-- How to reach the clinic
+**Inclua:**
+- O que aconteceu desde a última vez que ouviu da unidade
+- O que vem em seguida e quando
+- O que (se algo) precisa fazer
+- Como contatar a unidade
 
-**Don't include:**
-- Legal analysis (they don't need to know the IRAC)
-- Weaknesses in their case (unless it's time to have that conversation — and that's a call for the professor, not a status update)
-- Jargon
+**Não inclua:**
+- Análise jurídica (não precisam saber o FIRAC)
+- Pontos fracos do caso (a não ser que seja hora dessa conversa — e isso é decisão do(a) supervisor(a), não de atualização de status)
+- Jargão
 
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires student review and supervision step per plugin config]`
+*Rótulo de revisão para o(a) estagiário(a) (não para o(a) assistido(a) — retirar antes de enviar):*
+`[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]`
 
-Check your jurisdiction's student practice rule for required law-student sign-off language; some jurisdictions require specific forms.
+Cheque a norma de regência do estágio (LC 80/94 art. 4º §6º para DP; Resolução CNE/CES 5/2018 + regimento da IES + convênio para NPJ acadêmico) para o texto de identificação de estagiário(a) exigido.
 
 ```markdown
-Dear [Client],
+Prezado(a) [Assistido(a)],
 
-I wanted to update you on your case.
+Queria te dar uma atualização sobre seu caso.
 
-**What's happened:** [Plain English. "We filed your answer with the court on
-[date]" not "The responsive pleading was submitted."]
+**O que aconteceu:** [Português simples. "Protocolamos sua contestação no juízo
+em [data]" não "Foi apresentada a peça contestatória."]
 
-**What's next:** [What and when. "The court scheduled a hearing for [date] at
-[time]. You need to be there." Or: "We're waiting for the landlord's lawyer
-to respond. That could take a few weeks."]
+**Próximos passos:** [O quê e quando. "O juízo marcou audiência para [data] às
+[hora]. Você precisa estar presente." Ou: "Estamos aguardando a resposta do(a)
+advogado(a) do(a) locador(a). Isso pode levar algumas semanas."]
 
-**What you need to do:** [Specific and clear. Or: "Nothing right now — we'll
-let you know when we need something from you."]
+**O que você precisa fazer:** [Específico e claro. Ou: "Nada agora — a gente
+te avisa quando precisar de algo."]
 
-**How to reach us:** [Clinic phone, hours, student name]
+**Como nos contatar:** [Telefone da unidade, horário, nome do(a) estagiário(a)]
 
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name]
+[Nome do(a) estagiário(a)]
+Estagiário(a) de Direito, inscrito(a) na OAB [seccional/nº] sob LC 80/94 art. 4º §6º
+Sob a supervisão de [Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a)]
+[Nome da unidade / NPJ]
 ```
 
-**Before sending:** sending a client status update is a consequential action. The gate is the supervision workflow in `## Supervision style` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reinforced by the Part 0 role check confirming a licensed supervising attorney owns the setup. Confirm the draft has been reviewed per the supervision protocol (queue / flag / lighter-touch) and all internal review labels (`[AI-ASSISTED DRAFT]`, `[VERIFY]`, etc.) have been removed from the client-facing copy.
+**Antes de enviar:** enviar atualização de status ao(à) assistido(a) é ação consequente. O gate é o workflow de supervisão em `## Estilo de supervisão` em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reforçado pela checagem de papel da Parte 0 confirmando que Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a) habilitado(a) é dono(a) do setup. Confirme que a minuta foi revisada conforme o protocolo de supervisão (fila / flag / toque mais leve) e todos os rótulos internos de revisão (`[MINUTA ASSISTIDA POR IA]`, `[VERIFICAR]`, etc.) foram removidos da cópia voltada ao(à) assistido(a).
 
-### Internal (for the professor)
+### Interno (para o(a) supervisor(a))
 
-**Reader:** The supervising professor. Knows the law. Wants to know where the case stands and what the student needs from them.
+**Leitor(a):** O(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a). Sabe a lei. Quer saber onde o caso está e o que o(a) estagiário(a) precisa.
 
-**Include:**
-- Procedural status (where in the life of the case)
-- What's been done since last check-in
-- What's coming up (deadlines, hearings)
-- Issues needing professor input
-- Student's assessment (how it's going, concerns)
+**Inclua:**
+- Posição processual (onde na vida do caso)
+- O que foi feito desde último check-in
+- O que vem em seguida (prazos, audiências)
+- Questões precisando de input do(a) supervisor(a)
+- Avaliação do(a) estagiário(a) (como está indo, preocupações)
 
 ```markdown
-# Status: [Client] — [Matter] — [date]
+# Status: [Assistido(a)] — [Matéria] — [data]
 
-**Student:** [name] | **Procedural posture:** [pre-filing / answer filed /
-discovery / motion pending / etc.]
+**Estagiário(a):** [nome] | **Posição processual:** [pré-protocolo /
+contestação apresentada / instrução / impugnação pendente / sentença / etc.]
 
-## Since last check-in
+## Desde último check-in
 
-- [What's been done]
+- [O que foi feito]
 
-## Upcoming
+## Próximos passos
 
-| Date | What | Action needed by |
+| Data | O quê | Ação necessária até |
 |---|---|---|
-| [date] | [deadline/hearing] | [date] |
+| [data] | [prazo/audiência] | [data] |
 
-## Needs professor input
+## Precisa de input do(a) supervisor(a)
 
-- [Question or decision point — specific]
+- [Questão ou ponto de decisão — específico]
 
-## Student's assessment
+## Avaliação do(a) estagiário(a)
 
-[How it's going. Strengths, concerns, strategic questions. This is where the
-student's thinking shows.]
+[Como está indo. Pontos fortes, preocupações, questões estratégicas. Aqui é
+onde o pensamento do(a) estagiário(a) aparece.]
 
 ---
-[AI-ASSISTED DRAFT — student should revise the assessment section especially;
-that's your thinking, not a summary of notes]
+[MINUTA ASSISTIDA POR IA — estagiário(a) deve revisar especialmente a seção de
+avaliação; é seu pensamento, não sumário de notas]
 ```
 
 ### Court-ready
 
-**Reader:** A judge or clerk. Formal. Specific to what the court needs (often a status report ordered by the court, or a statement in advance of a status conference).
+**Leitor(a):** Magistrado(a) ou serventuário(a). Formal. Específica para o que o juízo precisa (frequentemente uma petição de informação de andamento determinada pelo juízo, ou manifestação prévia à audiência).
 
-**Include:**
-- Procedural history (briefly)
-- Current status of discovery/motions/settlement
-- What's outstanding
-- Proposed next steps or scheduling
+**Inclua:**
+- Histórico processual (brevemente)
+- Status atual de instrução/impugnações/conciliação
+- O que está pendente
+- Próximos passos propostos ou agendamento
 
-**Format:** Per local rules. Caption, signature block, certificate of service if filed.
+**Formato:** Conforme regimento local. Cabeçalho com endereçamento, qualificação, bloco de assinatura, certidão se aplicável.
 
 ```markdown
 ═══════════════════════════════════════════════════════════════════════
-  AI-ASSISTED DRAFT — requires student analysis and attorney review
-  Court filings ALWAYS require professor review before filing
+  MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão
+  do(a) supervisor(a)
+  Peças a protocolar SEMPRE exigem revisão do(a) supervisor(a) antes do
+  protocolo
 ═══════════════════════════════════════════════════════════════════════
 
-[Caption per jurisdiction — VERIFY against current local rules]
+[Cabeçalho conforme jurisdição — VERIFICAR contra regimento local atual]
 
-STATUS REPORT
+PETIÇÃO DE INFORMAÇÃO DE ANDAMENTO
 
-[Party] respectfully submits this status report pursuant to [the court's
-order of [date] / local rule [X] / in advance of the status conference
-scheduled for [date]].
+[Parte], por sua Defensoria Pública / Núcleo de Prática Jurídica, vem
+respeitosamente apresentar a presente informação de andamento [em
+cumprimento ao despacho de [data] / nos termos do art. [X] do regimento /
+em vista da audiência marcada para [data]].
 
-1. Procedural history: [brief]
+1. Histórico processual: [breve]
 
-2. Current status: [discovery status / motion status / settlement status]
+2. Status atual: [status de instrução / status de impugnações / status de
+   conciliação]
 
-3. Outstanding matters: [what's pending]
+3. Matérias pendentes: [o que está pendente]
 
-4. Proposed next steps: [scheduling, if the court wants input]
+4. Próximos passos propostos: [agendamento, se o juízo quer input]
 
-[Signature block — student attorney under supervision of [Professor]]
+[Bloco de assinatura — estagiário(a) de Direito sob supervisão de
+[Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a)], indicando
+inscrição OAB sob LC 80/94 art. 4º §6º se na DP, ou estágio acadêmico se
+em NPJ]
 
-[Certificate of service if filing]
+[Certidão se aplicável]
 
 ---
 
-[VERIFY: caption format, local status report requirements, service
-requirements — per current [Court] rules]
+[VERIFICAR: formato de cabeçalho, requisitos locais de petição de
+informação, requisitos de intimação — conforme regimento [Tribunal] atual]
 ```
 
-## Supervision routing
+## Roteamento de supervisão
 
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`:
-- Client-facing → usually a flag trigger (client communication)
-- Internal → no flag (it's going to the professor anyway)
-- Court-ready → always flagged if formal queue enabled (court filings)
+Conforme `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`:
+- Voltado ao(à) assistido(a) → geralmente gatilho de flag (comunicação com assistido(a))
+- Interno → sem flag (vai para o(a) supervisor(a) de qualquer forma)
+- Court-ready → sempre sinalizado se fila formal habilitada (peças a juízo)
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- **Decide what to tell the client.** Especially on bad news or case weaknesses — that's a conversation for the student and professor to have, then the student to have with the client. Status updates are status, not strategic advice.
-- **File anything with a court.** Drafts the document; professor reviews; filing per clinic procedure.
-- **Replace the student's assessment in internal status.** The "student's assessment" section is the student's thinking — the draft can scaffold it but can't write it.
+- **Decidir o que dizer ao(à) assistido(a).** Especialmente sobre más notícias ou pontos fracos do caso — isso é conversa para o(a) estagiário(a) e supervisor(a) terem, depois o(a) estagiário(a) ter com o(a) assistido(a). Atualizações de status são status, não parecer estratégico.
+- **Protocolar qualquer coisa no juízo.** Redige o documento; supervisor(a) revisa; protocolo conforme procedimento da unidade.
+- **Substituir a avaliação do(a) estagiário(a) no status interno.** A seção "avaliação do(a) estagiário(a)" é o pensamento do(a) estagiário(a) — a minuta pode escafoldar mas não pode escrever.
 
-## Close with the next-steps decision tree
+## Encerre com a árvore de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+Encerre com a árvore de próximos passos conforme CLAUDE.md `## Outputs`. Customize as opções para o que esta skill acabou de produzir — os cinco branches default (redigir o X, escalonar, pegar mais fatos, observar e esperar, outra coisa) são ponto de partida, não lock-in. A árvore é o output; o(a) supervisor(a) escolhe.
 

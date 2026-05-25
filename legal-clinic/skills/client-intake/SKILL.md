@@ -1,21 +1,24 @@
 ---
 name: client-intake
 description: >
-  Structured intake — practice-area templates, cross-area issue spotting,
-  conflict flags, and triage classification. Produces a formatted case summary
-  the student analyzes and the professor reviews. Does NOT decide case
-  acceptance. Use when starting a new client intake, running an intake
-  interview, or writing up a new client's situation.
-argument-hint: "[optional: practice area hint]"
+  Intake estruturado do(a) assistido(a) — templates por área de atuação da
+  Defensoria Pública (Família/Sucessões, Consumidor, Saúde, BPC/LOAS,
+  Locação, Possessória, Defesa em cobrança), identificação cruzada de
+  pretensões, flags de impedimento institucional, classificação de triagem
+  por urgência humanitária. Produz sumário de caso formatado que o(a)
+  estagiário(a) analisa e o(a) Defensor(a)-Supervisor(a) revisa. NÃO decide
+  aceitação. Use ao iniciar atendimento novo, rodar entrevista de intake,
+  ou escrever situação de novo(a) assistido(a).
+argument-hint: "[opcional: dica de área de atuação]"
 ---
 
 # /client-intake
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice areas, intake templates, supervision style, flag triggers.
-2. Use the workflow below.
-3. Route to practice-area template. Listen for cross-area issues throughout.
-4. Conflict check flags. Triage classification.
-5. Output formatted case summary with AI-assisted label, verification prompts, supervision routing.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → áreas de atuação, templates de intake, modelo de supervisão, gatilhos de flag.
+2. Use o workflow abaixo.
+3. Rote para template por área. Escute pretensões cruzadas ao longo do atendimento.
+4. Flags de impedimento. Classificação de triagem.
+5. Output: sumário formatado com rótulo de IA-assistida, pedidos de verificação, roteamento para supervisão.
 
 ```
 /legal-clinic:client-intake
@@ -23,226 +26,262 @@ argument-hint: "[optional: practice area hint]"
 
 ---
 
-# Client Intake
+# Intake do(a) Assistido(a)
 
-## Purpose
+## Propósito
 
-Intake is one of the biggest bottlenecks in clinics. A student might spend 45 minutes interviewing, another hour writing it up, more time spotting the issues. Meanwhile the waitlist grows.
+Intake é um dos maiores gargalos em unidades de DP e NPJ. Um(a) estagiário(a) pode gastar 45 min entrevistando, mais 1 hora escrevendo, mais tempo identificando pretensões. Enquanto isso, a fila do acolhimento cresce.
 
-This skill structures the conversation, produces the write-up, spots issues across practice areas, and flags conflicts — so the student's time goes to analysis, not transcription.
+Esta skill estrutura a conversa, produz a redação, identifica pretensões entre áreas, e flag impedimentos — para que o tempo do(a) estagiário(a) vá para análise, não transcrição.
 
-**What it doesn't do:** decide whether to take the case. That's the student's analysis and the professor's judgment. Claude accelerates the information-gathering and structuring, not the lawyering.
+**O que NÃO faz:** decide se o caso é atendido. Isso é análise do(a) estagiário(a) e juízo do(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a). Claude acelera a coleta de informação e estruturação, não a advocacia.
 
-## Load context
+## Carregar contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice areas, intake templates (per practice area if multiple), supervision style, jurisdiction, flag triggers.
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → áreas de atuação, templates de intake (por área se múltiplas), modelo de supervisão, vara/jurisdição, gatilhos de flag.
 
-## Read the supervisor guide
+## Leia o guia do(a) supervisor(a)
 
-Check for a practice-area guide at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. If one exists, use its intake questions, red flags, and good-fit criteria instead of the generic defaults below. If one doesn't exist, use the generic intake and note at the end of the intake summary: "This was a generic intake — your supervisor can tailor the questions for your clinic type with `/legal-clinic:build-guide`."
+Cheque por guia por área em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area>.md`. Se um existe, use suas perguntas de intake, bandeiras vermelhas e critérios de atendimento em vez dos defaults genéricos abaixo. Se não existe, use intake genérico e nota no fim do sumário: "Foi intake genérico — seu(sua) supervisor(a) pode afinar perguntas para sua unidade com `/legal-clinic:build-guide`."
 
-When the intake starts before the practice area is routed (Step 1 of the workflow below), re-check for the guide after routing — the guide path depends on which practice area the intake landed in.
+Quando o intake começa antes da área ser roteada (Passo 1 do workflow), re-cheque o guia após rotear — o caminho do guia depende de qual área o intake caiu.
 
 ## Workflow
 
-### Step 1: Practice area routing
+### Passo 1: Roteamento por área
 
-Which practice area does this intake start in? The client may not know — they know their problem, not the legal category.
+Qual área o(a) assistido(a) traz? O(A) assistido(a) pode não saber — sabe o problema dele(a), não a categoria jurídica.
 
-> "Tell me what's going on — what brought you to the clinic today?"
+> "Me conta o que está acontecendo — o que te trouxe à Defensoria hoje?"
 
-From the answer, route to the appropriate intake template. If the clinic handles multiple areas and the problem spans them (housing client mentions immigration status, family client mentions domestic violence), note all relevant areas — cross-area issue spotting is a feature, not a bug.
+Da resposta, rote para o template apropriado. Se a unidade trata múltiplas áreas e o problema atravessa (assistida de Família menciona violência doméstica, assistido de Consumidor menciona despejo iminente), note todas — identificação cruzada de pretensões é feature, não bug.
 
-### Step 2: Practice-area-specific intake
+### Passo 2: Intake específico por área
 
-Each practice area asks different questions. Use the template from `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` for this area. Defaults if none provided:
+Cada área pergunta diferente. Use o template em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` para esta área. Defaults se nenhum:
 
-**Immigration:**
-- Current status and how entered
-- Any prior applications, removals, encounters with ICE/CBP
-- Country conditions relevant to any asylum/withholding claim
-- Family members and their statuses
-- Criminal history (sensitive — explain why asking)
-- Timeline urgency: any pending hearings, deadlines, NTAs
+**Família / Sucessões:**
+- Relação (cônjuge, união estável, ex-companheiro(a), pais separados, filiação)
+- Filhos envolvidos — idades, arranjo atual de guarda
+- Segurança: há violência, ameaça, medo? (cuidado — vide flags cruzadas Lei Maria da Penha)
+- Ordens judiciais existentes (medidas protetivas, alimentos provisórios)
+- Patrimônio / partilha em discussão
+- Hipossuficiência: comprovação de renda (até 3 SM tipicamente para presunção)
+- Urgência: alguma audiência marcada? Prescrição próxima?
 
-**Housing:**
-- Type of housing (private, subsidized, public)
-- What happened: notice received, lockout, conditions problem, deposit dispute
-- Lease terms and payment history
-- Habitability issues (repairs requested, landlord response, documentation)
-- Timeline urgency: notice date, court date if any
+**Saúde Pública (CF art. 196):**
+- Pretensão: medicamento (cite o nome e princípio ativo), leito UTI, internação (CAPS / clínica), procedimento cirúrgico, exame, terapia
+- Prescrição médica (preferencialmente do SUS — mas privada também serve com fundamentação)
+- Tentativa administrativa (SUS Estadual / Municipal contatado? Negativa por escrito?)
+- Quadro clínico (laudo médico — quando emitido, gravidade, prognóstico, urgência)
+- Custo privado se não obtido pelo SUS (alegação de inviabilidade financeira)
+- Tema 793 STF aplicável (solidariedade entre União, Estado, Município)
+- Tema 106 STJ aplicável (requisitos para medicamento não-RENAME)
 
-**Family:**
-- Relationship and what's at issue (custody, support, divorce, protection)
-- Children involved — ages, current arrangement
-- Safety: any violence, threats, fear (handle carefully — see cross-area flags)
-- Existing court orders
-- Timeline urgency: any hearings scheduled
+**Consumidor (CDC, JEC se ≤ 40 SM):**
+- Tipo de problema (vício de produto, vício de serviço, cobrança indevida, cobrança vexatória CDC 42, recusa de fornecedor, publicidade enganosa)
+- Relação de consumo confirmada (CDC arts. 2º + 3º)
+- Documentação: nota fiscal, contrato, recibo, faturas, prints de mensagens
+- Tentativa anterior de resolução (reclamação no Procon? Carta? Telefonema?)
+- Inscrição em cadastro de inadimplentes (SPC/Serasa)?
+- Urgência: prazo de prescrição (CDC 26 — 30/90 dias para vício; 27 — 5 anos para fato do produto)
 
-**Consumer:**
-- Type of debt or dispute
-- Who's contacting them and how (FDCPA relevance)
-- Documentation: contracts, statements, collection letters
-- Has anything been filed against them
-- Timeline urgency: answer deadlines, garnishment, judgment
+**Previdenciário (BPC/LOAS — Justiça Federal):**
+- Idade ≥ 65 anos OU deficiência (impedimento de longo prazo)
+- Composição familiar e renda per capita (≤ 1/4 SM regra; Tema 27 STF permite outros critérios)
+- Cadastro CadÚnico atualizado? Quando?
+- Prévio requerimento administrativo INSS (Tema 350 STF — condição da ação)
+- Documentação: RG, CPF, CadÚnico, laudo médico se deficiência, comprovante de renda da família
+- Encaminhamento à DPU se DPE estadual não tem competência
 
-### Step 3: Cross-practice-area issue spotting
+**Locação (Lei 8.245/91) — defesa em despejo:**
+- Tipo de contrato (residencial / não-residencial / temporada)
+- Causa do despejo (falta de pagamento? Denúncia vazia? Infração contratual? Outras hipóteses art. 9º)
+- Notificação recebida (data, conteúdo)
+- Valores em discussão (alugueres em atraso, encargos)
+- Possibilidade de purgação da mora (Lei 8.245 art. 62 II — depósito de aluguel + multa + custas + honorários)
+- Vícios do imóvel (CDC se relação de consumo + Lei 8.245)
+- Urgência: prazo para purgação ou para contestar; data da audiência
 
-While running the practice-area template, listen for issues outside that area:
+**Possessória:**
+- Tipo: reintegração (já perdeu posse), manutenção (turbação parcial), interdito proibitório (ameaça)
+- Data do esbulho/turbação (força nova até 1 ano CPC 558; força velha após — rito comum)
+- Prova de posse anterior (documentos, contas em nome, testemunhas)
+- Atual ocupação por terceiro
+- Risco de desocupação iminente
 
-| Client says | Also flags |
+**Defesa em ação de cobrança:**
+- Origem da dívida alegada
+- Já houve pagamento (parcial ou integral)? Documentação
+- Tese de defesa cabível (prescrição CC 206; inexigibilidade; cobrança indevida CDC 42)
+- Prazo: 15 dias úteis para contestar (CPC 335) + dobro para Defensor (CPC 186 = 30 dias úteis)
+
+### Passo 3: Identificação cruzada de pretensões
+
+Enquanto roda o template por área, escute pretensões fora dessa área:
+
+| Assistido(a) diz | Também flag |
 |---|---|
-| "I'm worried about my immigration status" | Immigration issue — even in a housing intake |
-| "My partner [threatening behavior]" | DV / family law / protective order — even in a consumer intake |
-| "I can't work because of my injury" | Possible benefits/disability claim |
-| "They're taking money from my paycheck" | Garnishment — consumer/employment overlap |
-| "The landlord said he'd call ICE" | Housing + immigration + possible retaliation claim |
+| "Tenho medo do meu marido / ex" | Lei Maria da Penha — mesmo em intake de Família ou Consumidor; flag para medida protetiva urgente |
+| "Meu filho não quer voltar do pai dele" | ECA — possível conflito de guarda + envolvimento do Conselho Tutelar |
+| "Estou sem o medicamento há semanas" | Saúde pública — mesmo em intake de outra área |
+| "Não consigo trabalhar por causa do problema de saúde" | Possível BPC/LOAS + pretensão previdenciária |
+| "Me cortaram a água / luz / gás" | Consumidor + possível concessionária + dignidade da pessoa humana CF 1º III |
+| "O patrão me pôs na rua sem pagar" | Trabalhista — encaminhar ao Núcleo Trabalhista da DP se houver; ou Justiça do Trabalho |
+| "Meu vizinho está construindo no meu terreno" | Possessória + possível arbitramento de honorários periciais (se Justiça Comum) |
+| "Foram me cobrar uma dívida de 5 anos atrás" | Consumidor + prescrição CC 206 + dano moral CDC 42 |
 
-Note every cross-area issue in the summary. The clinic may handle it, refer it, or both — that's the professor's call. The student should see it.
+Note toda pretensão cruzada no sumário. A unidade pode tratar, encaminhar (a outra DP, ao Núcleo Especializado, ao Conselho Tutelar, ao CRAS/CREAS), ou ambos — chamada do(a) supervisor(a). O(A) estagiário(a) deve ver.
 
-### Step 4: Conflict check flags
+### Passo 4: Flags de impedimento institucional
 
-Per whatever conflict-check process `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` describes. At minimum:
+Per o processo de checagem que `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` descreve. No mínimo:
 
-- Opposing party name(s) — does the clinic represent or have represented them?
-- Related parties — anyone else the student or clinic might have a conflict with?
-- Positional conflicts — is this case asking for something that would hurt another clinic client?
+- Nome(s) da contraparte — a unidade representa ou já representou?
+- Partes relacionadas — alguém mais com quem estagiário(a) ou unidade pode ter conflito?
+- Impedimento posicional — este caso pede algo que prejudicaria outro(a) assistido(a) da unidade?
+- **Vedações institucionais (Defensor — LC 80/94 art. 46):** o(a) Defensor(a) responsável tem relação privada com a contraparte? Está em hipótese de impedimento (LC 80/94 art. 134 + CPC 144-148)?
+- **Para NPJ:** algum(a) estagiário(a) ou professor(a) tem relação com a contraparte?
 
-Flag for professor review. Don't resolve the conflict — surface it.
+Flag para revisão do(a) supervisor(a). Não resolva o impedimento — surface.
 
-### Step 5: Triage classification
+### Passo 5: Classificação de triagem
 
-Not a case-acceptance decision — a triage input:
+Não é decisão de aceitação — input para triagem:
 
-| Classification | Means |
+| Classificação | Significa |
 |---|---|
-| **Urgent** | Deadline in days, safety issue, irreversible harm imminent |
-| **Time-sensitive** | Deadline in weeks, harm ongoing but not immediately irreversible |
-| **Standard** | No immediate deadline, can queue normally |
-| **May be out of scope** | Issue is outside clinic's practice areas — flag for referral assessment |
+| **Urgente** | Prazo em dias úteis, urgência humanitária (vida/saúde/violência), dano irreversível iminente |
+| **Tempo-sensível** | Prazo em semanas, dano em curso mas não imediatamente irreversível |
+| **Padrão** | Sem prazo imediato, pode entrar na fila normal |
+| **Pode estar fora do escopo** | Pretensão fora das áreas da unidade — flag para encaminhamento a outra DP ou núcleo |
 
-### Step 6: Supervision flag check
+### Passo 6: Checagem de flag de supervisão
 
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` supervision style and flag triggers. If formal queue or configurable flags are enabled, and a trigger is present (deadline mentioned, DV indicator, immigration status at issue, etc.), note the flag.
+Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` modelo de supervisão e gatilhos. Se fila formal ou flags configuráveis habilitados, e gatilho presente (prazo mencionado, indicador Lei Maria da Penha, criança em risco, saúde mental, criminal por escala, etc.), note a flag.
 
-### Step 7: Deadline handoff — required deliverable
+### Passo 7: Handoff de prazo — entregável obrigatório
 
-If the intake surfaces any timeline deadline (answer due, hearing, statute-of-limitations cutoff, cure period, filing window, notice window, ICE check-in, removal hearing, eviction court date, protective order renewal), **emit a copy-paste-ready `/legal-clinic:deadlines --add ...` block as part of the intake output**. This is a required deliverable, not a suggestion — the intake identifies deadlines, and the student shouldn't have to re-transcribe them into the deadline skill.
+Se o intake surface qualquer prazo (contestação, audiência, prescrição, decadência, purgação, intimação para responder, etc.), **emita um bloco `/legal-clinic:deadlines --add ...` pronto para copiar-colar como parte do output**. Isto é entregável obrigatório, não sugestão — o intake identifica prazos, e o(a) estagiário(a) não deve ter que re-transcrever para a skill de prazos.
 
-Format each deadline as a fenced code block the student can copy, with every field pre-populated from the intake:
+Formate cada prazo como bloco de código cercado para o(a) estagiário(a) copiar, com cada campo pré-populado:
 
 ```
 /legal-clinic:deadlines --add
-  case=[case slug or client-last-name-keyword]
-  type=[response|hearing|statute-of-limitations|discovery|cure-period|filing-window|notice|other]
-  description="[one-line description of what is due]"
-  due=[VERIFY — student + supervisor compute from triggering event]
-  source="[triggering event + statute/rule cite, e.g., 'UD complaint served 2026-05-04, CCP § 1167']"
-  owner=[student name]
+  case=[slug do caso ou palavra-chave-sobrenome]
+  type=[contestacao|audiencia|prescricao|decadencia|purgacao|notificacao|intimacao|cumprimento|outro]
+  description="[descrição em uma linha do que vence]"
+  due=[VERIFICAR — estagiário(a) + supervisor(a) calculam do evento gatilho com CPC 219 dias úteis + dobro Defensor CPC 186]
+  source="[evento gatilho + cite de lei/dispositivo, ex.: 'Ação de despejo Lei 8.245 art. 62, II, citado em 2026-05-04, prazo 15 dias úteis para purgação']"
+  owner=[nome do(a) estagiário(a)]
   warnings=[14,7,3,1]
+  prazo_em_dobro_defensor=true  # se aplicável
 ```
 
-Rules:
-- One block per deadline surfaced. Do not combine. Each one will route through the deadlines skill's pre-add duplicate check.
-- Leave the `due=` value as `[VERIFY — student + supervisor compute]` when the deadline is jurisdictional (response deadline, SOL, notice window under a specific rule). The deadlines skill will not compute for you; the student + supervisor do the math and update the entry.
-- When a date is given in the triggering document (a hearing date on a summons, an ICE check-in date, a renewal deadline on a protective order), put that date in `due=`. When the date is computed (count N days from triggering event), leave the `[VERIFY]` marker.
-- If no deadline is surfaced in the intake, omit this section — don't fabricate one.
+Regras:
+- Um bloco por prazo identificado. Não combine. Cada um passa pela checagem de duplicação pré-add da skill de prazos.
+- Deixe `due=` como `[VERIFICAR — estagiário(a) + supervisor(a) calculam]` quando o prazo é jurisdicional (contestação, prescrição, prazo de janela específica). A skill de prazos não calcula por você; estagiário(a) + supervisor(a) fazem a conta e atualizam a entrada.
+- Quando uma data é dada no documento gatilho (data de audiência em intimação), coloque no `due=`. Quando a data é calculada (contar N dias úteis do evento), deixe o marcador `[VERIFICAR]`.
+- Se nenhum prazo é identificado no intake, omita esta seção — não fabrique.
 
 ## Output
 
 ```markdown
-# Intake Summary: [Client name or ID]
+# Sumário de Intake: [Nome do(a) Assistido(a) ou ID]
 
 ---
-[AI-ASSISTED DRAFT — requires student analysis and attorney review]
+[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]
 
-**Privilege and confidentiality.** This summary is derived from client communications that may be privileged, confidential, or both. It inherits the source's privilege status. Distributing it beyond the privilege circle (including outside the clinic) can waive privilege. Keep it in the clinic's privileged file store, mark it appropriately, and make distribution decisions with your supervisor.
+**Sigilo do(a) assistido(a) (LC 80/94 art. 4º-A V) + sigilo profissional (Lei 8.906/94 art. 7º XIX).** Este sumário deriva de comunicações com o(a) assistido(a) sob sigilo. Distribuir fora do círculo de sigilo (incluindo fora da unidade) pode constituir infração ético-disciplinar. Armazene em local com controle de acesso (pasta privada, sistema interno Sapiens-DPGU ou similar), marque adequadamente, e decisões de distribuição em consulta com supervisor(a).
 ---
 
-**Date:** [date] | **Intake by:** [student] | **Practice area:** [primary + any cross-area]
+**Data:** [data] | **Intake por:** [estagiário(a)] | **Área de atuação:** [primária + qualquer cruzada]
 
 ## Bottom line
 
-[Take the case / Decline because X / Need more info on Y — next step is Z]
+[Atender o caso / Recusar porque X / Precisar de mais informação sobre Y — próximo passo é Z]
 
-## Client's situation (in their words)
+## Situação do(a) assistido(a) (nas palavras dele/dela)
 
-[The narrative the client gave, before legal categorization. This is the human story.]
+[A narrativa que o(a) assistido(a) deu, antes da categorização jurídica. Esta é a história humana.]
 
-## Legal issues identified
+## Pretensões jurídicas identificadas
 
-*Every statutory, ordinance, regulatory, rule, or case citation in this section carries a provenance tag (see plugin CLAUDE.md `## Shared guardrails` for the tag vocabulary). `[user provided]` if the supervisor uploaded the text, `[statute / regulator site]` if you fetched it this session from an official source, a research-connector tag (`[CourtListener]`, etc.) if it came from a tool result in this conversation, `[model knowledge — verify]` otherwise. The default is `[model knowledge — verify]`. A supervising attorney who cannot verify a cite against a connector needs to see the tag to know what to check first.*
+*Cada citação de dispositivo, súmula, Tema ou julgado nesta seção carrega tag de proveniência (vide guardrails compartilhados do CLAUDE.md para o vocabulário de tag). `[usuário forneceu]` se o(a) supervisor(a) subiu o texto, `[lei / planalto.gov.br]` se você puxou nesta sessão de fonte oficial, tag de MCP de pesquisa (`[BNP]`, `[TJAM]`, etc.) se veio de resultado de ferramenta nesta conversa, `[conhecimento do modelo — verificar]` caso contrário. Default é `[conhecimento do modelo — verificar]`. Defensor(a)-Supervisor(a) que não pode verificar contra conector precisa ver a tag para saber o que conferir primeiro.*
 
-### Primary ([practice area])
-- [Issue 1]: [one line with any cite tagged, e.g., "RLTO §5-12-080 `[model knowledge — verify]`"]
-- [Issue 2]: [one line]
+### Primária ([área])
+- [Pretensão 1]: [uma linha com qualquer cite taggada, ex.: "CC art. 1.694 + Súmula 358 STJ `[conhecimento do modelo — verificar]`"]
+- [Pretensão 2]: [uma linha]
 
-### Cross-practice-area flags
-- [Other area]: [what the client said that raised it]
-  [UNCERTAIN: whether clinic handles this or refers — professor call]
+### Pretensões cruzadas
+- [Outra área]: [o que o(a) assistido(a) disse que levantou]
+  [INCERTO: se a unidade trata ou encaminha — chamada do(a) supervisor(a)]
 
-## Key facts
+## Fatos-chave
 
-| Fact | Source | Documentation |
+| Fato | Fonte | Documentação |
 |---|---|---|
-| [fact] | [client statement / document provided] | [have it / need it] |
+| [fato] | [declaração do(a) assistido(a) / documento juntado] | [tenho / preciso obter] |
 
-## Conflict check
+## Hipossuficiência (Defensor — Súmula 481 STJ)
 
-**Opposing party:** [name(s)]
-**Related parties:** [any]
-**Flag:** [clear / needs conflict check against clinic database]
+**Presumida:** [sim / não — Defensor presume; coleta documental é confirmatória, não constitutiva]
+**Comprovação documental disponível:** [CadÚnico / comprovante renda / outros]
+**Renda familiar per capita declarada:** [R$]
 
-## Triage
+## Checagem de impedimento
 
-**Classification:** [Urgent / Time-sensitive / Standard / May be out of scope]
-**Driving deadline:** [if any — date and what it is]
+**Contraparte:** [nome(s)]
+**Partes relacionadas:** [se houver]
+**Vedações institucionais (Defensor LC 80/94 art. 46):** [confirmar — relação privada? parecer remunerado anterior?]
+**Flag:** [clear / precisa checagem contra base interna ou consulta ao(à) supervisor(a)]
 
-## Deadlines to log
+## Triagem
 
-[One `/legal-clinic:deadlines --add ...` block per surfaced deadline — Step 7.
-If none, omit this section.]
+**Classificação:** [Urgente / Tempo-sensível / Padrão / Pode estar fora do escopo]
+**Prazo direcionador:** [se houver — data e o que é]
+**Urgência humanitária:** [se aplicável — vida, saúde, despejo iminente, violência]
 
-## Jurisdictional notes
+## Prazos a logar
 
-*Every statute, ordinance, rule, or case citation in this section carries a provenance tag — same vocabulary as `## Legal issues identified`. Default `[model knowledge — verify]`. When no research connector is reachable for this session, record it in the **Sources:** line of the reviewer note (see plugin CLAUDE.md `## Outputs`) — do not emit a standalone banner.*
+[Um bloco `/legal-clinic:deadlines --add ...` por prazo identificado — Passo 7. Se nenhum, omita esta seção.]
 
-[State-specific or local-rule-specific issues relevant to this case type, per
-CLAUDE.md jurisdiction, with each cite tagged]
+## Notas jurisdicionais
 
-## Supervision flags
+*Cada dispositivo, súmula, regra ou julgado nesta seção carrega tag de proveniência — mesmo vocabulário de `## Pretensões jurídicas identificadas`. Default `[conhecimento do modelo — verificar]`. Quando nenhum MCP de pesquisa está conectado nesta sessão, registre na linha **Fontes:** da nota do revisor — não emita banner separado.*
 
-[If supervision style includes flags: which fired and why. If formal queue:
-"QUEUED for [professor]."]
+[Questões específicas do estado, da comarca, ou da vara relevantes a este tipo de caso, per CLAUDE.md jurisdição, com cada cite taggado. Para DPEAM: vara da atribuição da unidade — 1ª/12ª JEC ou 19ª/20ª Cível Comum, etc.]
+
+## Flags de supervisão
+
+[Se modelo de supervisão inclui flags: quais dispararam e por quê. Se fila formal: "EM FILA para [supervisor(a)]."]
 
 ---
 
-## Verification prompts for the student
+## Pedidos de verificação para o(a) estagiário(a)
 
-Before analysis, verify:
-- [ ] [Specific fact the intake relies on — confirm with client or documents]
-- [ ] [Deadline date — confirm from the actual notice/court document, not client's memory]
-- [ ] [Any legal conclusion above is a starting hypothesis — research before relying on it]
+Antes da análise, verifique:
+- [ ] [Fato específico em que o intake se baseia — confirme com assistido(a) ou documentos]
+- [ ] [Data de prazo — confirme do documento real, não da memória do(a) assistido(a)]
+- [ ] [Qualquer conclusão jurídica acima é hipótese de partida — pesquise antes de confiar]
+- [ ] Hipossuficiência: declaração assinada pelo(a) assistido(a) presente na pasta
 
-## What this summary does NOT do
+## O que este sumário NÃO faz
 
-This summary does not decide whether the clinic takes this case. That's your
-analysis and [Professor]'s judgment. It structures what the client told you
-so you can spend your time on the analysis instead of the write-up.
+Este sumário não decide se a unidade atende este caso. Isto é sua análise e juízo do(a) Defensor(a)-Supervisor(a). Estrutura o que o(a) assistido(a) te contou para você gastar seu tempo na análise em vez da redação.
 ```
 
-## Practice-area intake template references
+## Referências de templates por área
 
-Store practice-area-specific question sets at `references/intake-templates/[area].md`. Cold-start populates these from the professor's intake form(s); if none provided, use the defaults above.
+Armazene conjuntos específicos de pergunta por área em `references/intake-templates/[area].md`. Cold-start populou destes do formulário do(a) supervisor(a); se nenhum, use defaults acima.
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- **Decide case acceptance.** Student analyzes, professor decides.
-- **Resolve conflicts.** Flags them for the professor.
-- **Give advice during intake.** Intake is gathering; advice comes after analysis and professor review.
-- **Produce a final document.** The summary is a starting point — the student reads it, corrects anything mischaracterized, and builds the analysis from it.
+- **Decide aceitação.** Estagiário(a) analisa, Defensor(a)/Professor(a)-Supervisor(a) decide.
+- **Resolve impedimentos.** Flag para o(a) supervisor(a).
+- **Dá orientação durante intake.** Intake é coleta; orientação vem após análise e revisão do(a) supervisor(a).
+- **Produz documento final.** O sumário é ponto de partida — o(a) estagiário(a) lê, corrige qualquer caracterização errada, e constrói a análise a partir dele.
 
-## Close with the next-steps decision tree
+## Feche com árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
+Termine com a árvore per CLAUDE.md `## Outputs`. Customize ao que esta skill acabou de produzir.

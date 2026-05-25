@@ -1,22 +1,23 @@
 ---
 name: client-letter
 description: >
-  Routine client correspondence from templates — appointment confirmations,
-  document requests, brief "we filed it" updates. Plain language, required
-  elements, supervision routing. NOT substantive advice. Use when a student
-  needs to send routine correspondence, an appointment confirmation, a
-  document request letter, or a brief status note to a client.
+  Correspondência de rotina com o(a) assistido(a) a partir de templates —
+  confirmações de atendimento, pedidos de documento, atualizações breves do
+  tipo "protocolamos". Linguagem simples, elementos obrigatórios, roteamento de
+  supervisão. NÃO é parecer substantivo. Use quando um(a) estagiário(a) precisa
+  enviar correspondência de rotina, confirmação de atendimento, carta de pedido
+  de documentos, ou nota breve de status ao(à) assistido(a).
 argument-hint: "[appointment | doc-request | update]"
 ---
 
 # /client-letter
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → plain-language standards, supervision style, clinic contact info.
-2. Use the templates and workflow below.
-3. Match type to template. Plain-language check.
-4. Output with AI-assisted label, supervision routing.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → padrões de linguagem simples, estilo de supervisão, dados de contato da unidade.
+2. Use os templates e o workflow abaixo.
+3. Case tipo com template. Checagem de linguagem simples.
+4. Output com rótulo IA-assistida, roteamento de supervisão.
 
-Scope: routine only. Substantive advice → `/status client` or a conversation with the professor.
+Escopo: rotina apenas. Parecer substantivo → `/status client` ou conversa com o(a) supervisor(a).
 
 ```
 /legal-clinic:client-letter appointment
@@ -28,139 +29,142 @@ Scope: routine only. Substantive advice → `/status client` or a conversation w
 
 ---
 
-# Client Letter: Routine Correspondence
+# Carta ao(à) Assistido(a): Correspondência de Rotina
 
-## Purpose
+## Propósito
 
-Clinics send a lot of routine correspondence: "your appointment is Tuesday at 2pm," "please bring your lease," "we filed your answer." This skill handles those from templates so students aren't typing the same letter every week.
+Unidades de DP e NPJs mandam muita correspondência de rotina: "seu atendimento é terça às 14h," "favor trazer seu contrato de locação," "protocolamos sua contestação." Esta skill cuida dessas a partir de templates para que estagiários(as) não fiquem digitando a mesma carta toda semana.
 
-**Scope: routine only.** Substantive advice, bad news, case strategy — those are `/status client` or a conversation, not a template letter.
+**Escopo: rotina apenas.** Parecer substantivo, má notícia, estratégia de caso — essas são `/status client` ou conversa, não carta-template.
 
-## Load context
+## Carregue contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → plain-language standards, supervision style, clinic contact info.
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → padrões de linguagem simples, estilo de supervisão, dados de contato da unidade.
 
-## Pedagogy check
+## Checagem pedagógica
 
-Read the supervisor guide for this practice area at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Check the `pedagogy_posture` setting:
+Leia o guia do(a) supervisor(a) para esta área de atuação em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area-de-atuacao>.md`. Cheque o setting `pedagogy_posture`:
 
-- **`guide` (default):** Produce the structure and the checklist (required elements, plain-language targets, sign-off per student practice rule). Ask the student to draft each section. Give feedback on their draft (register, reading level, required elements, what they missed). Offer to fill a section only when the student has tried once.
-- **`assist`:** Produce the letter. Flag items for student review. The student edits and learns by reviewing.
-- **`teach`:** Don't produce the letter. Ask the student to draft it. Give feedback. Ask leading questions when they're stuck. Only show a model paragraph after two attempts, and only the section they're stuck on. Track what they got right and wrong so the supervisor can see progress.
+- **`guide` (default):** Produza a estrutura e o checklist (elementos obrigatórios, alvos de linguagem simples, sign-off conforme norma de regência do estágio). Peça ao(à) estagiário(a) para redigir cada seção. Dê feedback no que escreveu (registro, nível de leitura, elementos obrigatórios, o que faltou). Ofereça preencher uma seção só depois que o(a) estagiário(a) tentou uma vez.
+- **`assist`:** Produza a carta. Sinalize itens para revisão do(a) estagiário(a). Estagiário(a) edita e aprende revisando.
+- **`teach`:** Não produza a carta. Peça ao(à) estagiário(a) para redigir. Dê feedback. Faça perguntas leading quando travam. Só mostre um parágrafo-modelo depois de duas tentativas, e só na seção em que está travado(a). Acompanhe o que acertou e errou para que o(a) supervisor(a) veja progresso.
 
-If no guide exists, use `guide`. If the guide exists but doesn't set a posture, use `guide`.
+Se nenhum guia existe, use `guide`. Se o guia existe mas não seta postura, use `guide`.
 
-Whatever the posture, the output always includes: "**Pedagogy mode: [assist/guide/teach]** — set by your supervisor's guide. This means I [description of what the student did vs what the skill did]."
+Qualquer que seja a postura, o output sempre inclui: "**Modo pedagógico: [assist/guide/teach]** — setado pelo guia do(a) seu(sua) supervisor(a). Isso significa que eu [descrição do que o(a) estagiário(a) fez vs. o que a skill fez]."
 
-## Sign-off and student-attorney disclosure
+## Sign-off e identificação como estagiário(a)
 
-Check your jurisdiction's student practice rule for required disclosure language in letters signed by a law student. Some jurisdictions require specific forms; most require that the student identify themselves as a law student / certified legal intern and identify the supervising attorney. The templates below use a generic form — conform the sign-off to your rule before sending.
+Cheque a norma de regência do estágio (LC 80/94 art. 4º §6º para estágio na DP; Resolução CNE/CES 5/2018 + regimento da IES + convênio para NPJ acadêmico) para o texto de identificação exigido em cartas assinadas por estagiário(a). Estagiários(as) na DP devem se identificar como estagiários(as) inscritos(as) na OAB sob LC 80/94 art. 4º §6º e identificar o(a) Defensor(a)-Supervisor(a); em NPJ, identificar como estagiário(a) acadêmico(a) sob orientação do(a) Professor(a)-Orientador(a) e a IES. Os templates abaixo usam forma genérica — conforme o sign-off à sua norma antes de enviar.
 
-## Letter types
+## Tipos de carta
 
-> **Review label goes OUTSIDE the letter.** The `[AI-ASSISTED DRAFT — requires review per plugin config supervision step]` tag is a note to the student, not part of the letter body. Place it above the rendered template (or in a header the student deletes before sending), never inside the fenced letter content. If it ends up in the client-facing copy, the skill has failed.
+> **Rótulo de revisão fica FORA da carta.** A tag `[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]` é nota ao(à) estagiário(a), não parte do corpo da carta. Coloque acima do template renderizado (ou em cabeçalho que o(a) estagiário(a) deleta antes de enviar), nunca dentro do conteúdo da carta. Se acabar na cópia que vai ao(à) assistido(a), a skill falhou.
 
-### Appointment confirmation
+### Confirmação de atendimento
 
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires review per plugin config supervision step]`
-
-```markdown
-Dear [Client],
-
-This confirms your appointment with [Clinic name]:
-
-**Date:** [date]
-**Time:** [time]
-**Where:** [address / room / or "by phone at [number]"]
-**With:** [student name]
-
-**Please bring:** [documents needed — from case notes or leave as prompt
-for student to fill]
-
-If you need to reschedule, call us at [clinic phone] at least 24 hours before.
-
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name] | [phone] | [hours]
-```
-
-### Document request
-
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires review per plugin config supervision step]`
+*Rótulo de revisão para o(a) estagiário(a) (não para o(a) assistido(a) — retirar antes de enviar):*
+`[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]`
 
 ```markdown
-Dear [Client],
+Prezado(a) [Assistido(a)],
 
-To move your case forward, we need the following documents from you:
+Confirmamos seu atendimento com [Nome da unidade / NPJ]:
 
-- [Document 1 — e.g., "Your lease agreement"]
-- [Document 2 — e.g., "The notice you received from your landlord"]
-- [Document 3]
+**Data:** [data]
+**Horário:** [hora]
+**Onde:** [endereço / sala / ou "por telefone no [número]"]
+**Com:** [nome do(a) estagiário(a)]
 
-**How to get them to us:** [drop off at clinic / email to [address] / bring
-to next appointment]
+**Por favor traga:** [documentos necessários — das notas do caso ou deixar
+como prompt para o(a) estagiário(a) preencher]
 
-**Please send by:** [date — if there's a deadline, say why: "We need these
-by [date] so we can file your answer before the court deadline."]
+Se precisar remarcar, ligue para nós em [telefone da unidade] com no mínimo 24
+horas de antecedência.
 
-If you don't have some of these or aren't sure what we mean, call us at
-[clinic phone] and we can help.
-
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name] | [phone] | [hours]
+[Nome do(a) estagiário(a)]
+Estagiário(a) de Direito, inscrito(a) na OAB [seccional/nº] sob LC 80/94 art. 4º §6º
+Sob a supervisão de [Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a)]
+[Nome da unidade / NPJ] | [telefone] | [horário de atendimento]
 ```
 
-### Brief status update
+### Pedido de documentos
 
-For routine "we filed it" / "we're waiting" updates. (Fuller status updates → `/status client`.)
-
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires review per plugin config supervision step]`
+*Rótulo de revisão para o(a) estagiário(a) (não para o(a) assistido(a) — retirar antes de enviar):*
+`[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]`
 
 ```markdown
-Dear [Client],
+Prezado(a) [Assistido(a)],
 
-Quick update: [one-line what happened — "We filed your answer with the court
-on [date]" / "We sent the demand letter to your landlord on [date]"].
+Para dar andamento ao seu caso, precisamos dos seguintes documentos:
 
-**What's next:** [one line — "We're waiting for their response" / "The court
-will schedule a hearing and let us know the date"].
+- [Documento 1 — ex.: "Seu contrato de locação"]
+- [Documento 2 — ex.: "A notificação que você recebeu do(a) locador(a)"]
+- [Documento 3]
 
-You don't need to do anything right now. We'll let you know when we do.
+**Como nos entregar:** [trazer pessoalmente à unidade / enviar por e-mail para
+[endereço] / trazer no próximo atendimento]
 
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name] | [phone] | [hours]
+**Por favor envie até:** [data — se houver prazo, explique por quê: "Precisamos
+desses documentos até [data] para protocolar sua contestação antes do prazo do
+juízo."]
+
+Se você não tem algum desses ou não sabe a que estamos nos referindo, ligue
+para nós em [telefone da unidade] e a gente ajuda.
+
+[Nome do(a) estagiário(a)]
+Estagiário(a) de Direito, inscrito(a) na OAB [seccional/nº] sob LC 80/94 art. 4º §6º
+Sob a supervisão de [Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a)]
+[Nome da unidade / NPJ] | [telefone] | [horário de atendimento]
 ```
 
-## Before sending
+### Atualização breve de status
 
-Sending a letter to a client is a consequential action. This plugin's gate is the supervision workflow described in `## Supervision style` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reinforced by the Part 0 role check that confirms a licensed supervising attorney owns the clinic setup. That gate still holds: every letter clears review before it leaves the clinic.
+Para atualizações de rotina do tipo "protocolamos" / "estamos aguardando". (Atualizações mais cheias → `/status client`.)
 
-Before sending any of the letters above, confirm:
+*Rótulo de revisão para o(a) estagiário(a) (não para o(a) assistido(a) — retirar antes de enviar):*
+`[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]`
 
-1. The draft has been reviewed per the supervision protocol in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` (queue / flag / lighter-touch).
-2. All internal review labels (`[AI-ASSISTED DRAFT]`, any `[VERIFY]` or `[FACT NEEDED]` tags) have been removed from the client-facing copy.
-3. The sign-off conforms to your jurisdiction's student practice rule for law-student-signed correspondence.
+```markdown
+Prezado(a) [Assistido(a)],
 
-**This is a student draft for supervising-attorney review, not a final letter.** Sending it has legal consequences for the client and may constitute legal advice or communication on the client's behalf. A licensed supervising attorney reviews, edits, and signs off before the letter leaves the clinic. Do not send without supervisor approval.
+Atualização rápida: [uma linha do que aconteceu — "Protocolamos sua contestação
+no juízo em [data]" / "Enviamos a notificação extrajudicial ao(à) locador(a)
+em [data]"].
 
-## Plain-language check
+**Próximos passos:** [uma linha — "Estamos aguardando a resposta deles(as)" /
+"O juízo vai marcar a audiência e nos informar a data"].
 
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` standards. Short sentences. No jargon. Reading level target enforced. If a template above includes a legal term the client might not know, explain it the first time: "We filed your 'answer' — that's the document that tells the court your side of the story."
+Você não precisa fazer nada agora. A gente te avisa quando precisar.
 
-## Supervision routing
+[Nome do(a) estagiário(a)]
+Estagiário(a) de Direito, inscrito(a) na OAB [seccional/nº] sob LC 80/94 art. 4º §6º
+Sob a supervisão de [Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a)]
+[Nome da unidade / NPJ] | [telefone] | [horário de atendimento]
+```
 
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`. Routine correspondence may or may not be a flag trigger depending on the supervision style the professor chose. If lighter-touch: these go out after student review without a queue step. If formal queue: even routine letters queue.
+## Antes de enviar
 
-## What this skill does NOT do
+Enviar carta ao(à) assistido(a) é ação consequente. O gate deste plugin é o workflow de supervisão descrito em `## Estilo de supervisão` em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reforçado pela checagem de papel da Parte 0 que confirma que um(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a) habilitado(a) é dono(a) do setup da unidade. Esse gate continua valendo: toda carta passa pela revisão antes de sair da unidade.
 
-- **Substantive advice.** If the letter would say "here's what I think about your case" or "here's what you should do," that's not routine — that's `/status client` or a conversation with the professor first.
-- **Bad news.** Case closing, adverse ruling, can't-help — those need thought, not a template. Flag for professor.
-- **Anything to opposing counsel or a court.** Different audience, different skill (`/draft` or `/status court`).
+Antes de enviar qualquer carta acima, confirme:
+
+1. A minuta foi revisada conforme o protocolo de supervisão em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` (fila / flag / toque mais leve).
+2. Todos os rótulos internos de revisão (`[MINUTA ASSISTIDA POR IA]`, qualquer tag `[VERIFICAR]` ou `[FATO NECESSÁRIO]`) foram removidos da cópia que vai ao(à) assistido(a).
+3. O sign-off conforma à norma de regência do estágio para correspondência assinada por estagiário(a) de Direito.
+
+**Isto é minuta de estagiário(a) para revisão do(a) supervisor(a), não carta final.** Enviá-la tem consequências jurídicas para o(a) assistido(a) e pode constituir parecer ou comunicação em nome do(a) assistido(a). Um(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a) habilitado(a) revisa, edita e dá sign-off antes da carta sair da unidade. Não envie sem aprovação do(a) supervisor(a).
+
+## Checagem de linguagem simples
+
+Conforme padrões de `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`. Frases curtas. Sem jargão. Nível de leitura alvo (ensino fundamental II — 6º-9º ano) forçado, em cumprimento ao dever de informar com clareza (LC 80/94 art. 4º-A III). Se um template acima inclui termo jurídico que o(a) assistido(a) pode não conhecer, explique na primeira vez: "Protocolamos sua 'contestação' — esse é o documento que conta sua versão da história ao juízo."
+
+## Roteamento de supervisão
+
+Conforme `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`. Correspondência de rotina pode ou não ser gatilho de flag dependendo do estilo de supervisão que o(a) supervisor(a) escolheu. Se toque mais leve: essas saem depois da revisão do(a) estagiário(a) sem passar por fila. Se fila formal: mesmo cartas de rotina vão para a fila.
+
+## O que esta skill NÃO faz
+
+- **Parecer substantivo.** Se a carta diria "aqui está o que eu acho do seu caso" ou "aqui está o que você deve fazer," isso não é rotina — é `/status client` ou conversa com o(a) supervisor(a) primeiro.
+- **Má notícia.** Encerramento de caso, decisão desfavorável, não-é-caso-da-unidade — esses precisam de pensamento, não template. Sinalize para o(a) supervisor(a).
+- **Qualquer coisa para advogado(a) contrário(a) ou juízo.** Audiência diferente, skill diferente (`/draft` ou `/status court`).

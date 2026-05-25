@@ -1,163 +1,170 @@
 ---
 name: draft
 description: >
-  First draft of a common clinic document — practice-area templates (asylum
-  applications, eviction answers, protective order petitions, demand letters),
-  jurisdiction-aware formatting, explicitly a starting point requiring student
-  analysis and attorney review. Use when a student needs a first draft of a
-  motion, letter, petition, declaration, or other clinic document.
-argument-hint: "[document type — e.g., 'eviction-answer', 'asylum-declaration', 'demand-letter']"
+  Primeira minuta de documento da unidade — templates por área (petição
+  inicial JEC Lei 9.099, petição inicial Comum CPC 319, contestação,
+  recurso inominado, ofício institucional DP, notificação extrajudicial),
+  formatação calibrada por vara, explicitamente ponto de partida exigindo
+  análise do(a) estagiário(a) e revisão do(a) supervisor(a). Use quando
+  estagiário(a) precisa de primeira minuta de petição, contestação, ofício,
+  notificação, declaração ou outro documento da unidade.
+argument-hint: "[tipo de documento — ex.: 'peticao-inicial-jec', 'contestacao-despejo', 'oficio-saude']"
 ---
 
 # /draft
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice-area templates, jurisdiction, local rules, supervision style.
-2. Use the workflow below.
-3. Match doc type to template. Gather facts from case notes — flag missing, never guess.
-4. Apply jurisdiction formatting. Draft with `[FACT NEEDED]`, `[VERIFY]`, `[UNCERTAIN]` flags inline.
-5. Output with prominent AI-assisted label, student review checklist, supervision routing.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → templates por área, jurisdição/vara, regras locais, modelo de supervisão.
+2. Use o workflow abaixo.
+3. Case tipo do documento com template. Colete fatos do(a) assistido(a) — flag faltantes, nunca chute.
+4. Aplique formatação por vara. Minute com flags `[FATO NECESSÁRIO]`, `[VERIFICAR]`, `[INCERTO]` inline.
+5. Output com rótulo de IA-assistida em destaque, checklist de revisão do(a) estagiário(a), roteamento para supervisão.
 
 ```
-/legal-clinic:draft eviction-answer
+/legal-clinic:draft peticao-inicial-jec
 ```
 
 ```
-/legal-clinic:draft asylum-declaration
+/legal-clinic:draft oficio-saude-medicamento
 ```
 
 ---
 
-# Draft: First-Draft Document Generation
+# Draft: Geração de Primeira Minuta de Documento
 
-## Purpose
+## Propósito
 
-Students spend enormous time on first drafts of documents where the educational value is in the analysis and strategy, not in formatting a caption or writing "Dear Judge." This skill produces the first draft from case notes and practice-area templates so the student's time goes to the thinking.
+Estagiários(as) gastam tempo enorme em primeiras minutas de documentos onde o valor pedagógico está na análise e estratégia, não em formatar endereçamento ou escrever "MM. Juiz(a)". Esta skill produz a primeira minuta a partir das notas do caso e templates por área para que o tempo do(a) estagiário(a) vá para o pensamento.
 
-**Every draft is explicitly a starting point.** Not final work product. The student analyzes, revises, and the professor reviews before anything goes anywhere.
+**Toda minuta é explicitamente ponto de partida.** Não é produto final. O(A) estagiário(a) analisa, revisa, e o(a) supervisor(a) revisa antes de qualquer protocolização.
 
-## Load context
+## Carregar contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice areas, practice-area templates, jurisdiction (state + local court + any local rules ingested), supervision style.
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → áreas, templates por área, jurisdição (UF + vara/comarca + provimentos da Corregedoria local ingest), modelo de supervisão.
 
-Case notes or intake summary for the facts.
+Notas do caso ou sumário de intake para os fatos.
 
-## Pedagogy check
+## Checagem pedagógica
 
-Read the supervisor guide for this practice area at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Check the `pedagogy_posture` setting:
+Leia o guia do(a) supervisor(a) para esta área em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area>.md`. Cheque a configuração `pedagogy_posture`:
 
-- **`guide` (default):** Produce the structure and the checklist. Ask the student to draft each section. Give feedback on their draft (register, reading level, required elements, what they missed). Offer to fill a section only when the student has tried once.
-- **`assist`:** Produce the work product. Flag items for student review. The student edits and learns by reviewing.
-- **`teach`:** Don't produce the work product. Ask the student to draft it. Give feedback. Ask leading questions when they're stuck. Only show a model paragraph after two attempts, and only the section they're stuck on. Track what they got right and wrong so the supervisor can see progress.
+- **`guide` (default):** Produz a estrutura e o checklist. Pede para estagiário(a) minutar cada seção. Dá feedback na minuta dele(a) (registro, nível de leitura, elementos obrigatórios, o que perdeu). Oferece preencher uma seção apenas quando estagiário(a) tentou uma vez.
+- **`assist`:** Produz o produto. Flag itens para revisão. Estagiário(a) edita e aprende revisando.
+- **`teach`:** Não produz o produto. Pede para estagiário(a) minutar. Dá feedback. Faz perguntas direcionadoras quando trava. Só mostra parágrafo modelo após duas tentativas, e só a seção em que trava. Rastreia o que acertou e errou para supervisor(a) ver progresso.
 
-If no guide exists, use `guide`. If the guide exists but doesn't set a posture, use `guide`.
+Se nenhum guia existe, use `guide`. Se o guia existe mas não seta postura, use `guide`.
 
-Whatever the posture, the output always includes: "**Pedagogy mode: [assist/guide/teach]** — set by your supervisor's guide. This means I [description of what the student did vs what the skill did]."
+Qualquer que seja a postura, o output sempre inclui: "**Modo pedagógico: [assist/guide/teach]** — setado pelo guia do(a) seu(sua) supervisor(a). Significa que [descrição do que o(a) estagiário(a) fez vs. o que a skill fez]."
 
-**Jurisdiction assumption.** The draft assumes the state, court, and local rules set in CLAUDE.md. Caption format, service requirements, page limits, filing windows, and substantive rules vary materially across jurisdictions and even between courts in the same state. If the matter is in a different court or a different state, confirm with your supervisor before relying on any format, deadline, or argument in the draft.
+**Suposição de jurisdição.** A minuta assume o UF, comarca/vara e regras locais setados no CLAUDE.md. Formato de endereçamento, requisitos de protocolização eletrônica (Lei 11.419/06 / e-SAJ TJAM), limites de página (se houver provimento), janelas de protocolização, e regras substantivas variam materialmente entre jurisdições e mesmo entre varas no mesmo tribunal. Se o caso é em vara diferente ou UF diferente, confirme com supervisor(a) antes de confiar em qualquer formato, prazo ou argumento.
 
 ## Workflow
 
-### Step 1: Which document?
+### Passo 1: Que documento?
 
-Match the request to the clinic's template set (from `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`). Common set by practice area:
+Case o pedido ao conjunto de templates da unidade (do `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`). Conjunto comum por área:
 
-| Practice area | Documents |
+| Área de atuação | Documentos |
 |---|---|
-| **Immigration** | I-589 asylum application narrative, client declaration, motion to change venue, motion to continue, FOIA request, country conditions summary |
-| **Housing** | Eviction answer, demand letter (repairs/deposit), motion to stay execution, discovery requests |
-| **Family** | Protective order petition, custody declaration, motion to modify, financial affidavit |
-| **Consumer** | Debt validation letter, FDCPA demand letter, answer to collection complaint, motion to vacate default |
-| **General litigation** | Motion template, notice of appearance, certificate of service |
+| **Família / Sucessões** | Petição inicial de divórcio (consensual / litigioso), alimentos, união estável, guarda, modificação de guarda; declaração de hipossuficiência |
+| **Saúde Pública** | Petição inicial de fornecimento de medicamento (Tema 793 STF + Tema 106 STJ), leito UTI, internação compulsória, procedimento cirúrgico; pedido de tutela de urgência CPC 300; ofício administrativo prévio à secretaria de saúde |
+| **Consumidor (JEC)** | Petição inicial Lei 9.099/95 (vício produto/serviço CDC 18-25; cobrança indevida CDC 42; recusa de fornecedor; publicidade enganosa CDC 37); contestação a ação de cobrança |
+| **Previdenciário (JEF)** | Petição inicial BPC/LOAS; recurso administrativo INSS; petição de cumprimento de sentença |
+| **Locação** | Contestação em ação de despejo (Lei 8.245/91); pedido de purgação da mora (art. 62 II) |
+| **Possessória** | Petição inicial de reintegração / manutenção / interdito proibitório (CPC 554-568); contestação |
+| **Defesa em cobrança** | Contestação CPC 335-342; embargos monitórios CPC 702; embargos à execução CPC 914-920 |
+| **Geral** | Petição genérica, ofício institucional da DP, notificação extrajudicial, declaração, certidão |
 
-If the requested document isn't in the template set: "The clinic's templates don't include [X]. I can attempt a draft from general principles, but flag this heavily — it hasn't been tuned for your practice area or jurisdiction. Better to ask [Professor] if there's an existing template."
+Se o documento pedido não está no conjunto: "Os templates da unidade não incluem [X]. Posso tentar minuta a partir de princípios gerais, mas flag pesado — não foi afinado para sua área ou vara. Melhor perguntar ao(à) [Defensor(a)-Supervisor(a)] se há template existente."
 
-### Step 2: Gather the facts
+### Passo 2: Colete os fatos
 
-Read the intake summary or case notes. For each fact the document needs: do we have it?
+Leia o sumário de intake ou notas do caso. Para cada fato que o documento precisa: temos?
 
-| Document needs | Have? | Source |
+| Documento precisa | Tenho? | Fonte |
 |---|---|---|
-| [fact] | ✓ / ✗ | [intake / client doc / need to get] |
+| [fato] | ✓ / ✗ | [intake / documento do(a) assistido(a) / preciso obter] |
 
-Missing required facts → don't guess. Mark them: `[FACT NEEDED: client's entry date — get from I-94 or ask client]`.
+Fatos obrigatórios faltantes → não chute. Marque: `[FATO NECESSÁRIO: data de início do contrato — obter da via assinada ou perguntar ao(à) assistido(a)]`.
 
-### Step 3: Apply jurisdiction
+### Passo 3: Aplique jurisdição
 
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` jurisdiction:
+Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` jurisdição:
 
-- **Caption format:** state and local court rules. If local rules were ingested at cold-start, use them. If not, use state default and flag: `[VERIFY CAPTION: local rules not loaded — confirm format against [Court]'s current rules]`
-- **Service requirements:** who gets served, how, by when per the court's rules
-- **Local quirks:** page limits, font requirements, standing orders. Apply what's ingested; flag what isn't.
+- **Formato de endereçamento:** padrão CNJ + regras locais da vara. Se provimentos locais foram ingest no cold-start, use. Se não, use padrão CNJ e flag: `[VERIFICAR ENDEREÇAMENTO: provimentos locais não carregados — confirme formato contra as regras vigentes da Corregedoria-Geral local]`.
+   - Exemplo para vara DPEAM cível: `EXMO(A). SR(A). DR(A). JUIZ(A) DE DIREITO DA __ VARA CÍVEL DA COMARCA DE MANAUS — ESTADO DO AMAZONAS`
+- **Requisitos de protocolização eletrônica:** sistema do tribunal (e-SAJ TJAM, PJe TRF, eproc TJDFT, etc.), Lei 11.419/06 art. 5º termo inicial. Vide regras de cada sistema.
+- **Particularidades locais:** limites de página (se há provimento), tipo de letra (Padrão CNJ é Arial 12 ou Times 12), espaçamento, requisitos da Defensoria (timbre, assinatura digital). Aplique o que está ingest; flag o que não.
+- **Prazos:** sempre dias úteis (CPC 219) salvo no rito sumaríssimo do JEC (Lei 9.099 — dias corridos por STJ); aplicar prazo em dobro Defensor (CPC 186) se aplicável.
 
-### Step 4: Draft
+### Passo 4: Minute
 
-Use the practice-area template. Fill what can be filled from facts. Leave placeholders explicit — never fill with plausible-sounding invention.
+Use o template por área. Preencha o que pode ser preenchido com fatos. Deixe placeholders explícitos — nunca preencha com invenção plausível-sonora.
 
-**Everywhere the draft makes a legal assertion:** that assertion is a hypothesis the student verifies, not a conclusion the draft guarantees. Mark accordingly.
+**Em todo lugar onde a minuta faz afirmação jurídica:** essa afirmação é hipótese que o(a) estagiário(a) verifica, não conclusão que a minuta garante. Marque conforme.
 
-### Step 5: Flag uncertainty
+### Passo 5: Flag incerteza
 
-Three kinds of flags, in-line:
+Três tipos de flag, inline:
 
-- `[FACT NEEDED: ...]` — the document needs a fact the case notes don't have
-- `[VERIFY: ...]` — a legal or factual assertion that needs checking before this is filed
-- `[UNCERTAIN: ...]` — the skill is genuinely unsure and says so rather than guessing
+- `[FATO NECESSÁRIO: ...]` — o documento precisa de fato que as notas do caso não têm
+- `[VERIFICAR: ...]` — alegação jurídica ou factual que precisa ser conferida antes de protocolar
+- `[INCERTO: ...]` — a skill está genuinamente em dúvida e diz em vez de chutar
 
-### Step 6: Supervision routing
+### Passo 6: Roteamento de supervisão
 
-Filing a document with a court or agency is a consequential action. The gate is the supervision workflow in `## Supervision style` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reinforced by the Part 0 role check that confirms a licensed supervising attorney owns the clinic setup. Court filings always route through supervision before filing, regardless of the supervision-style choice.
+Protocolar documento ao juízo ou enviar a órgão administrativo (ofício DP) é ação consequente. O gate é o workflow de supervisão em `## Estilo de supervisão` no `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reforçado pela checagem de papel da Parte 0 que confirma supervisor(a) habilitado(a) é dono(a) do setup. Peças a protocolar sempre rotam por supervisão antes da protocolização, independentemente da escolha de estilo.
 
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` supervision style:
-- **Formal queue:** draft goes to queue, student sees "queued for [Professor]"
-- **Configurable flags:** if this document type is a flag trigger (court filings usually are), output includes "CHECK WITH [PROFESSOR] BEFORE FILING"
-- **Lighter-touch:** standard safeguard label, no additional gate — but court filings still go to the professor before filing per the clinic's existing supervision structure
+Per `CLAUDE.md` modelo de supervisão:
+- **Fila formal:** minuta vai para fila, estagiário(a) vê "em fila para [supervisor(a)]"
+- **Flags configuráveis:** se este tipo de documento é gatilho de flag (peças a protocolar geralmente são), output inclui "CHECAR COM [SUPERVISOR(A)] ANTES DE PROTOCOLAR"
+- **Toque mais leve:** rótulo de salvaguarda padrão, sem gate adicional — mas peças a protocolar ainda vão ao(à) supervisor(a) antes da protocolização per estrutura existente
 
 ## Output
 
 ```markdown
 ═══════════════════════════════════════════════════════════════════════
-  AI-ASSISTED DRAFT — REQUIRES STUDENT ANALYSIS AND ATTORNEY REVIEW
-  This is a starting point, not final work product.
-  Every [VERIFY] and [FACT NEEDED] flag must be resolved before filing.
+  MINUTA ASSISTIDA POR IA — EXIGE ANÁLISE DO(A) ESTAGIÁRIO(A) E
+  REVISÃO DO(A) SUPERVISOR(A)
+  Este é ponto de partida, não produto final.
+  Todo flag [VERIFICAR] e [FATO NECESSÁRIO] deve ser resolvido antes
+  de protocolar.
 ═══════════════════════════════════════════════════════════════════════
 
-[The document — in the practice-area template format, jurisdiction-aware,
-with flags inline]
+[O documento — no formato do template por área, calibrado por vara,
+com flags inline]
 
 ═══════════════════════════════════════════════════════════════════════
 
-## Student review checklist
+## Checklist de revisão do(a) estagiário(a)
 
-Before showing this to [Professor]:
+Antes de mostrar ao(à) [supervisor(a)]:
 
-- [ ] Read the whole thing. Does it say what you want it to say?
-- [ ] Every fact: is it accurate per the client's actual documents, not just the intake notes?
-- [ ] Every [VERIFY] flag: resolved with research or struck
-- [ ] Every [FACT NEEDED] flag: filled with verified information or the section removed
-- [ ] Legal theory: is this the right argument? Are there better ones? (That's your analysis, not the draft's.)
-- [ ] Jurisdiction: caption, service, format correct per current local rules
-- [ ] [Supervision step per CLAUDE.md style]
+- [ ] Leia o documento inteiro. Diz o que você quer que diga?
+- [ ] Cada fato: é preciso per documentos efetivos do(a) assistido(a), não só per notas de intake?
+- [ ] Cada flag [VERIFICAR]: resolvido com pesquisa ou cortado
+- [ ] Cada flag [FATO NECESSÁRIO]: preenchido com informação verificada ou seção removida
+- [ ] Tese jurídica: é o argumento certo? Há melhores? (Esta é sua análise, não da minuta.)
+- [ ] Vara/jurisdição: endereçamento, protocolização, formato corretos per regras locais vigentes
+- [ ] Prazo em dobro Defensor (CPC 186) computado se aplicável
+- [ ] Hipossuficiência: pedido de gratuidade (CPC 98) + Súmula 481 STJ presente
+- [ ] [Passo de supervisão per CLAUDE.md modelo]
 
-## What this draft does NOT do
+## O que esta minuta NÃO faz
 
-- It does not decide strategy. The draft follows the most common approach for
-  this document type — you decide if that's right for this client.
-- It does not verify its own legal assertions. Every legal conclusion above is
-  a hypothesis until you research it.
-- It does not file itself. [Professor] reviews, you file per clinic procedure.
+- Não decide estratégia. A minuta segue a abordagem mais comum para este tipo de documento — você decide se é certa para este(a) assistido(a).
+- Não verifica as próprias asseverações jurídicas. Toda conclusão jurídica acima é hipótese até você pesquisar.
+- Não se protocola. [Supervisor(a)] revisa, você protocola per procedimento da unidade (Sapiens-DPGU / sistema próprio / e-SAJ / PJe).
 
 ---
 
-**Before this leaves the clinic.** This is a student draft for supervising-attorney review, not a final letter, filing, or form. Filing it with a court or agency, or sending it to a client or opposing party, has legal consequences for the client. A licensed supervising attorney reviews, edits, and signs off before it leaves the clinic. Strip the AI-assisted draft header only after that sign-off. Do not send or file this draft without supervisor approval.
+**Antes de sair da unidade.** Esta é minuta de estagiário(a) para revisão de supervisor(a) habilitado(a), não carta, peça, ou formulário final. Protocolizar com juízo ou órgão, ou enviar ao(à) assistido(a) ou contraparte, tem consequência jurídica para o(a) assistido(a). Supervisor(a) habilitado(a) revisa, edita, e assina antes de sair. Tire o cabeçalho de IA-assistida apenas depois desse sign-off. Não envie ou protocole esta minuta sem aprovação.
 
-*ABA Formal Opinion 512 (2024): generative AI use requires competence,
-supervision, and verification. This draft is designed to be supervised and
-verified — it is not designed to be trusted without that.*
+*Provimento OAB 205/2021 + Resolução CNJ 332/2020: uso de IA na advocacia exige competência, supervisão e verificação. Esta minuta é desenhada para ser supervisionada e verificada — não é desenhada para ser confiada sem isso.*
 ```
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- **Produce final work product.** First draft only. Student revises, professor reviews.
-- **Guess at missing facts.** Flags them for the student to get.
-- **Decide the legal theory.** Uses the common approach; the student decides if it's the right one for this case.
-- **Replace jurisdiction-specific research.** Applies ingested local rules; flags where rules weren't ingested or might have changed.
+- **Produz produto final.** Primeira minuta apenas. Estagiário(a) revisa, supervisor(a) revisa.
+- **Chuta fatos faltantes.** Flag para estagiário(a) obter.
+- **Decide a tese jurídica.** Usa a abordagem comum; estagiário(a) decide se é a certa.
+- **Substitui pesquisa específica da jurisdição/vara.** Aplica regras locais ingest; flag onde regras não foram ingest ou podem ter mudado.

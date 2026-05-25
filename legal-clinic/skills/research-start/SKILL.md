@@ -1,203 +1,207 @@
 ---
 name: research-start
 description: >
-  Research roadmap for a legal issue — statutes to check, case law areas to
-  investigate, regulatory frameworks, Westlaw search terms. Leads and
-  frameworks, NOT authoritative citations; students verify and develop
-  everything. Use when a student asks where to start researching, wants a
-  research roadmap for an issue, or needs gaps identified in existing research.
-argument-hint: "[legal issue]"
+  Roteiro de pesquisa para uma tese jurídica — dispositivos a checar
+  (planalto.gov.br), áreas de jurisprudência a investigar (BNP/CJF/TJAM),
+  frameworks de pesquisa, termos para JusRatio/MCPs brasileiros. Pistas e
+  roteiros, NÃO citações autoritativas; estagiários(as) verificam e
+  desenvolvem tudo. Use quando estagiário(a) pergunta por onde começar a
+  pesquisar, quer roteiro de pesquisa para uma questão, ou precisa
+  identificar lacunas em pesquisa existente.
+argument-hint: "[tese ou questão jurídica]"
 ---
 
 # /research-start
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → jurisdiction, practice area.
-2. Use the workflow below.
-3. Frame the issue specifically. Build roadmap: statutory starting points (unverified), case law areas (not cases), secondary sources, search terms.
-4. If student has existing research uploaded: synthesize and identify gaps.
-5. Output with prominent "leads not authorities" header. Everything is a starting point the student verifies.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → jurisdição/vara, áreas de atuação.
+2. Use o workflow abaixo.
+3. Enquadre a questão especificamente. Construa roteiro: pontos de partida normativos (não-verificados), áreas de jurisprudência (não julgados específicos), fontes secundárias, termos de busca.
+4. Se estagiário(a) tem pesquisa existente subida: sintetize e identifique lacunas.
+5. Output com header "pistas, não autoridades" em destaque. Tudo é ponto de partida que o(a) estagiário(a) verifica.
 
 ```
-/legal-clinic:research-start "habitability defense to nonpayment eviction in [State]"
+/legal-clinic:research-start "defesa de habitabilidade em ação de despejo por falta de pagamento — Manaus, AM"
 ```
 
 ---
 
-# Research Start: Roadmap, Not Research
+# Research Start: Roteiro, Não Pesquisa
 
-## Purpose
+## Propósito
 
-Legal research is essential to clinical education. But the initial phase — figuring out *what* to research, finding the right statute, understanding the framework — is often the most time-consuming and least educational part. Students spend hours finding the starting point before they can do the actual research.
+Pesquisa jurídica é essencial à educação em estágio supervisionado. Mas a fase inicial — descobrir *o que* pesquisar, achar o dispositivo certo, entender o framework — é frequentemente o mais demorado e menos pedagógico. Estagiários(as) gastam horas achando o ponto de partida antes de poder fazer a pesquisa efetiva.
 
-This skill produces the starting point: statutes to check, case law areas to investigate, search terms for Westlaw and CourtListener. **None of it is verified. None of it is authoritative. All of it is a lead for the student to run down.**
+Esta skill produz o ponto de partida: dispositivos a checar, áreas de jurisprudência a investigar, termos de busca para JusRatio (proprietário, níveis A-E) e os MCPs open-source BNP/CJF/TJAM/DataJud. **Nada disso é verificado. Nada disso é autoritativo. Tudo é pista para o(a) estagiário(a) correr atrás.**
 
-**This is a pedagogical safeguard, not just an ethical one.** Students still learn to research. They just start from a better place.
+**Esta é salvaguarda pedagógica, não só ética.** Estagiários(as) ainda aprendem a pesquisar. Só começam de um lugar melhor.
 
-## Load context
+## Carregar contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → jurisdiction (state), practice areas.
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → jurisdição/vara (UF), áreas de atuação.
 
 ## Workflow
 
-### Step 0: Seed documents first
+### Passo 0: Docs-semente primeiro
 
-**Before building the roadmap, read the clinic's own seed documents.** The supervising attorney uploaded them at cold-start (handbook, filing guides, local court rules, intake forms, example case files, prior memos) — they are pre-vetted, jurisdiction-specific, and will beat any Westlaw query on the first 20 minutes of a student's research.
+**Antes de construir o roteiro, leia os docs-semente da unidade.** O(A) supervisor(a) subiu no cold-start (regimento, regras locais, formulários de intake, exemplo de caso, memos anteriores) — são pré-vetados, jurisdição-específicos, e vão bater qualquer query no JusRatio nos primeiros 20 minutos de pesquisa.
 
-1. Read `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → `## Seed documents`. Identify any item whose purpose or filename matches the research area (e.g., "Alameda UD filing guide" for a UD habitability question; a redacted sample case file in the same practice area; a prior memo on the same issue).
-2. For each match, surface it as a **Seed documents to read first** block at the top of the roadmap output. Name the file, say why it matters for this specific question, and say what it likely covers vs. where outside research will still be needed.
-3. If no seed documents match the issue, say so plainly ("No clinic seed documents match this issue — proceeding straight to primary sources"). Don't fabricate a match.
-4. If the clinic has the `LIMITED DATA` flag set in `## Seed documents`, add a one-line note: "Clinic has fewer than 10 seed docs; your professor's precedent bank is thin — lean harder on primary sources and flag what's missing for your supervisor."
+1. Leia `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → `## Documentos-semente`. Identifique qualquer item cujo propósito ou nome de arquivo case com a área de pesquisa (ex.: "Manual do Núcleo de Saúde DPEAM" para questão de medicamento; exemplo de caso anonimizado na mesma área; memo anterior sobre a mesma questão).
+2. Para cada match, surface como bloco **Docs-semente a ler primeiro** no topo do roteiro. Nomeie o arquivo, diga por que importa para esta questão específica, e diga o que provavelmente cobre vs. onde pesquisa externa ainda vai ser necessária.
+3. Se nenhum doc-semente casa com a questão, diga clarmente ("Nenhum doc-semente casa com esta questão — indo direto a fontes primárias"). Não fabrique match.
+4. Se a unidade tem flag `DADOS LIMITADOS` em `## Documentos-semente`, adicione nota: "Unidade tem menos de 10 docs-semente; precedente do(a) supervisor(a) é fino — pesar mais em fontes primárias e flag o que falta para supervisor(a)."
 
-The roadmap still covers statutes, case law areas, secondary sources, and search terms — seed docs are the first lead, not a replacement for the rest. But surface them above everything else so the student starts where their supervisor's precedent starts.
+O roteiro ainda cobre dispositivos, áreas de jurisprudência, fontes secundárias, e termos de busca — docs-semente são primeira pista, não substituto do resto.
 
-### Step 1: Frame the issue
+### Passo 1: Enquadre a questão
 
-What's the research question? Be specific. Not "eviction defenses" — "habitability defense to nonpayment eviction in [State], specifically whether a broken heater qualifies and whether the tenant had to give written notice."
+Qual a pergunta de pesquisa? Seja específico. Não "defesas de despejo" — "defesa de habitabilidade em ação de despejo por falta de pagamento, vara cível de Manaus, especificamente se aquecedor solar quebrado qualifica e se locatário(a) tinha que dar aviso por escrito".
 
-If the question is too broad, narrow it with the student: "That's three research questions. Let's take them one at a time. Which first?"
+Se a pergunta é muito ampla, restrinja com estagiário(a): "Isto são três perguntas. Vamos uma de cada vez. Qual primeiro?"
 
-### Step 2: Build the roadmap
+### Passo 2: Construa o roteiro
 
-**Statutory starting points:**
-List statutes *likely* relevant. State explicitly these are likely, not confirmed.
+**Pontos de partida normativos:**
+Liste dispositivos *provavelmente* relevantes. Indique explicitamente que são prováveis, não confirmados.
 
-> **Likely relevant statutes** (UNVERIFIED — confirm currency and applicability):
-> - [State] Landlord-Tenant Act, likely at [State Code Title X] — look for "warranty of habitability" or "repair and deduct"
-> - Local housing code for [City/County] — may define specific conditions (heat, water) as required
-> - `[VERIFY each citation is current and correct — codes get renumbered]`
+> **Dispositivos provavelmente relevantes** (NÃO-VERIFICADO — confirme vigência e aplicabilidade contra planalto.gov.br):
+> - [Lei 8.245/91 — Lei do Inquilinato] art. 9º (hipóteses de despejo) e art. 62 II (purgação da mora)
+> - CDC arts. 18-25 se relação de consumo (vício do serviço de locação se imóvel comercial)
+> - Provimentos da Corregedoria-Geral do TJAM para particularidades locais
+> - `[VERIFIQUE cada citação contra fonte oficial — dispositivos podem ter sido alterados; Lei 8.245 teve alterações pela Lei 12.112/09]`
 
-**Case law areas to investigate:**
-Not cases — *areas*. The student finds the cases.
+**Áreas de jurisprudência a investigar:**
+Não julgados específicos — *áreas*. Estagiário(a) acha os julgados.
 
-> **Case law areas:**
-> - [State] Supreme Court or appellate decisions on implied warranty of habitability — look for the leading case establishing the doctrine
-> - Cases on what conditions qualify — heat specifically, if any
-> - Cases on procedural prerequisites — did tenant have to give notice? withhold rent? escrow?
-> - Cases on the remedy — offset against rent owed, or a separate damages claim?
+> **Áreas de jurisprudência:**
+> - STJ — decisões consolidadas sobre vício do imóvel locado e purgação da mora (use BNP-API para precedentes vinculantes e Temas Repetitivos)
+> - TJAM — Câmara Cível e Turma Recursal sobre habitabilidade em locação na comarca de Manaus (use TJAM via e-SAJ)
+> - Súmulas STJ sobre locação (Súmula 214 STJ — perda da fiança em caso de prorrogação)
+> - Tese fixada em Tema Repetitivo se houver
 
-**Regulatory / administrative sources:**
-If applicable (immigration especially).
+**Fontes administrativas / regulatórias:**
+Se aplicável.
 
-> **Administrative sources:**
-> - [Agency] regulations at [CFR cite area]
-> - Agency guidance or policy manuals — often more current than regs
-> - For immigration: USCIS Policy Manual, BIA precedent decisions
+> **Fontes administrativas:**
+> - Para Saúde: RENAME (Relação Nacional de Medicamentos Essenciais); Lei 12.401/11 (incorporação CONITEC); resoluções da CONITEC e da CMED para preços
+> - Para Previdenciário: Lei 8.213/91 + Decreto 3.048/99; Súmulas da TNU; informativos do INSS
+> - Para Consumidor: orientações do Senacon e PROCONs
+> - Para Família: Estatuto do Idoso (Lei 10.741/03), ECA (Lei 8.069/90), Lei Maria da Penha (Lei 11.340/06) — quando há vetor cruzado
 
-**Secondary sources to orient:**
-Where to get the framework before diving into primary.
+**Fontes secundárias para orientar:**
+Onde pegar o framework antes de mergulhar em fonte primária.
 
-> **Secondary sources (for framework, not to cite):**
-> - [State] practice guide on landlord-tenant (check clinic library)
-> - Relevant CLE materials
-> - Law review notes on the specific issue if it's contested
+> **Fontes secundárias (para framework, não para citar):**
+> - Manuais doutrinários BR de referência por área: Tartuce / Gonçalves (Civil), Marinoni / Didier (Proc. Civil), Pedro Lenza (Constitucional), Cláudia Lima Marques (Consumidor), Maurício Godinho (Trabalho)
+> - Artigos de revistas como RT, Revista de Processo, Revista do Consumidor
+> - Para Defensor: publicações da ESDPGE ou ESDPU sobre teses institucionais
+> - Notas de prática do(a) seu(sua) supervisor(a) (se compartilhadas)
 
-**Search terms:**
-For Westlaw, or whatever the clinic uses.
+**Termos de busca:**
+Para JusRatio (sintaxe `+termo`, `-termo`, `"frase"`) ou os MCPs open-source.
 
-> **Search terms to try:**
-> - Westlaw: `"warranty of habitability" /s heat! & [State]`
-> - CourtListener: `implied warranty of habitability AND (heat OR heater) AND [State]`
-> - Refine based on what comes back — these are starting queries
+> **Termos de busca a tentar:**
+> - **JusRatio:** `+"habitabilidade" +"locação" +"purgação da mora"` (pesquisar_documentos; filtra por nível A vinculante primeiro)
+> - **BNP-API (STF/STJ vinculantes):** `+"locação" +"habitabilidade"` (buscar_precedentes — Tema Repetitivo aplicável?)
+> - **CJF (STF/STJ/TRF):** `locação E habitabilidade E TJAM` (ou local equivalente)
+> - **TJAM (e-SAJ):** `habitabilidade locação` (sintaxe permite E, OU, NAO sem acento; aspas para frase)
+> - Refine baseado no que vier — estas são queries de partida
 
-### Step 3: Flag what's uncertain
+### Passo 3: Flag o que é incerto
 
-If the skill is unsure whether a source is relevant or current:
+Se a skill está em dúvida se uma fonte é relevante ou vigente:
 
-> `[UNCERTAIN: whether [State] has a specific statute on this vs. common-law
-> doctrine only — the search will tell you]`
+> `[INCERTO: se o TJAM tem orientação consolidada sobre este recorte específico vs. doutrina comum — a busca vai te dizer]`
 
-Uncertainty is stated, not hidden.
+Incerteza é declarada, não escondida.
 
-> **No silent supplement.** This skill produces leads, not authoritative citations — by design, students run the citations down themselves. But if a query to a configured research tool (Westlaw, CourtListener) returns few or no results for a specific rule or case, say so and stop. Do NOT manufacture citations from web search or model knowledge to fill a thin result set without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [rule]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) stop here and flag the gap for your supervisor. Which would you like?" The supervising attorney decides whether to accept lower-confidence sources.
+> **Sem suplementação silenciosa.** Esta skill produz pistas, não citações autoritativas — por design, estagiários(as) correm atrás. Mas se uma query a MCP retorna poucos ou nenhum resultado para regra ou julgado específico, diga e pare. NÃO fabrique citações de busca web ou conhecimento do modelo para preencher resultado fino sem perguntar. Diga: "A busca retornou [N] resultados em [ferramenta]. Cobertura parece fina para [regra]. Opções: (1) ampliar query, (2) tentar ferramenta diferente, (3) buscar na web — resultados marcados `[busca web — verificar]` e devem ser checados contra fonte primária, ou (4) parar e flag a lacuna para supervisor(a). Qual?" Supervisor(a) decide se aceita fontes de menor confiança.
 >
-> **Source attribution.** Tag every suggested citation with where it came from: `[Westlaw]`, `[CourtListener]`, `[Fastcase]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations supplied by the supervising attorney or case file. Citations tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags — they tell the student which leads are raw research and which are model guesses to verify against a primary source.
+> **Atribuição de fonte.** Marque toda citação sugerida com de onde veio: `[JusRatio]`, `[BNP]`, `[CJF]`, `[TJAM]`, `[DataJud]`, ou nome da tool MCP; `[busca web — verificar]` para web; `[conhecimento do modelo — verificar]` para citações lembradas do treino; `[usuário forneceu]` para citações fornecidas pelo(a) supervisor(a) ou pelo caso. Citações marcadas `verificar` carregam risco mais alto de fabricação e devem ser checadas primeiro. Nunca tire ou colapse as tags — dizem ao(à) estagiário(a) quais leads são pesquisa pura e quais são palpites do modelo a verificar contra fonte primária.
 
-### Step 4: Synthesize uploaded research (if any)
+### Passo 4: Sintetize pesquisa subida (se houver)
 
-If the student has already done some research and uploads it: read it, identify what's covered and what's missing.
+Se o(a) estagiário(a) já fez pesquisa e sobe: leia, identifique o que está coberto e o que falta.
 
-> **From your research so far:**
-> - You have: [summary of what's covered]
-> - Gap: [what the roadmap above suggests that you haven't found yet]
-> - `[VERIFY: the case you cited — [name] — run through a citator (verify it is good law) it, it may have been distinguished or limited]`
+> **Da sua pesquisa até agora:**
+> - Você tem: [sumário do que está coberto]
+> - Lacuna: [o que o roteiro sugere e você ainda não achou]
+> - `[VERIFICAR: o julgado que você citou — [nome] — rode no JusRatio ou BNP para conferir se está em vigor; pode ter sido superado por Tema Repetitivo mais recente]`
 
 ## Output
 
 ```markdown
 ═══════════════════════════════════════════════════════════════════════
-  RESEARCH ROADMAP — LEADS, NOT AUTHORITIES
-  Nothing below is a verified citation. Every statute, every case area,
-  every search term is a starting point for YOUR research. You verify
-  currency, applicability, and accuracy. You find the actual cases.
-  If something below turns out to be wrong or outdated, that's expected —
-  this is a map of where to look, not a substitute for looking.
+  ROTEIRO DE PESQUISA — PISTAS, NÃO AUTORIDADES
+  Nada abaixo é citação verificada. Cada dispositivo, cada área de
+  jurisprudência, cada termo de busca é ponto de partida para SUA
+  pesquisa. Você verifica vigência, aplicabilidade e precisão. Você acha
+  os julgados efetivos. Se algo abaixo se revelar errado ou desatualizado,
+  é esperado — este é mapa de onde olhar, não substituto de olhar.
 ═══════════════════════════════════════════════════════════════════════
 
-# Research Roadmap: [Issue]
+# Roteiro de Pesquisa: [Questão]
 
-**Jurisdiction:** [State] | **Practice area:** [area]
+**Vara/jurisdição:** [comarca + vara] | **Área de atuação:** [área]
 
-## Seed documents to read first
+## Docs-semente a ler primeiro
 
-[Per Step 0. List any clinic seed docs that match the issue with a one-line
-"what this likely covers" note. If none matched: "No clinic seed documents
-match this issue — proceeding to primary sources."]
+[Per Passo 0. Liste docs-semente da unidade que casam com a questão com nota de uma linha "o que provavelmente cobre". Se nenhum: "Nenhum doc-semente casa com esta questão — indo a fontes primárias."]
 
-## Statutory starting points (UNVERIFIED)
+## Pontos de partida normativos (NÃO-VERIFICADOS)
 
-[list with VERIFY flags]
+[lista com flags VERIFICAR contra planalto.gov.br]
 
-## Case law areas to investigate
+## Áreas de jurisprudência a investigar
 
-[areas, not cases]
+[áreas, não julgados — direcionando para BNP (STF/STJ vinculantes), CJF (STF/STJ/TRF), TJAM (local)]
 
-## Administrative / regulatory sources
+## Fontes administrativas / regulatórias
 
-[if applicable]
+[se aplicável — agências, ANS, ANATEL, INSS, SUS conforme área]
 
-## Secondary sources (for framework, not citation)
+## Fontes secundárias (para framework, não citação)
 
-[list]
+[manuais doutrinários BR por área]
 
-## Search terms
+## Termos de busca
 
-**Westlaw:** [queries]
+**JusRatio:** [queries com sintaxe + - "frase"]
+**BNP-API:** [queries para precedentes STF/STJ vinculantes]
+**CJF:** [queries com operadores E OU NAO]
+**TJAM (e-SAJ):** [queries para jurisprudência local]
+**DataJud (se quer ver processos do mesmo tipo):** [exemplos de números CNJ similares na comarca]
 
-## Uncertainty flags
+## Flags de incerteza
 
-[Everywhere the roadmap is genuinely unsure]
-
----
-
-## What to do with this
-
-1. Start with a secondary source to get the framework
-2. Find and read the primary statutes — confirm the citations above are current
-3. Run the searches, find the leading cases
-4. run through a citator (verify it is good law) everything before relying on it
-5. Come back and run `/memo` to scaffold your analysis once you have the rule
-
-## What this roadmap does NOT do
-
-- **It does not give you citations you can use.** Every cite above is a lead
-  to verify, not an authority to rely on.
-- **It does not do the research.** You do the research. This gets you to the
-  starting line faster.
-- **It does not replace Westlaw.** Those have the actual cases. This
-  tells you where to point them.
+[Em todo lugar onde o roteiro genuinamente está em dúvida]
 
 ---
 
-**Cite verification — required before use.** Citations above were generated by an AI model and have not been verified. Before relying on any case, statute, or rule — or including it in client work — run it through Westlaw, Fastcase, CourtListener, or your clinic's research platform for accuracy and current good-law status. Flag unverified citations to your supervisor.
+## O que fazer com isto
+
+1. Comece com fonte secundária para pegar o framework (manual doutrinário)
+2. Ache e leia os dispositivos primários — confirme as citações acima contra planalto.gov.br
+3. Rode as buscas no JusRatio primeiro (níveis A/B de autoridade priorizados), depois BNP/CJF/TJAM
+4. Para todo julgado citado em peça, verifique no JusRatio se segue em vigor (sem overruling/modulação)
+5. Volte e rode `/memo` para escafoldar sua análise em FIRAC quando tiver a regra
+
+## O que este roteiro NÃO faz
+
+- **Não te dá citações para você usar.** Cada cite acima é pista a verificar, não autoridade para confiar.
+- **Não faz a pesquisa.** Você faz. Isto te leva ao ponto de partida mais rápido.
+- **Não substitui MCPs.** Eles têm os julgados efetivos. Isto te diz onde apontar.
+
+---
+
+**Verificação de citação — exigida antes do uso.** Citações acima foram geradas por modelo de IA e não foram verificadas. Antes de confiar em julgado, dispositivo, súmula, Tema — ou incluir em produto para assistido(a) — rode no JusRatio (níveis A-E), BNP (precedentes vinculantes STF/STJ), CJF (federal), TJAM (e-SAJ local), ou planalto.gov.br para dispositivo legal. Flag citações não-verificadas ao(à) seu(sua) supervisor(a).
 ```
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- **Provide authoritative citations.** Explicitly, by design. The student verifies every cite before using it.
-- **Replace legal research.** Accelerates the "where do I start" phase; the research itself is still the student's.
-- **Guarantee the roadmap is complete.** It's a starting set of leads. The research may reveal sources the roadmap missed — that's fine, that's research.
+- **Fornece citações autoritativas.** Explicitamente, por design. Estagiário(a) verifica toda cite antes de usar.
+- **Substitui pesquisa jurídica.** Acelera a fase "por onde começo"; a pesquisa em si ainda é do(a) estagiário(a).
+- **Garante que o roteiro está completo.** É conjunto de pistas iniciais. A pesquisa pode revelar fontes que o roteiro perdeu — tudo bem, é pesquisa.
 
-## Close with the next-steps decision tree
+## Feche com a árvore de decisão de próximos passos
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
+Termine com a árvore per CLAUDE.md `## Outputs`. Customize as opções ao que esta skill acabou de produzir.

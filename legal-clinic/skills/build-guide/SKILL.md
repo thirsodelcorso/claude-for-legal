@@ -1,251 +1,253 @@
 ---
 name: build-guide
 description: >
-  Help a clinic supervisor author a practice-area guide that configures how
-  student-facing skills behave — intake questions, pedagogy posture (assist /
-  guide / teach), review gates, cross-plugin checks, and local rules. Use when
-  a supervising attorney wants to build or revise a per-practice-area guide,
-  tune how the clinic skills behave for their clinic type, or set their
-  teaching philosophy as plugin configuration.
+  Ajuda o(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a) a autorar
+  um guia por área de atuação que configura como as skills voltadas ao(à)
+  estagiário(a) se comportam — perguntas de intake, postura pedagógica (assist
+  / guide / teach), gates de revisão, checagens cruzadas entre plugins, e
+  regras locais. Use quando o(a) supervisor(a) quer construir ou revisar um
+  guia por área de atuação, calibrar como as skills do plugin se comportam
+  para o tipo de unidade ou NPJ, ou setar a filosofia pedagógica como
+  configuração do plugin.
 argument-hint: "[optional: practice area — e.g., 'immigration', 'housing']"
 ---
 
 # /build-guide
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → role (must be Supervising attorney), practice areas, jurisdiction.
-2. Use the workflow below.
-3. If the user is not the supervising attorney, stop and redirect (students run `/legal-clinic:ramp`).
-4. Walk through: practice area → intake questions → pedagogy posture → review gates → cross-plugin checks → local rules.
-5. Write `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Create the `guides/` directory if needed.
-6. Offer a test run — run `/legal-clinic:draft` under the configured posture so the supervisor sees what a student sees.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → papel (deve ser Defensor[a]-Supervisor[a] ou Professor[a]-Orientador[a]), áreas de atuação, jurisdição.
+2. Use o workflow abaixo.
+3. Se o(a) usuário(a) não for o(a) supervisor(a), pare e redirecione (estagiários[as] rodam `/legal-clinic:ramp`).
+4. Percorra: área de atuação → perguntas de intake → postura pedagógica → gates de revisão → checagens cruzadas entre plugins → regras locais.
+5. Escreva `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area-de-atuacao>.md`. Crie o diretório `guides/` se necessário.
+6. Ofereça um test run — rode `/legal-clinic:draft` sob a postura configurada para que o(a) supervisor(a) veja o que o(a) estagiário(a) vê.
 
 ```
 /legal-clinic:build-guide
 ```
 
-Multiple guides are fine — one per practice area. Re-run this command to revise. Edit the guide file directly for quick changes.
+Múltiplos guias são bem-vindos — um por área de atuação. Re-rode este comando para revisar. Edite o arquivo do guia direto para mudanças rápidas.
 
 ---
 
-# Build Guide: Supervisor-Authored Practice-Area Guide
+# Build Guide: Guia por Área de Atuação Autorado pelo(a) Supervisor(a)
 
-## Purpose
+## Propósito
 
-The supervisor guide is the dial that turns student-facing skills from "get the work done" into "teach the student to do the work." Every student-facing skill in this plugin reads the guide before producing output: intake asks the questions the supervisor wants asked, drafting skills pick a pedagogy posture (assist / guide / teach), review gates route to the supervisor on the items the supervisor cares about, and cross-plugin checks wrap other-plugin skills in a supervision layer.
+O guia do(a) supervisor(a) é o dial que vira as skills voltadas ao(à) estagiário(a) de "tira o trabalho" para "ensina o(a) estagiário(a) a fazer o trabalho." Toda skill voltada ao(à) estagiário(a) neste plugin lê o guia antes de produzir output: intake pergunta as perguntas que o(a) supervisor(a) quer perguntadas, skills de redação escolhem postura pedagógica (assist / guide / teach), gates de revisão roteiam ao(à) supervisor(a) os itens com que o(a) supervisor(a) se importa, e checagens cruzadas entre plugins envelopam skills de outros plugins em uma camada de supervisão.
 
-This skill helps a supervisor author that guide in 5-10 minutes per practice area. The guide is plain markdown at a well-known path — edit it by hand anytime.
+Esta skill ajuda o(a) supervisor(a) a autorar esse guia em 5-10 minutos por área de atuação. O guia é markdown puro em um caminho conhecido — edite na mão a qualquer momento.
 
-**Audience: the supervising attorney.** Not students. Students run `/legal-clinic:ramp` and then the student-facing skills; they don't author guides.
+**Público: o(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a).** Não estagiários(as). Estagiários(as) rodam `/legal-clinic:ramp` e depois as skills voltadas a eles(as); não autoram guias.
 
-## Work-product header
+## Cabeçalho de trabalho-produto
 
-Every output from this skill is a supervisor-facing configuration artifact, not student work product. Do NOT prepend `[AI-ASSISTED DRAFT — requires student analysis and attorney review]` to the output of this skill — that label is for student outputs. The guide file this skill writes is a supervisor configuration document; it sits next to CLAUDE.md in the plugin config directory, not in a matter workspace.
+Todo output desta skill é artefato de configuração voltado ao(à) supervisor(a), não trabalho-produto de estagiário(a). NÃO prefixe `[MINUTA ASSISTIDA POR IA — exige análise do(a) estagiário(a) e revisão do(a) supervisor(a)]` ao output desta skill — esse rótulo é para outputs de estagiário(a). O arquivo de guia que esta skill escreve é um documento de configuração do(a) supervisor(a); fica ao lado do CLAUDE.md no diretório de config do plugin, não em uma pasta de caso.
 
-## Key things your guide should address
+## Coisas-chave que seu guia deve endereçar
 
-Offer this as a checklist the supervisor can skip through or use as the table of contents for the interview:
+Ofereça isto como um checklist que o(a) supervisor(a) pode pular ou usar como índice da entrevista:
 
-- What does a student need to know before they touch a case? (Ethics rules, confidentiality, their scope of authority)
-- What are the 3-5 most common mistakes students make in this practice area, and how should the skill catch them?
-- When must the student stop and get your sign-off? (Filing, sending to a client, making a representation, advising on strategy)
-- What's the reading level for client communications? (6th grade is the usual target for legal aid)
-- What local rules, forms, or deadlines should every student know?
-- When should the skill teach vs. do? (Per document type — you can set a default and override per type)
+- O que o(a) estagiário(a) precisa saber antes de tocar em um caso? (Regras éticas — Código de Ética OAB, Provimento OAB 205/2021, Resolução CNJ 332/2020; sigilo do(a) assistido(a) — LC 80/94 art. 4º-A V; escopo de atuação sob LC 80/94 art. 4º §6º)
+- Quais os 3-5 erros mais comuns que estagiários(as) cometem nesta área de atuação, e como a skill deve apanhá-los?
+- Quando o(a) estagiário(a) deve parar e pegar seu sign-off? (Protocolar, enviar ao(à) assistido(a), fazer uma representação, aconselhar sobre estratégia)
+- Qual o nível de leitura para comunicações com o(a) assistido(a)? (Ensino fundamental II — 6º-9º ano — é o alvo usual em DP e NPJ atendendo população de baixa renda)
+- Que regras locais (resoluções CSDPGE, regimento TJAM), formulários ou prazos todo(a) estagiário(a) deve saber?
+- Quando a skill deve teach vs. do? (Por tipo de documento — você pode setar default e fazer override por tipo)
 
-Walk through the checklist at the start of the interview so the supervisor knows what's coming and can flag which items they already have strong views on versus which they want to think through. Skip any item the supervisor waves off; note it in the guide as "not specified — skill uses defaults."
+Percorra o checklist no início da entrevista para que o(a) supervisor(a) saiba o que vem e possa sinalizar quais itens já tem visão forte versus quais quer pensar. Pule qualquer item que o(a) supervisor(a) descartar; anote no guia como "não especificado — skill usa defaults."
 
 ## Workflow
 
-### Step 1: Check role
+### Passo 1: Cheque o papel
 
-This is a supervisor skill. Read `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → `## Who's using this` → Role. If the role is not "Supervising attorney," say:
+Esta é uma skill de supervisor(a). Leia `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → `## Quem está usando` → Papel. Se o papel não for "Defensor(a)-Supervisor(a)" ou "Professor(a)-Orientador(a)", diga:
 
-> This skill is for supervisors — it configures how the student-facing skills behave. If you're the supervisor, make sure your practice profile role is set to "Supervising attorney" in `/legal-clinic:cold-start-interview`. If you're a student, this isn't the right skill for you — run `/legal-clinic:ramp` to onboard, or ask your supervisor to author a guide for your clinic.
+> Esta skill é para supervisores(as) — ela configura como as skills voltadas ao(à) estagiário(a) se comportam. Se você é o(a) supervisor(a), confirme que seu papel no perfil de atuação está setado como "Defensor(a)-Supervisor(a)" ou "Professor(a)-Orientador(a)" em `/legal-clinic:cold-start-interview`. Se você é estagiário(a), esta não é a skill certa — rode `/legal-clinic:ramp` para onboarding, ou peça ao(à) seu(sua) supervisor(a) para autorar um guia para a unidade ou NPJ.
 
-Stop if the role is not supervising attorney.
+Pare se o papel não for de supervisão.
 
-### Step 2: Which practice area?
+### Passo 2: Qual área de atuação?
 
-> What clinic is this guide for? (Immigration / Housing / Family / Transactional / Criminal defense / Consumer / Other)
+> Para qual área de atuação é este guia? (Família/Sucessões / Consumidor / Saúde Pública / Previdenciário (BPC/LOAS) / Locação / Possessória / Defesa em ação de cobrança / Outra)
 
-If the answer is "Other," ask for a short name — that name becomes the filename (lowercase, hyphenated: `immigration-removal-defense.md`, `transactional-nonprofit.md`, etc.).
+Se a resposta for "Outra", peça um nome curto — esse nome vira o nome do arquivo (lowercase, com hífen: `familia-sucessoes.md`, `saude-medicamento.md`, etc.).
 
-Check the practice areas listed in `CLAUDE.md` → `## Clinic profile` → Practice areas. If the chosen practice area is not listed there, note it: "I'll write this guide, but your practice profile doesn't list [area] as one of your clinic's practice areas. That's fine — you can add it later with `/legal-clinic:cold-start-interview --redo` — but the student-facing skills won't route intakes to this area until the profile lists it."
+Cheque as áreas de atuação listadas em `CLAUDE.md` → `## Perfil da unidade / NPJ` → Áreas de atuação. Se a área escolhida não estiver listada lá, anote: "Vou escrever este guia, mas seu perfil de atuação não lista [área] como uma das áreas da unidade. Tudo bem — você pode adicionar depois com `/legal-clinic:cold-start-interview --redo` — mas as skills voltadas ao(à) estagiário(a) não vão rotear intakes para esta área até o perfil listar."
 
-If a guide already exists at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`, offer: "A guide for [area] already exists at [path]. Do you want to (a) revise it section-by-section, (b) start fresh and overwrite, or (c) see what's there first?"
+Se um guia já existe em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area-de-atuacao>.md`, ofereça: "Um guia para [área] já existe em [caminho]. Você quer (a) revisar seção por seção, (b) começar do zero e sobrescrever, ou (c) ver o que está lá primeiro?"
 
-### Step 3: Intake questions
+### Passo 3: Perguntas de intake
 
-> What should students ask a new client for this clinic type? I'll start with a generic intake for [practice area] — tell me what to add, remove, or change. What red flags should students look for? What makes a case a good fit for your clinic vs. a referral out?
+> O que estagiários(as) devem perguntar a um(a) novo(a) assistido(a) nesta área de atuação? Vou começar com um intake genérico para [área de atuação] — me diga o que adicionar, remover ou mudar. Que bandeiras vermelhas estagiários(as) devem procurar? O que faz um caso ter perfil para a unidade vs. encaminhamento externo?
 
-Show the generic intake defaults for the practice area — use the same defaults that `client-intake` uses (Immigration: status, entry, prior applications, country conditions, family, criminal history, timeline urgency; Housing: housing type, what happened, lease, habitability, timeline; Family: relationship, issue, children, safety, orders, hearings; Consumer: debt type, contacts, documentation, filings, deadlines). For practice areas outside those four, ask the supervisor to describe the intake from scratch.
+Mostre os defaults genéricos de intake para a área de atuação — use os mesmos defaults que `client-intake` usa (Família: relação, filhos[as], segurança Lei Maria da Penha, ordens existentes, audiências; Consumidor: tipo de obrigação, quem cobra, documentação, ações em curso, prazos prescricionais/decadenciais; Saúde Pública: quadro clínico, medicamento/leito/procedimento, negativa, urgência; Previdenciário: BPC/LOAS, indeferimento, perícia; Locação: tipo de locação, notificação, pagamentos, condições; Possessória: tipo de posse, esbulho/turbação, tempo, urgência). Para áreas fora dessas, peça ao(à) supervisor(a) para descrever o intake do zero.
 
-Capture: questions to add, questions to remove, questions to rephrase, red flags (a list), good-fit criteria (what makes this a case the clinic takes vs. refers out).
+Capture: perguntas a adicionar, perguntas a remover, perguntas a reformular, bandeiras vermelhas (lista), critérios de "perfil para unidade" (o que faz a unidade pegar o caso vs. encaminhar para outra DP / núcleo especializado / advogado dativo).
 
-### Step 4: Pedagogy posture
+### Passo 4: Postura pedagógica
 
-> How much should the skills do vs. how much should the student do?
+> Quanto as skills devem fazer vs. quanto o(a) estagiário(a) deve fazer?
 >
-> - **Guide (default):** The skill produces structure; students fill in substance; the skill gives feedback. Balanced — most clinics start here.
-> - **Assist:** The skill produces work product; students review and learn by editing. Fastest, least pedagogical. Good for high-volume clinics or when deadlines are tight.
-> - **Teach:** The skill doesn't produce work product — students draft, the skill gives Socratic feedback and only shows models after two attempts. Slowest, most pedagogical. Good for seminar-style clinics or when learning is the primary goal.
+> - **Guide (default):** A skill produz estrutura; o(a) estagiário(a) preenche a substância; a skill dá feedback. Balanceado — a maioria das unidades começa aqui.
+> - **Assist:** A skill produz o trabalho-produto; o(a) estagiário(a) revisa e aprende editando. Mais rápido, menos pedagógico. Bom para unidades de alto volume ou quando os prazos apertam.
+> - **Teach:** A skill não produz trabalho-produto — o(a) estagiário(a) redige, a skill dá feedback socrático e só mostra modelos depois de duas tentativas. Mais lento, mais pedagógico. Bom para NPJ com seminário ou quando aprender é o objetivo primário.
 >
-> You can set this per document type (e.g., teach for client letters, assist for file memos).
+> Você pode setar isto por tipo de documento (ex.: teach para cartas ao(à) assistido(a), assist para memos internos).
 
-Capture the default posture for the practice area, and any per-document overrides. Per-document settings the skills read:
+Capture a postura default para a área de atuação, e quaisquer overrides por documento. Configurações por documento que as skills leem:
 
 - `pedagogy_posture_default: assist | guide | teach`
 - `pedagogy_posture_client_letter: [override]`
 - `pedagogy_posture_memo: [override]`
 - `pedagogy_posture_draft: [override]`
 
-If the supervisor names a document type the skills don't currently have, record the intended posture in a `pedagogy_posture_other:` block with a note — future skills can read it.
+Se o(a) supervisor(a) nomear um tipo de documento que as skills atualmente não têm, registre a postura pretendida em bloco `pedagogy_posture_other:` com nota — skills futuras podem ler.
 
-### Step 5: Review gates
+### Passo 5: Gates de revisão
 
-> Which work product needs your review before it goes to a client? Which can students send directly? Default: everything client-facing needs review.
+> Que trabalho-produto precisa de sua revisão antes de ir ao(à) assistido(a)? Qual o(a) estagiário(a) pode enviar diretamente? Default: tudo voltado ao(à) assistido(a) precisa de revisão.
 
-Present the options as a table the supervisor fills in:
+Apresente as opções como tabela que o(a) supervisor(a) preenche:
 
-| Work product | Gate |
+| Trabalho-produto | Gate |
 |---|---|
-| Intake summary | [student writes; supervisor reviews at case rounds / supervisor reviews before client sees / student keeps] |
-| Memo (internal) | [supervisor reviews / student keeps] |
-| Client letter (appointment / doc request / brief status) | [supervisor reviews / student sends directly] |
-| Client letter (substantive advice / bad news) | [always supervisor — cannot override] |
-| Draft filing (court / agency) | [always supervisor — cannot override] |
-| Status update to court | [always supervisor — cannot override] |
-| Research-start roadmap | [student works from it directly] |
+| Sumário de intake | [estagiário(a) escreve; supervisor(a) revisa em reunião de equipe / supervisor(a) revisa antes do(a) assistido(a) ver / estagiário(a) guarda] |
+| Memo (interno) | [supervisor(a) revisa / estagiário(a) guarda] |
+| Carta ao(à) assistido(a) (atendimento / pedido de doc / status breve) | [supervisor(a) revisa / estagiário(a) envia diretamente] |
+| Carta ao(à) assistido(a) (conselho substantivo / má notícia) | [sempre supervisor(a) — não pode override] |
+| Minuta de peça (juízo / órgão administrativo) | [sempre supervisor(a) — não pode override] |
+| Atualização de status para juízo | [sempre supervisor(a) — não pode override] |
+| Roadmap de research-start | [estagiário(a) trabalha direto a partir disto] |
 
-Some gates are non-negotiable: client letters that give substantive advice, court filings, and status to courts always route through the supervisor per the clinic's supervision structure. Flag those as fixed; the configurable gates are the routine ones.
+Alguns gates são não-negociáveis: cartas ao(à) assistido(a) com conselho substantivo, peças a protocolar e atualizações ao juízo sempre passam pelo(a) supervisor(a) per estrutura de supervisão da unidade. Sinalize esses como fixos; os configuráveis são os de rotina.
 
-### Step 6: Cross-plugin checks
+### Passo 6: Checagens cruzadas entre plugins
 
-> Do you want students to use skills from other plugins (defined-terms checks, doc consistency, section references, research verification)? I can wrap them in supervision — the student runs the check, the output flags uncertainty for your review, nothing goes out without your sign-off.
+> Você quer que estagiários(as) usem skills de outros plugins (checagem de termos definidos, consistência documental, referências cruzadas de seção, verificação de pesquisa)? Posso envolver em supervisão — o(a) estagiário(a) roda a checagem, o output sinaliza incerteza para sua revisão, nada sai sem seu sign-off.
 
-Offer concrete examples tied to practice area:
+Ofereça exemplos concretos atrelados à área de atuação:
 
-- **Transactional clinic:** `commercial-legal:review` (NDA triage, vendor review) wrapped so the student runs the review, the output is flagged for supervisor review before going to the client.
-- **Immigration clinic:** `litigation-legal:chronology` for building a timeline from client documents, flagged for supervisor review before it feeds a filing.
-- **Housing clinic:** `litigation-legal:subpoena-triage` when the client brings in a subpoena, wrapped so the student drafts the response plan but the supervisor signs off.
-- **Any clinic:** `privacy-legal:triage` if the student is handling any matter where personal data is shared outside the clinic.
+- **Família/Sucessões:** `litigation-legal:chronology` para construir timeline de fatos a partir de documentos do(a) assistido(a), sinalizada para revisão do(a) supervisor(a) antes de alimentar petição de divórcio litigioso ou de alimentos.
+- **Consumidor:** `commercial-legal:review` para triagem de contratos de adesão antes de petição inicial em JEC, sinalizada para revisão do(a) supervisor(a) antes de ir para a contraparte.
+- **Saúde Pública:** `litigation-legal:chronology` para timeline de negativas administrativas e laudos, sinalizada para revisão do(a) supervisor(a) antes de alimentar petição inicial com pedido de tutela de urgência.
+- **Qualquer área:** `privacy-legal:triage` se o(a) estagiário(a) está lidando com matéria onde dados pessoais sensíveis (saúde, criança/adolescente, vítima de violência) são compartilhados fora da unidade.
 
-If the supervisor names a cross-plugin skill they want, record: skill name, when students should use it, what supervision wrapper applies (always reviewer, only when flagged, never without supervisor).
+Se o(a) supervisor(a) nomear uma skill cross-plugin que queira, registre: nome da skill, quando estagiários(as) devem usar, que envelope de supervisão se aplica (sempre revisor[a], só quando sinalizado, nunca sem supervisor[a]).
 
-### Step 7: Local rules and jurisdiction
+### Passo 7: Regras locais e jurisdição
 
-> What court(s) does your clinic practice in? Any local rules or forms students need to use?
+> Em que juízo(s) sua unidade atua? Alguma resolução ou regimento local (CSDPGE, TJAM) que estagiários(as) precisam usar?
 
-Check `CLAUDE.md` → `## Jurisdiction` — the state and primary court are already set at cold-start. This step is for practice-area-specific local rules and forms (e.g., "Housing Court standing order on summary process answers," "USCIS filing address for the local field office," "Family Court self-help center forms and where to find them"). Offer to capture a short list of pointers the student-facing skills should use when drafting or advising.
+Cheque `CLAUDE.md` → `## Jurisdição` — UF e juízo primário já estão setados no cold-start. Este passo é para regras e formulários específicos da área de atuação (ex.: "Provimento TJAM sobre prazo da contestação em ação de despejo," "endereço de protocolo do INSS local para ações previdenciárias," "central de conciliação de Família e como acessar formulários"). Ofereça capturar uma lista curta de pointers que as skills voltadas ao(à) estagiário(a) devem usar ao redigir ou aconselhar.
 
-### Step 8: Write the guide
+### Passo 8: Escreva o guia
 
-Write to `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Create the `guides/` directory if it doesn't exist. Use this structure:
+Escreva em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area-de-atuacao>.md`. Crie o diretório `guides/` se não existir. Use esta estrutura:
 
 ```markdown
-# Practice-area guide: [Practice area]
+# Guia por área de atuação: [Área de atuação]
 
-*Authored by the supervising attorney via `/legal-clinic:build-guide`. Student-facing skills read this before producing output. Edit directly anytime.*
+*Autorado pelo(a) Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a) via `/legal-clinic:build-guide`. Skills voltadas ao(à) estagiário(a) leem isto antes de produzir output. Edite direto a qualquer momento.*
 
-**Last updated:** [date]
-**Authored by:** [supervising attorney name from CLAUDE.md]
+**Última atualização:** [data]
+**Autorado por:** [nome do(a) supervisor(a) do CLAUDE.md]
 
 ---
 
 ## Intake
 
-**Questions to ask** (supplement/replace the generic defaults):
-- [question 1]
-- [question 2]
+**Perguntas a fazer** (suplementam/substituem os defaults genéricos):
+- [pergunta 1]
+- [pergunta 2]
 - ...
 
-**Red flags** (surface these in the intake summary if present):
-- [flag 1]
-- [flag 2]
+**Bandeiras vermelhas** (surface no sumário de intake se presentes):
+- [bandeira 1]
+- [bandeira 2]
 
-**Good-fit criteria** (cases this clinic takes):
-- [criterion 1]
-- [criterion 2]
+**Critérios de "perfil para unidade"** (casos que a unidade pega):
+- [critério 1]
+- [critério 2]
 
-**Refer-out criteria** (cases this clinic does not take):
-- [criterion 1]
-- [criterion 2]
+**Critérios de encaminhamento** (casos que a unidade não pega):
+- [critério 1]
+- [critério 2]
 
 ---
 
-## Pedagogy posture
+## Postura pedagógica
 
 `pedagogy_posture_default: [assist | guide | teach]`
 
-Per-document overrides (optional):
+Overrides por documento (opcional):
 - `pedagogy_posture_client_letter: [assist | guide | teach]`
 - `pedagogy_posture_memo: [assist | guide | teach]`
 - `pedagogy_posture_draft: [assist | guide | teach]`
 
-**Rationale:** [one or two sentences from the supervisor on why this posture — helps next semester's supervising attorney understand the choice]
+**Razão:** [uma ou duas frases do(a) supervisor(a) sobre por que essa postura — ajuda o(a) supervisor(a) do termo seguinte a entender a escolha]
 
 ---
 
-## Review gates
+## Gates de revisão
 
-| Work product | Gate |
+| Trabalho-produto | Gate |
 |---|---|
-| Intake summary | [gate] |
-| Memo (internal) | [gate] |
-| Client letter — routine | [gate] |
-| Client letter — substantive | supervisor (fixed) |
-| Draft filing | supervisor (fixed) |
-| Court-facing status | supervisor (fixed) |
-| Research roadmap | [gate] |
+| Sumário de intake | [gate] |
+| Memo (interno) | [gate] |
+| Carta ao(à) assistido(a) — rotina | [gate] |
+| Carta ao(à) assistido(a) — substantiva | supervisor(a) (fixo) |
+| Minuta de peça | supervisor(a) (fixo) |
+| Status voltado ao juízo | supervisor(a) (fixo) |
+| Roadmap de pesquisa | [gate] |
 
 ---
 
-## Cross-plugin checks
+## Checagens cruzadas entre plugins
 
-| Skill | When students use it | Supervision wrapper |
+| Skill | Quando estagiários(as) usam | Envelope de supervisão |
 |---|---|---|
-| [plugin:skill] | [situation] | [wrapper] |
+| [plugin:skill] | [situação] | [envelope] |
 
 ---
 
-## Local rules and jurisdiction
+## Regras locais e jurisdição
 
-**Court(s):** [from CLAUDE.md or additional courts for this practice area]
-**Practice-area-specific local rules and forms:**
+**Juízo(s):** [do CLAUDE.md ou juízos adicionais para esta área de atuação]
+**Regras e formulários locais específicos desta área de atuação:**
 - [pointer 1]
 - [pointer 2]
 ```
 
-Fill every section from the supervisor's answers. Leave a section empty only if the supervisor said so — do not invent content.
+Preencha toda seção a partir das respostas do(a) supervisor(a). Deixe uma seção vazia só se o(a) supervisor(a) disse — não invente conteúdo.
 
-Then tell the supervisor:
+Então diga ao(à) supervisor(a):
 
-> Your guide is at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Every student who uses the clinic plugin for [practice area] will have skills that follow it. Edit the file directly to change anything, or re-run `/legal-clinic:build-guide` to revise a section. You can have multiple guides — one per practice area.
+> Seu guia está em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area-de-atuacao>.md`. Todo(a) estagiário(a) que usar o plugin para [área de atuação] vai ter skills que seguem ele. Edite o arquivo direto para mudar algo, ou re-rode `/legal-clinic:build-guide` para revisar uma seção. Você pode ter múltiplos guias — um por área de atuação.
 
-### Step 9: Offer a test run
+### Passo 9: Ofereça um test run
 
-> Want to see how the pedagogy posture changes the experience? I'll run `/legal-clinic:draft` with a sample client letter under [posture] — you'll see what the student sees.
+> Quer ver como a postura pedagógica muda a experiência? Vou rodar `/legal-clinic:draft` com uma carta de exemplo ao(à) assistido(a) sob [postura] — você vê o que o(a) estagiário(a) vê.
 
-If the supervisor says yes, simulate the drafting skill reading the guide they just wrote and producing output under the configured posture. Walk through one full cycle so the supervisor sees exactly what a student would see.
+Se o(a) supervisor(a) topar, simule a skill de redação lendo o guia que acabaram de escrever e produzindo output sob a postura configurada. Percorra um ciclo completo para que o(a) supervisor(a) veja exatamente o que um(a) estagiário(a) veria.
 
 ## Output
 
-The skill's "output" is the file written at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. The conversation with the supervisor is the interview; the written guide is the artifact.
+O "output" da skill é o arquivo escrito em `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<area-de-atuacao>.md`. A conversa com o(a) supervisor(a) é a entrevista; o guia escrito é o artefato.
 
-After writing, show a brief confirmation:
+Depois de escrever, mostre confirmação curta:
 
-> **Guide written.** `[practice-area]` is now configured:
+> **Guia escrito.** `[area-de-atuacao]` agora está configurado:
 >
-> - Intake: [N] custom questions, [N] red flags, [N] refer-out criteria
-> - Pedagogy: [posture default], with overrides for [list if any]
-> - Review gates: [summary of what routes to supervisor vs. student]
-> - Cross-plugin: [N] skills wired in
+> - Intake: [N] perguntas custom, [N] bandeiras vermelhas, [N] critérios de encaminhamento
+> - Pedagogia: [postura default], com overrides para [listar se houver]
+> - Gates de revisão: [sumário do que rota ao(à) supervisor(a) vs. estagiário(a)]
+> - Cross-plugin: [N] skills conectadas
 >
-> Students will see these changes the next time they run a clinic command for this practice area. Edit `[path]` anytime to change anything, or re-run `/legal-clinic:build-guide` to revise.
+> Estagiários(as) vão ver essas mudanças na próxima vez que rodarem um comando do plugin para esta área de atuação. Edite `[caminho]` a qualquer momento para mudar algo, ou re-rode `/legal-clinic:build-guide` para revisar.
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- **Configure the plugin globally.** The guide is per-practice-area. For plugin-wide config (supervision style, jurisdiction, practice areas), that's `/legal-clinic:cold-start-interview`.
-- **Author student work product.** This is supervisor-facing configuration, not a draft for a client.
-- **Override the supervision style from cold-start.** The supervision model (formal queue / configurable flags / lighter-touch) is set at setup. Review gates in the guide refine that model for this practice area; they don't replace it.
-- **Make a student skill skip the AI-assisted header, the confidence flags, or the verification prompts.** Those are shared-guardrail baselines. The guide changes posture, not guardrails.
+- **Configurar o plugin globalmente.** O guia é por-área-de-atuação. Para config plugin-wide (estilo de supervisão, jurisdição, áreas de atuação), isso é `/legal-clinic:cold-start-interview`.
+- **Autorar trabalho-produto de estagiário(a).** Isto é configuração voltada ao(à) supervisor(a), não minuta para o(a) assistido(a).
+- **Override do estilo de supervisão do cold-start.** O modelo de supervisão (fila formal / flags configuráveis / toque mais leve) é setado no setup. Gates de revisão no guia refinam esse modelo para esta área de atuação; não substituem.
+- **Fazer uma skill de estagiário(a) pular o cabeçalho IA-assistida, as flags de confiança ou os pedidos de verificação.** Esses são baselines de guardrail compartilhado. O guia muda postura, não guardrails.

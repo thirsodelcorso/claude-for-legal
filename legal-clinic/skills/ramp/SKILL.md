@@ -1,20 +1,21 @@
 ---
 name: ramp
 description: >
-  Student semester onboarding — clinic procedures, tool walkthrough, practice
-  exercises before real cases. Reads the handbook the professor uploaded at
-  setup and teaches it interactively. Use when a new clinic student says
-  "onboard me", "I'm new to the clinic", "getting started", or at the start of
-  each semester; pass --card for the one-page reference.
+  Onboarding de termo/semestre do(a) estagiário(a) — procedimentos da unidade,
+  walkthrough das ferramentas, exercícios práticos antes de casos reais. Lê o
+  manual que o(a) supervisor(a) subiu no setup e ensina interativamente. Use
+  quando estagiário(a) novo(a) diz "me onboarda", "sou novo(a) na unidade",
+  "começando", ou no início de cada termo/semestre; passe --card para a
+  referência de uma página.
 argument-hint: "[--card for the one-page reference]"
 ---
 
 # /ramp
 
-1. Check `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` is set up. If placeholders: "Ask [professor] to run `/legal-clinic:cold-start-interview` first."
-2. Use the walkthrough below.
-3. Walk through: clinic context (from handbook) → commands → practice exercises (fake intake, practice draft, research roadmap) → verification habits.
-4. `--card`: generate the one-page reference card.
+1. Cheque que `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` está setado. Se placeholders: "Peça a [supervisor(a)] para rodar `/legal-clinic:cold-start-interview` primeiro."
+2. Use o walkthrough abaixo.
+3. Percorra: contexto da unidade (do manual) → comandos → exercícios práticos (intake fake, draft prático, roadmap de pesquisa) → hábitos de verificação.
+4. `--card`: gere o cartão de referência de uma página.
 
 ```
 /legal-clinic:ramp
@@ -26,111 +27,111 @@ argument-hint: "[--card for the one-page reference]"
 
 ---
 
-# Ramp: Semester Onboarding
+# Ramp: Onboarding de Termo/Semestre
 
-## Purpose
+## Propósito
 
-Every semester, the clinic loses its entire workforce and rebuilds from scratch. New students need to learn procedures, case management, filing conventions, and practice-area basics before they're useful. Traditionally that takes weeks of reading PDFs and asking the professor the same questions every semester.
+Todo termo/semestre, a unidade ou NPJ perde sua força de trabalho inteira e reconstrói do zero. Estagiários(as) novos(as) precisam aprender procedimentos, gestão de casos, convenções de protocolo, e básico das áreas de atuação antes de serem úteis. Tradicionalmente isso leva semanas de ler PDFs e fazer ao(à) supervisor(a) as mesmas perguntas todo termo.
 
-This skill is the guided walkthrough. It reads what the professor uploaded during cold-start — the handbook, the filing guides, the local rules — and teaches it interactively, with practice exercises so students try the tools in a low-stakes setting before a real client is on the line.
+Esta skill é o walkthrough guiado. Lê o que o(a) supervisor(a) subiu no cold-start — o manual, os guias de protocolo, as resoluções e regimentos locais — e ensina interativamente, com exercícios práticos para que estagiários(as) experimentem as ferramentas em ambiente de baixo risco antes de um(a) assistido(a) real estar na linha.
 
-**Audience: students.** Professors don't run this (they run `/cold-start-interview`).
+**Público: estagiários(as).** Supervisores(as) não rodam isto (rodam `/cold-start-interview`).
 
-## Load context
+## Carregue contexto
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → clinic profile, practice areas, jurisdiction, handbook path, supervision style, practice-area templates.
+`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → perfil da unidade, áreas de atuação, jurisdição, caminho do manual, estilo de supervisão, templates por área de atuação.
 
-If that file is missing or still has placeholders: "The clinic hasn't been set up yet. Ask [supervising professor] to run `/cold-start-interview` first."
+Se esse arquivo está faltando ou ainda tem placeholders: "A unidade ainda não foi setada. Peça a [Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a)] para rodar `/cold-start-interview` primeiro."
 
-## The walkthrough
+## O walkthrough
 
-### Opening
+### Abertura
 
-> Welcome to [clinic name]. I'm going to walk you through how this clinic works and how to use these tools — about twenty minutes, and you can pause anytime. By the end you'll have run a practice intake, drafted a practice document, and you'll know what to do when you get your first real case.
+> Bem-vindo(a) à [nome da unidade ou NPJ]. Vou te guiar por como esta unidade funciona e como usar essas ferramentas — uns vinte minutos, e você pode pausar a qualquer momento. Ao final, você vai ter rodado um intake prático, redigido um documento prático, e vai saber o que fazer quando pegar seu primeiro caso real.
 >
-> One thing up front: everything I generate is a starting point, not a final answer. You do the analysis. [Professor] reviews your work [per supervision style]. I handle the formatting and the first draft so you spend your time on the lawyering, not on writing "Dear Judge" for the twentieth time.
+> Uma coisa de cara: tudo que eu gero é ponto de partida, não resposta final. Você faz a análise. [Supervisor(a)] revisa seu trabalho [conforme estilo de supervisão]. Eu cuido da formatação e da primeira minuta para que você gaste seu tempo em advocacia, não em escrever "Excelentíssimo Senhor" pela vigésima vez.
 
-### Part 1: This clinic (5 min)
+### Parte 1: Esta unidade (5 min)
 
-Read from `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` and the ingested handbook. Cover, interactively:
+Leia de `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` e do manual ingerido. Cubra, interativamente:
 
-- **Practice areas** — what the clinic handles, what it doesn't (and where to refer if someone walks in with an out-of-scope issue)
-- **Clients** — who they are, what they're facing, languages
-- **Jurisdiction** — which courts, which judges, what the local quirks are
-- **Case management** — how cases are tracked, where files live, what a well-documented case looks like
-- **Supervision** — how review works in this clinic (per the supervision style in CLAUDE.md). Be specific: "Before anything goes to a client or a court, [it goes in the review queue / you check with Professor X / etc.]"
+- **Áreas de atuação** — o que a unidade atende, o que não (e para onde encaminhar se alguém aparece com matéria fora de escopo, ex.: matéria federal para DPU, ou núcleo especializado)
+- **Assistidos(as)** — quem são, o que estão enfrentando, línguas (incluindo comunidades indígenas se aplicável)
+- **Jurisdição** — quais juízos (TJAM, JEC, Juízos Cíveis), quais varas, quais quirks locais
+- **Gestão de casos** — como casos são rastreados, onde pastas vivem (Sapiens-DPGU / sistema próprio AM), como se parece um caso bem-documentado
+- **Supervisão** — como a revisão funciona nesta unidade (conforme estilo de supervisão no CLAUDE.md). Seja específico: "Antes de algo ir ao(à) assistido(a) ou ao juízo, [vai para a fila de revisão / você checa com [Defensor(a)-Supervisor(a)] / etc.]"
 
-Don't lecture — check understanding. "So if a client comes in with an eviction notice but also mentions they're undocumented, what do you do?" (Answer: both issues get noted in intake; the immigration question may need a referral or a flag to the professor, depending on the clinic's scope.)
+Não palestre — cheque entendimento. "Então se um(a) assistido(a) vem com notificação de despejo mas também menciona que é vítima de violência doméstica, o que você faz?" (Resposta: ambas as questões ficam anotadas no intake; a Lei Maria da Penha pode acionar encaminhamento para núcleo especializado ou flag para supervisor(a), dependendo do escopo da unidade.)
 
-### Part 2: The commands (5 min)
+### Parte 2: Os comandos (5 min)
 
-Walk through each command the student will actually use:
+Percorra cada comando que o(a) estagiário(a) vai efetivamente usar:
 
-| Command | When you use it | What you get |
+| Comando | Quando você usa | O que você ganha |
 |---|---|---|
-| `/client-intake` | Client interview | Formatted case summary with issues spotted, conflict flags, triage |
-| `/draft [doc type]` | Need a first draft of a common document | Practice-area template filled from case notes — *starting point, not final* |
-| `/memo` | Need to analyze a case internally | IRAC-format memo with research gaps flagged |
-| `/research-start [issue]` | Starting legal research | Roadmap: statutes to check, case law areas, search terms — *leads, not authoritative cites* |
-| `/status [audience]` | Updating someone on a case | Summary tailored to client / professor / court |
-| `/client-letter [type]` | Routine correspondence | Appointment confirm, doc request, status update from templates |
+| `/client-intake` | Atendimento do(a) assistido(a) | Sumário de caso formatado com questões identificadas, flags de conflito, triagem |
+| `/draft [tipo de doc]` | Precisa de primeira minuta de documento comum | Template da área de atuação preenchido das notas — *ponto de partida, não final* |
+| `/memo` | Precisa analisar um caso internamente | Memo formato FIRAC com lacunas de pesquisa sinalizadas |
+| `/research-start [questão]` | Começando pesquisa jurídica | Roadmap: leis a checar, áreas de jurisprudência, termos de busca — *pistas, não citações autoritativas* |
+| `/status [audiência]` | Atualizando alguém num caso | Sumário calibrado ao(à) assistido(a) / supervisor(a) / juízo |
+| `/client-letter [tipo]` | Correspondência de rotina | Confirmação de atendimento, pedido de documento, atualização de status a partir de templates |
 
-For each: what it does, what it explicitly doesn't do, what the student verifies before relying on it.
+Para cada: o que faz, o que explicitamente não faz, o que o(a) estagiário(a) verifica antes de confiar.
 
-### Part 3: Practice exercises (8-10 min)
+### Parte 3: Exercícios práticos (8-10 min)
 
-**Low-stakes. Fake client. Real tools.**
+**Baixo risco. Assistido(a) fictício(a). Ferramentas reais.**
 
-**Exercise 1 — Practice intake:**
-> Here's a fake client scenario: [practice-area-appropriate hypo — e.g., for a housing clinic, "Maria got a 3-day notice to quit last Tuesday. She's two months behind on rent after losing her job. The apartment has had a broken heater since November. She has two kids."]
+**Exercício 1 — Intake prático:**
+> Aqui um cenário fictício de assistida: [hipo apropriado à área — ex.: para unidade que atende locação, "Maria recebeu notificação para desocupar em 30 dias terça passada. Está três meses atrasada com o aluguel após perder o emprego. O apartamento tem sistema hidráulico vazando desde novembro. Tem dois filhos."]
 >
-> Run `/client-intake` and interview me as if I'm Maria. I'll answer as Maria would. At the end, look at the case summary it produces — what issues did it spot? Did it catch the habitability defense?
+> Rode `/client-intake` e me entreviste como se eu fosse a Maria. Vou responder como Maria responderia. Ao final, olhe o sumário do caso que produziu — quais questões identificou? Pegou a exceção de habitabilidade prejudicada?
 
-Debrief: what the intake caught, what the *student* should have probed deeper on, what gets flagged for the professor.
+Debrief: o que o intake pegou, em que o(a) *estagiário(a)* devia ter sondado mais fundo, o que fica sinalizado para o(a) supervisor(a).
 
-**Exercise 2 — Practice draft:**
-> Using Maria's intake, run `/draft eviction-answer`. You'll get a first draft.
+**Exercício 2 — Draft prático:**
+> Usando o intake da Maria, rode `/draft contestacao-despejo`. Você vai pegar uma primeira minuta.
 >
-> Read it. What's right about it? What's wrong? What would you change before showing it to [Professor]?
+> Leia. O que está certo? O que está errado? O que você mudaria antes de mostrar a [Supervisor(a)]?
 
-The point: the draft is competent but not final. The student learns to read critically, not accept.
+O ponto: a minuta é competente mas não final. O(a) estagiário(a) aprende a ler criticamente, não aceitar.
 
-**Exercise 3 — Research roadmap:**
-> Run `/research-start "habitability defense to eviction in [state]"`. You'll get a roadmap — statutes, case law areas, search terms.
+**Exercício 3 — Roadmap de pesquisa:**
+> Rode `/research-start "exceção de habitabilidade em ação de despejo no AM"`. Você vai pegar um roadmap — leis, áreas de jurisprudência, termos de busca.
 >
-> None of those citations are verified. That's on purpose. Pick one statute from the roadmap and tell me how you'd verify it's current and applies here.
+> Nenhuma dessas citações está verificada. É de propósito. Pegue uma lei do roadmap e me diga como você verificaria se está atual e se aplica aqui.
 
-The point: `/research-start` is a starting place, not a citation. The student still does the research.
+O ponto: `/research-start` é ponto de partida, não citação. O(a) estagiário(a) ainda faz a pesquisa.
 
-### Part 4: Verification habits (2 min)
+### Parte 4: Hábitos de verificação (2 min)
 
-The habits that matter:
+Os hábitos que importam:
 
-- **Every output is a starting point.** If it went to a client or a court without you reading it critically, something went wrong.
-- **Verify every citation** before it goes in anything. `/research-start` gives leads, not authorities.
-- **Check jurisdiction-specific details.** The plugin knows your state from setup, but local court quirks change — double-check against current local rules.
-- **When uncertain, it says so.** If an output has a `[UNCERTAIN: ...]` flag, that's a prompt to research or ask the professor, not to delete the flag and move on.
-- **[Supervision reminder per CLAUDE.md style]** — what gets reviewed before it goes out, and how.
+- **Todo output é ponto de partida.** Se foi ao(à) assistido(a) ou ao juízo sem você ter lido criticamente, algo deu errado.
+- **Verifique toda citação** antes de ir em qualquer coisa. `/research-start` dá pistas, não autoridades.
+- **Cheque detalhes específicos da jurisdição.** O plugin sabe sua UF do setup, mas quirks de regimento local mudam — duplo-cheque contra resoluções TJAM/CSDPGE atuais.
+- **Quando incerto, ele diz.** Se um output tem flag `[INCERTO: ...]`, é prompt para pesquisar ou perguntar ao(à) supervisor(a), não para deletar a flag e seguir.
+- **[Lembrete de supervisão conforme estilo no CLAUDE.md]** — o que é revisado antes de sair, e como.
 
-### Closing
+### Encerramento
 
-> That's it. You've run an intake, drafted a document, and built a research roadmap. Your first real case will feel similar, except the client is real and the professor is reading your work.
+> Pronto. Você rodou um intake, redigiu um documento, e construiu um roadmap de pesquisa. Seu primeiro caso real vai parecer similar, exceto que o(a) assistido(a) é real e o(a) supervisor(a) está lendo seu trabalho.
 >
-> The one-page reference card: `/ramp --card`
+> O cartão de referência de uma página: `/ramp --card`
 
 ## `/ramp --card`
 
-Generate the one-page student reference card per the one-page card spec. Contents:
+Gere o cartão de referência de uma página do(a) estagiário(a) conforme spec. Conteúdo:
 
-- The commands (table from Part 2, condensed)
-- What Claude can help with / what it can't (starting points yes, final work product no, authoritative citations no)
-- Verification habits (the bullets from Part 4)
-- Who to ask when stuck (professor name from CLAUDE.md)
+- Os comandos (tabela da Parte 2, condensada)
+- Com o que o Claude pode ajudar / com o que não pode (pontos de partida sim, trabalho-produto final não, citações autoritativas não)
+- Hábitos de verificação (bullets da Parte 4)
+- Quem perguntar quando travar (nome do(a) supervisor(a) do CLAUDE.md)
 
-Printable. One page. Hand it out on day one.
+Imprimível. Uma página. Entregue no primeiro dia.
 
-## What this skill does NOT do
+## O que esta skill NÃO faz
 
-- Replace the professor's orientation. It covers procedures and tools; the professor covers judgment, strategy, and the things you only learn by watching someone good do it.
-- Teach substantive law. Practice-area *orientation*, not a doctrinal course.
-- Certify the student as ready. The professor decides when a student takes a real case.
+- Substituir o(a) supervisor(a). Cobre procedimentos e ferramentas; supervisor(a) cobre juízo, estratégia, e as coisas que você só aprende vendo alguém bom(boa) fazer.
+- Ensinar direito substantivo. *Orientação* à área de atuação, não curso doutrinário.
+- Certificar que o(a) estagiário(a) está pronto(a). Supervisor(a) decide quando estagiário(a) pega caso real.

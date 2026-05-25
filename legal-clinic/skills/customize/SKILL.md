@@ -1,99 +1,107 @@
 ---
 name: customize
 description: >
-  Guided customization of your legal clinic profile — change one thing without
-  re-running the whole cold-start interview. Adjust clinic profile,
-  jurisdiction, supervision style, practice-area templates, semester
-  configuration, or output safeguards. Use when the user says "change my
-  [thing]", "new semester", "add a practice area", "update my config", or
-  "customize".
+  Customização guiada do perfil da unidade ou NPJ — mudar uma coisa sem
+  re-rodar a entrevista inteira de cold-start. Ajusta perfil da unidade,
+  jurisdição, estilo de supervisão, templates por área de atuação, configuração
+  de termo/semestre ou salvaguardas de output. Use quando o(a) usuário(a)
+  disser "muda meu [item]", "novo semestre", "adiciona área de atuação",
+  "atualiza minha config" ou "customizar".
 argument-hint: "[section name, or describe what you want to change]"
 ---
 
 # /customize
 
-## When this runs
+## Quando isto roda
 
-The user typed `/legal-clinic:customize`. They (usually the professor, sometimes
-a student) want to change something in the clinic profile — a jurisdiction, a
-supervision style, a practice-area template, a semester rollover — without
-re-running the whole cold-start interview and without hand-editing YAML.
+O(a) usuário(a) digitou `/legal-clinic:customize`. Ele(a) (geralmente o(a)
+Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a), às vezes um(a)
+estagiário(a)) quer mudar algo no perfil da unidade — uma jurisdição, um estilo
+de supervisão, um template de área de atuação, uma virada de termo — sem
+re-rodar a entrevista inteira de cold-start e sem editar YAML na mão.
 
-## What to do
+## O que fazer
 
-1. **Read the config.** Read
+1. **Leia a config.** Leia
    `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`.
-   If the plugin config does not exist or still contains `[PLACEHOLDER]`
-   values, say:
+   Se a config do plugin não existir ou ainda contiver valores `[PLACEHOLDER]`,
+   diga:
 
-   > You haven't run setup yet. Run `/legal-clinic:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+   > Você ainda não rodou o setup. Rode `/legal-clinic:cold-start-interview`
+   > primeiro — customize é para ajustar um perfil que você já tem.
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+2. **Mostre o mapa do que dá para customizar.** Liste o que está no perfil,
+   agrupado, com sumário em uma linha do valor atual:
 
-   - **Clinic profile** — clinic name, host school, faculty lead, active
-     practice areas, case type limits
-   - **Jurisdiction** — primary state, courts, agencies, local rules path
-   - **Supervision style** — informal vs. formal review queue; if formal,
-     who reviews what before it goes out
-   - **Practice-area templates** — which templates are active (immigration,
-     housing, small business, family, expungement, etc.) and any local
-     overrides
-   - **Semester** — current semester, active students, rollover rules,
-     handoff memo format
-   - **Output safeguards** — plain-language standards for client-facing
-     outputs, deadline warning rules, privilege labeling
-   - **Seed documents** — clinic handbook, jurisdiction rules, template
-     letters, sample memos, form libraries
-   - **Outputs** — supervisor guide format, client letter templates, memo
-     scaffolds
-   - **Workflow** — case directories, deadline tracker location, review
-     queue channel
-   - **Integrations** — document storage / Slack / court e-filing status,
-     fallbacks
+   - **Perfil da unidade / NPJ** — nome da unidade ou NPJ, IES sede (se NPJ),
+     Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a), áreas de atuação
+     ativas, limites de tipo de caso
+   - **Jurisdição** — UF primária, comarca, varas, órgãos administrativos,
+     caminho das resoluções e regimentos locais
+   - **Estilo de supervisão** — informal vs. fila de revisão formal; se
+     formal, quem revisa o quê antes de sair
+   - **Templates por área de atuação** — quais templates estão ativos
+     (Família/Sucessões, Consumidor, Saúde Pública, Previdenciário/BPC-LOAS,
+     Locação, Possessória, etc.) e quaisquer overrides locais
+   - **Termo / semestre** — termo atual, estagiários(as) ativos(as), regras de
+     rollover, formato do memo de handoff
+   - **Salvaguardas de output** — padrões de linguagem simples para outputs ao
+     (à) assistido(a), regras de alerta de prazo, rotulagem de sigilo
+   - **Documentos-semente** — manual/regimento da unidade, resoluções CSDPGE,
+     regras locais (TJAM), cartas-modelo, memos de exemplo, biblioteca de
+     formulários
+   - **Outputs** — formato do guia do(a) supervisor(a), templates de carta ao
+     (à) assistido(a), scaffolds de memo
+   - **Workflow** — diretórios de caso, localização do tracker de prazos,
+     canal da fila de revisão
+   - **Integrações** — sistema interno (Sapiens-DPGU / sistema próprio AM) /
+     armazenamento documental / acompanhamento processual e-SAJ via DataJud —
+     status e fallbacks
 
-3. **Ask what they want to change.**
+3. **Pergunte o que quer mudar.**
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+   > O que você gostaria de ajustar? Escolha uma seção, ou descreva a mudança
+   > com suas palavras.
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+4. **Faça a mudança.** Mostre o valor atual, peça o valor novo, explique o que
+   muda downstream, confirme, escreva na config.
 
-   Examples:
-   - *Adding a new practice area:* "`/client-intake` will route matters of this
-     type through the new template. `/draft`, `/memo`, and `/client-letter`
-     will use the practice-area prompts. `/research-start` will add the
-     corresponding Westlaw search terms."
-   - *Supervision style informal → formal review queue:* "`/supervisor-review-queue` becomes
-     active — student output will land there for supervisor sign-off before
-     it goes to the client."
-   - *New semester rollover:* "I'll archive the prior semester's active
-     cases, carry forward matters you flag as continuing, and prompt the
-     incoming students through `/ramp`."
+   Exemplos:
+   - *Adicionando nova área de atuação:* "`/client-intake` vai rotear matérias
+     desse tipo pelo novo template. `/draft`, `/memo` e `/client-letter` vão
+     usar os prompts da área. `/research-start` vai adicionar os termos de
+     busca correspondentes nos MCPs (JusRatio / BNP / TJAM)."
+   - *Estilo de supervisão informal → fila de revisão formal:*
+     "`/supervisor-review-queue` fica ativa — output de estagiário(a) vai cair
+     lá para sign-off do(a) supervisor(a) antes de ir ao(à) assistido(a)."
+   - *Rollover de novo termo:* "Vou arquivar os casos ativos do termo
+     anterior, carregar adiante as matérias que você sinalizar como
+     continuando, e fazer os(as) estagiários(as) entrantes passarem pelo
+     `/ramp`."
 
-5. **Close.**
+5. **Encerre.**
 
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/legal-clinic:customize` anytime.
+   > Pronto. Seu próximo output vai refletir a mudança. Mais alguma coisa?
+   > Você pode rodar `/legal-clinic:customize` a qualquer momento.
 
 ## Guardrails
 
-- **Never delete a section.** If the user wants to "drop" a practice area,
-  offer to mark it `[Archived]` and explain that archiving keeps case
-  history accessible but hides the template from `/client-intake` routing.
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., formal review queue on + informal supervision note;
-  or practice area on + no jurisdiction rules configured), flag the
-  tension.
-- **Flag guardrail degradation.** These are load-bearing and should not be
-  removed: the "NOT final work product" framing on `/draft`, plain-language
-  standards on client-facing outputs, "does NOT decide case acceptance" on
-  `/client-intake`, "NOT substantive advice" on `/client-letter`, and the
-  scaffold-not-analysis framing on `/memo`. These exist because students
-  ship work product — if the safeguards go, the risk of student work
-  reaching a client without supervisor review goes up. Confirm the
-  trade-off with the user, and if they're a student rather than the
-  professor, suggest they discuss it with the supervisor first.
-- **One change at a time.** Don't re-ask the whole interview.
+- **Nunca apague uma seção.** Se o(a) usuário(a) quiser "soltar" uma área de
+  atuação, ofereça marcar como `[Arquivada]` e explique que arquivar mantém
+  o histórico de caso acessível mas esconde o template do roteamento do
+  `/client-intake`.
+- **Sinalize inconsistência interna.** Se a mudança deixar o perfil
+  inconsistente (ex.: fila de revisão formal ligada + nota de supervisão
+  informal; ou área de atuação ligada + sem resoluções de jurisdição
+  configuradas), sinalize a tensão.
+- **Sinalize degradação de guardrail.** Estes são load-bearing e não devem ser
+  removidos: o enquadramento "NÃO é trabalho final" no `/draft`, padrões de
+  linguagem simples nos outputs ao(à) assistido(a), "NÃO decide aceitação do
+  caso" no `/client-intake`, "NÃO é parecer substantivo" no `/client-letter`,
+  e o enquadramento scaffold-não-análise no `/memo`. Eles existem porque
+  estagiários(as) entregam produto — se as salvaguardas caem, o risco de
+  trabalho de estagiário(a) chegar ao(à) assistido(a) sem revisão do(a)
+  supervisor(a) sobe. Confirme o trade-off com o(a) usuário(a), e se for
+  estagiário(a) e não o(a) supervisor(a), sugira que converse com o(a)
+  supervisor(a) primeiro.
+- **Uma mudança por vez.** Não re-pergunte a entrevista inteira.

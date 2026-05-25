@@ -1,19 +1,22 @@
 ---
 name: form-generation
 description: >
-  Reference: DEPRECATED — use `/draft` instead. This skill has been folded into
-  the draft skill, which handles practice-area document generation including
-  form population. Kept as a redirect for migration.
+  Referência: OBSOLETA — use `/draft` em vez disso. Esta skill foi consolidada
+  na skill draft, que cuida de geração de documentos por área de atuação
+  incluindo preenchimento de formulários. Mantida como redirecionamento para
+  migração.
 user-invocable: false
 ---
 
-# [DEPRECATED] Form Generation → see `/draft`
+# [OBSOLETA] Form Generation → ver `/draft`
 
-This skill was folded into `skills/draft/` during the v2 rebuild. The `/draft`
-command handles first-draft generation for all clinic documents including form
-population (asylum applications, eviction answers, protective order petitions,
-etc.) with practice-area templates and jurisdiction-aware formatting.
+Esta skill foi consolidada em `skills/draft/` durante o rebuild v2. O comando
+`/draft` cuida da geração de primeira minuta para todos os documentos do estágio
+(NPJ / DP), incluindo preenchimento de formulários (petições iniciais de
+divórcio, contestação em ação de despejo, petições de medida protetiva da Lei
+Maria da Penha, etc.) com templates por área de atuação e formatação ciente da
+jurisdição.
 
-**Use `/draft [document type]` instead.**
+**Use `/draft [tipo de documento]` em vez disso.**
 
-See `skills/draft/SKILL.md` for the full workflow.
+Ver `skills/draft/SKILL.md` para o workflow completo.

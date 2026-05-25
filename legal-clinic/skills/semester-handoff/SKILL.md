@@ -1,191 +1,192 @@
 ---
 name: semester-handoff
 description: >
-  End-of-semester case handoff memos — the mirror of /ramp. Produces per-case
-  transition memos and a cohort summary so the departing cohort hands work to
-  the incoming cohort cleanly. Reads deadlines, client-comms, and case history.
-  Use when the professor or departing students need to wrap up the semester,
-  build transition memos, or offboard a graduating/withdrawing student.
+  Memos de handoff de caso de fim de termo/semestre — o espelho do /ramp.
+  Produz memos de transição por caso e sumário de turma para que a turma que
+  sai entregue o trabalho à turma entrante de forma limpa. Lê prazos, comms
+  com assistidos(as), e histórico de caso. Use quando supervisor(a) ou
+  estagiários(as) que saem precisam fechar o termo/semestre, construir memos
+  de transição, ou offboarding de estagiário(a) que se desliga.
 argument-hint: "[--semester=YYYY-term (default: current)] [--case=[case_id] (for a single case)]"
 ---
 
 # /semester-handoff
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → clinic profile, semester dates, supervision style.
-2. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` and `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md` per case.
-3. Use the workflow below.
-4. Take active-case list as input (ask if clinic doesn't have a central list). Map outgoing → incoming owners.
-5. Generate per-case handoff memo → `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[semester]/[case_id].md`.
-6. Generate cohort summary → `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[semester]/_summary.md`.
-7. Route per supervision model — formal queue / configurable flags / lighter-touch.
+1. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → perfil da unidade, datas do termo, estilo de supervisão.
+2. Carregue `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` e `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md` por caso.
+3. Use o workflow abaixo.
+4. Pegue lista de casos ativos como input (pergunte se a unidade não tem lista central). Mapeie owner que sai → owner que entra.
+5. Gere memo de handoff por caso → `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[termo]/[case_id].md`.
+6. Gere sumário de turma → `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[termo]/_summary.md`.
+7. Rote conforme modelo de supervisão — fila formal / flags configuráveis / toque mais leve.
 
 ---
 
-# Semester Handoff
+# Handoff de Termo/Semestre
 
-## Purpose
+## Propósito
 
-Every semester, clinics lose their entire workforce and rebuild. `/ramp` solves half the problem — it onboards the new cohort. This skill solves the other half: it offboards the departing cohort by producing handoff memos that capture what the next student needs to know about every active case.
+Todo termo/semestre, unidades e NPJs perdem sua força de trabalho inteira e reconstroem. `/ramp` resolve metade do problema — faz onboarding da turma nova. Esta skill resolve a outra metade: faz offboarding da turma que sai, produzindo memos de handoff que capturam o que o(a) próximo(a) estagiário(a) precisa saber sobre todo caso ativo.
 
-Without this, case knowledge walks out the door with the student. The new student starts from the case file and intake summary, which is never enough. Two weeks are wasted re-learning the case before the new student can do anything useful. The client experiences the re-learning as a regression — calls go unanswered while the new student catches up, questions already answered get asked again.
+Sem isto, conhecimento do caso sai pela porta junto com o(a) estagiário(a). Estagiário(a) novo(a) começa da pasta do caso e sumário de intake, o que nunca é suficiente. Duas semanas são desperdiçadas re-aprendendo o caso antes que o(a) estagiário(a) novo(a) consiga fazer algo útil. O(a) assistido(a) experimenta o re-aprendizado como regressão — ligações ficam sem resposta enquanto o(a) novo(a) estagiário(a) corre atrás, perguntas já respondidas são re-perguntadas.
 
-## Audience
+## Público
 
-Professor or departing students. The professor runs it to orchestrate the full cohort offboarding; individual students can run it on their own cases if they're transitioning mid-semester (graduation, withdrawal).
+Supervisor(a) ou estagiários(as) que saem. Supervisor(a) roda para orquestrar o offboarding inteiro da turma; estagiários(as) individuais podem rodar nos seus próprios casos se estão transicionando no meio do termo (formatura, desligamento).
 
-## Load context
+## Carregue contexto
 
-- `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → clinic profile, semester, practice areas, supervision style
-- `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` → all active deadlines, grouped by case
-- `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md` (per case) → communications history
-- Case files / intake summaries the clinic maintains
-- Student roster — who owns what going into the handoff
+- `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → perfil da unidade, termo, áreas de atuação, estilo de supervisão
+- `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` → todos os prazos ativos, agrupados por caso
+- `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md` (por caso) → histórico de comunicações
+- Pastas de caso / sumários de intake que a unidade mantém
+- Lista de estagiários(as) — quem é owner do quê indo para o handoff
 
 ## Workflow
 
-### Step 1: Identify cases and owners
+### Passo 1: Identifique casos e owners
 
-- Pull all active cases (from intake records + `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` case_ids + client-comms folders)
-- For each case: who's the current owner student? Are they staying or leaving?
-- Map: outgoing owner → incoming owner (if known; otherwise mark "TBD — professor to assign")
+- Puxe todos os casos ativos (de registros de intake + case_ids em `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` + pastas de client-comms)
+- Para cada caso: quem é o(a) estagiário(a) owner atual? Está ficando ou saindo?
+- Mapeie: owner que sai → owner que entra (se conhecido(a); senão marque "TBD — supervisor(a) atribui")
 
-If the clinic doesn't maintain a central active-case list, the skill needs one input: a list of active cases. Ask for it. Don't guess.
+Se a unidade não mantém lista central de casos ativos, a skill precisa de um input: lista dos casos ativos. Pergunte. Não chute.
 
-### Step 2: Per-case handoff memo
+### Passo 2: Memo de handoff por caso
 
-For each case:
+Para cada caso:
 
 ```markdown
-# Case Handoff — [case name] — [semester ending]
+# Handoff de Caso — [nome do caso] — [termo encerrando]
 
 **Case ID:** [case_id]
-**Practice area:** [area]
-**Outgoing student:** [name]
-**Incoming student:** [name or "TBD"]
-**Supervising attorney:** [professor]
-**Client:** [name or client ID]
+**Área de atuação:** [área]
+**Estagiário(a) que sai:** [nome]
+**Estagiário(a) entrante:** [nome ou "TBD"]
+**Defensor(a)-Supervisor(a) / Professor(a)-Orientador(a):** [supervisor(a)]
+**Assistido(a):** [nome ou ID do(a) assistido(a)]
 
 ---
 
-## Where we are
+## Onde estamos
 
-[One paragraph: current posture. What's been done, what's pending, where the case is heading. If the case is at a natural pause point or between filings, say so.]
+[Um parágrafo: posição atual. O que foi feito, o que está pendente, para onde o caso está indo. Se está em ponto de pausa natural ou entre peças, diga.]
 
-## Pending deadlines
+## Prazos pendentes
 
-*Pulled from `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml`. Incoming student's first job is to confirm these are accurate and owned.*
+*Puxados de `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml`. Primeiro trabalho do(a) estagiário(a) entrante é confirmar que estão corretos e atribuídos.*
 
-| Due | Type | Description | Notes |
+| Devido | Tipo | Descrição | Notas |
 |---|---|---|---|
-| [date] | [type] | [one-line] | [if tight: "URGENT — due within [N] days of semester start"] |
+| [data] | [tipo] | [uma linha] | [se apertado: "URGENTE — vence em [N] dias após início do termo"] |
 
-## What's been done
+## O que foi feito
 
-- [Key actions this semester: intake, filings, hearings, major correspondence]
-- [Documents produced — with pointers to where they live]
+- [Ações-chave neste termo: intake, protocolizações, audiências, correspondência principal]
+- [Documentos produzidos — com pointers de onde vivem]
 
-## What's open
+## O que está aberto
 
-- [Decisions pending: e.g., "client hasn't decided whether to accept settlement offer"]
-- [Research gaps: e.g., "need to confirm whether [jurisdiction] allows [remedy]"]
-- [Open communications: e.g., "awaiting response from opposing counsel's office"]
+- [Decisões pendentes: ex.: "assistido(a) ainda não decidiu se aceita acordo proposto"]
+- [Lacunas de pesquisa: ex.: "precisa confirmar se [tribunal] admite [remédio]"]
+- [Comunicações abertas: ex.: "aguardando resposta de advogado(a) contrário(a)"]
 
-## Client relationship
+## Relação com o(a) assistido(a)
 
-- [How often has the student been in touch? Phone, email, in-person?]
-- [Any relationship context the next student should know: language preference, trust-building notes, circumstances that affect scheduling]
-- [Upcoming planned contact or appointments]
+- [Com que frequência o(a) estagiário(a) tem estado em contato? Telefone, e-mail, presencial?]
+- [Qualquer contexto de relação que o(a) próximo(a) estagiário(a) deve saber: idioma preferido, notas de construção de confiança, circunstâncias que afetam agendamento]
+- [Contato ou atendimentos planejados próximos]
 
-## Documents drafted / filed
+## Documentos redigidos / protocolados
 
-*Pointers, not content.*
+*Pointers, não conteúdo.*
 
-- [Date] [Document type] — [path or file reference] — [status: filed / drafted / in review queue]
+- [Data] [Tipo de documento] — [caminho ou referência ao arquivo] — [status: protocolado / minutado / em fila de revisão]
 
-## Communications history summary
+## Sumário de histórico de comunicações
 
-*From `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md`. Three-line summary here; incoming student reads the full log.*
+*De `~/.claude/plugins/config/claude-for-legal/legal-clinic/client-comms/[case-id]/log.md`. Sumário de três linhas aqui; estagiário(a) entrante lê o log completo.*
 
-[Short summary of recent contact patterns — e.g., "3 phone calls since intake, all in Spanish, client prefers evenings. Last contact: 2026-04-15, confirmed address for hearing notice."]
+[Sumário curto dos padrões recentes de contato — ex.: "3 ligações desde intake, todas em português, assistido(a) prefere noites. Último contato: 2026-04-15, confirmou endereço para intimação de audiência."]
 
-## Professor's flags for incoming student
+## Flags do(a) supervisor(a) para estagiário(a) entrante
 
-*Added by professor review before the handoff memo goes to the incoming student. Could include: "this case has a sensitive family dynamic — read the intake carefully before calling client"; "client has requested all mail go to PO box not home address"; "there's a scope question here we haven't resolved — check with me in week 1."*
+*Adicionadas por revisão do(a) supervisor(a) antes do memo de handoff ir para o(a) estagiário(a) entrante. Pode incluir: "este caso tem dinâmica familiar sensível — leia o intake com cuidado antes de ligar para assistido(a)"; "assistido(a) pediu que toda correspondência vá para caixa postal e não residência"; "há questão de escopo aqui que não resolvemos — cheque comigo na semana 1."*
 
-[flags, or "none"]
+[flags, ou "nenhuma"]
 
-## First-week priorities for incoming student
+## Prioridades de primeira semana para estagiário(a) entrante
 
-1. [Specific — e.g., "Call [client] within 48 hours of taking the case. Introduce yourself. Confirm you've received the case file."]
-2. [Deadline-driven — e.g., "Answer to eviction complaint is due [date]. Review outgoing student's draft, revise, file."]
-3. [Knowledge-gap — e.g., "Read outgoing student's memo on the habitability defense before the 4/28 status conference."]
+1. [Específico — ex.: "Ligue para [assistido(a)] dentro de 48h de pegar o caso. Apresente-se. Confirme que recebeu a pasta."]
+2. [Movido por prazo — ex.: "Contestação à ação de despejo vence [data]. Revise minuta do(a) estagiário(a) que saiu, revise, protocole."]
+3. [Lacuna de conhecimento — ex.: "Leia memo do(a) estagiário(a) que saiu sobre a exceção de habitabilidade antes da audiência de conciliação em 28/04."]
 
 ---
 
-**Handoff prepared by:** [outgoing student]
-**Date:** [YYYY-MM-DD]
-**Reviewed by:** [supervising attorney, if applicable per supervision model]
+**Handoff preparado por:** [estagiário(a) que sai]
+**Data:** [AAAA-MM-DD]
+**Revisado por:** [Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a), se aplicável conforme modelo de supervisão]
 ```
 
-### Step 3: Cohort summary
+### Passo 3: Sumário de turma
 
-After all per-case memos, produce `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[semester]/_summary.md`:
+Depois de todos os memos por caso, produza `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[termo]/_summary.md`:
 
 ```markdown
-# Cohort Handoff Summary — [semester ending]
+# Sumário de Handoff de Turma — [termo encerrando]
 
-**Departing students:** [N]
-**Incoming students:** [N]
-**Active cases transitioning:** [N]
-**Cases closing at semester end (no transition):** [N]
+**Estagiários(as) que saem:** [N]
+**Estagiários(as) entrantes:** [N]
+**Casos ativos transicionando:** [N]
+**Casos encerrando no fim do termo (sem transição):** [N]
 
 ---
 
-## Transitions
+## Transições
 
-| Case | Outgoing | Incoming | Practice area | Urgency |
+| Caso | Sai | Entra | Área de atuação | Urgência |
 |---|---|---|---|---|
-| [case_id] | [name] | [name or TBD] | [area] | [standard / deadline within 2 weeks / urgent] |
+| [case_id] | [nome] | [nome ou TBD] | [área] | [padrão / prazo em 2 semanas / urgente] |
 
-## Unassigned
+## Não-atribuídos
 
-[cases whose incoming student is "TBD" — professor assigns before next semester]
+[casos cujo(a) estagiário(a) entrante é "TBD" — supervisor(a) atribui antes do próximo termo]
 
-## Deadlines within 30 days of semester start
+## Prazos em 30 dias do início do termo
 
-[pulled from deadlines.yaml — these are the cases the new cohort hits running]
+[puxados de deadlines.yaml — esses são os casos em que a turma nova entra correndo]
 
-## Notes for professor
+## Notas para supervisor(a)
 
-- [Any case that raised concern about student performance, flagged for closer supervision]
-- [Any case where the outgoing student is willing to stay on consult — e.g., graduating 3L who wants to mentor the 2L taking over]
-- [Patterns across handoffs — e.g., "three of six cases have active deadlines in first 14 days; consider front-loading ramp exercises on those practice areas"]
+- [Qualquer caso que levantou preocupação sobre performance do(a) estagiário(a), sinalizado para supervisão mais próxima]
+- [Qualquer caso em que o(a) estagiário(a) que sai está disposto(a) a ficar de consulta — ex.: aluno(a) do último período que quer mentorar o(a) que assume]
+- [Padrões entre handoffs — ex.: "três de seis casos têm prazos ativos nos primeiros 14 dias; considere antecipar exercícios de ramp nessas áreas de atuação"]
 ```
 
-### Step 4: Professor review (if supervision model calls for it)
+### Passo 4: Revisão do(a) supervisor(a) (se modelo de supervisão pede)
 
-Closing a case or transitioning it to a new student is a consequential action. The gate is the supervision workflow in `## Supervision style` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reinforced by the Part 0 role check confirming a licensed supervising attorney owns the setup. Case-closing memos always get professor sign-off before the case is marked closed in the handoff document, regardless of supervision-style choice.
+Encerrar caso ou transicionar para novo(a) estagiário(a) é ação consequente. O gate é o workflow de supervisão em `## Estilo de supervisão` em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reforçado pela checagem de papel da Parte 0 confirmando que Defensor(a)-Supervisor(a) ou Professor(a)-Orientador(a) habilitado(a) é dono(a) do setup. Memos de encerramento de caso sempre pegam sign-off do(a) supervisor(a) antes do caso ser marcado encerrado no documento de handoff, independentemente da escolha de estilo de supervisão.
 
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` supervision style:
+Conforme estilo de supervisão em `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`:
 
-- **Formal review queue:** every handoff memo goes into the review queue before release to the incoming student. Professor approves, edits, or returns.
-- **Configurable flags:** memos carry "CHECK WITH [PROFESSOR] BEFORE RELYING" — professor reviews informally, student responsible for checking in.
-- **Lighter-touch:** memos carry standard AI-assisted label; professor reviews through existing structure. Case-closing memos still route to the professor before closure.
+- **Fila de revisão formal:** todo memo de handoff entra na fila de revisão antes de release ao(à) estagiário(a) entrante. Supervisor(a) aprova, edita ou devolve.
+- **Flags configuráveis:** memos carregam "CHECAR COM [SUPERVISOR(A)] ANTES DE CONFIAR" — supervisor(a) revisa informalmente, estagiário(a) responsável por procurar.
+- **Toque mais leve:** memos carregam rótulo padrão de IA-assistida; supervisor(a) revisa via estrutura existente. Memos de encerramento de caso ainda roteiam para supervisor(a) antes do fechamento.
 
-### Step 5: Hand off
+### Passo 5: Handoff
 
-Once reviewed, handoff memos live at `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[semester]/[case_id].md`. The incoming student reads them during their `/ramp` run at the start of next semester — `/ramp` should surface the memos for cases the new student is assigned.
+Uma vez revisados, memos de handoff vivem em `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[termo]/[case_id].md`. O(a) estagiário(a) entrante lê durante seu `/ramp` no início do próximo termo — `/ramp` deve surface os memos dos casos para os quais o(a) estagiário(a) novo(a) é atribuído(a).
 
-## Integration
+## Integração
 
-- **`/ramp`:** at the start of next semester, reads `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[most-recent-semester]/` and surfaces per-case memos for the cases each new student is taking on.
-- **`/deadlines`:** feeds the pending-deadlines section of each memo.
-- **`/client-comms-log`:** feeds the communications history summary.
-- **`/supervisor-review-queue` (if formal review enabled):** handoff memos route here for professor approval.
+- **`/ramp`:** no início do próximo termo, lê `~/.claude/plugins/config/claude-for-legal/legal-clinic/handoffs/[termo-mais-recente]/` e surface memos por caso dos casos que cada estagiário(a) novo(a) está pegando.
+- **`/deadlines`:** alimenta a seção de prazos pendentes de cada memo.
+- **`/client-comms-log`:** alimenta o sumário de histórico de comunicações.
+- **`/supervisor-review-queue` (se revisão formal habilitada):** memos de handoff roteiam aqui para aprovação do(a) supervisor(a).
 
-## What this skill does not do
+## O que esta skill não faz
 
-- **Close cases.** Handoff is for cases transitioning to the next cohort. Cases closing at semester end should get a final internal status memo (`/legal-clinic:status internal`) for the file and be marked closed in the handoff document; the status skill supports `client | internal | court` audiences.
-- **Assign incoming students.** Professor assigns. Skill records what the assignment is; doesn't pick.
-- **Generate handoffs from scratch without clinic data.** Needs the active case list as input. If the clinic doesn't maintain one, the skill surfaces that gap as a blocker rather than inventing.
-- **Replace a conversation.** The written memo is the record. The outgoing student should also have a conversation with the incoming student where feasible — the memo captures facts; a conversation captures judgment and relationship context the memo can't.
+- **Encerrar casos.** Handoff é para casos transicionando para a próxima turma. Casos encerrando no fim do termo devem ganhar memo de status interno final (`/legal-clinic:status internal`) para a pasta e ser marcados encerrados no documento de handoff; a skill status suporta audiências `client | internal | court`.
+- **Atribuir estagiários(as) entrantes.** Supervisor(a) atribui. Skill registra qual é a atribuição; não escolhe.
+- **Gerar handoffs do zero sem dados da unidade.** Precisa da lista de casos ativos como input. Se a unidade não mantém uma, a skill surface essa lacuna como bloqueador em vez de inventar.
+- **Substituir uma conversa.** O memo escrito é o registro. O(a) estagiário(a) que sai também deve ter uma conversa com o(a) que entra quando viável — o memo captura fatos; uma conversa captura juízo e contexto de relação que o memo não captura.
